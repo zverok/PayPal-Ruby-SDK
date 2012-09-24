@@ -6,7 +6,8 @@ class PayPal::SDK::Core::Config
   attr_accessor :username, :password, :signature, :app_id,
       :cert_key, :cert_path,
       :http_timeout, :http_retry, :http_trust, :http_proxy,
-      :end_point, :redirect_url, :dev_central_url
+      :end_point, :redirect_url, :dev_central_url,
+      :logfile
   
   def initialize(options)
     options.each do |key, value|
