@@ -1,0 +1,25 @@
+development:
+  username: jb-us-seller_api1.paypal.com
+  password: WX4WTU3S8MY44S7F
+  signature: AFcWxV21C7fd0v3bYYYRCpSSRl31A7yDhhsPUU2XhtMoZXsWHFxu-RWy
+  app_id: APP-80W284485P519543T
+  http_timeout: 30
+  http_retry: 5
+  http_trust: false
+  http_proxy: ""
+  end_point: "https://svcs.sandbox.paypal.com/"
+  redirect_url: "https://www.sandbox.paypal.com/webscr&cmd="
+  dev_central_url: "https://developer.paypal.com"
+test:
+  username: suarumugam-biz_api1.paypal.com
+  password: N6WUWNG3AESQUSXB
+  cert_key: KJAERUGBLVF6Y
+  cert_path: "config/cert_key.pem"
+  app_id: APP-5XV204960S3290106
+  http_timeout: 30
+  http_retry: 5
+  http_trust: false
+  http_proxy: ""
+  end_point: "https://svcs.sandbox.paypal.com/"
+  redirect_url: "https://www.sandbox.paypal.com/webscr&cmd="
+  dev_central_url: "https://developer.paypal.com"
