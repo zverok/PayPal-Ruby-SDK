@@ -17,7 +17,7 @@ class PayPal::SDK::Core::Config
   
   class << self
     def load(file_name, default_environment = "development")
-      @@configurations      = self.read_configurations(file_name)
+      @@configurations      = read_configurations(file_name)
       @@default_environment = default_environment
     end
     
