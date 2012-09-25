@@ -8,9 +8,11 @@ module PayPal::SDK::Core
       @config ||= Config.config
     end
     
-    def config=(config, *args)
-      @config = config.is_a?(Config) ? config : Config.config(config, *args)
+    def config=(env, *args)
+      @config = env.is_a?(Config) ? env : Config.config(env, *args)
     end
+    
+    alias_method :set_config, :config=
   end
   
   class Config    
@@ -25,7 +27,7 @@ module PayPal::SDK::Core
         send("#{key}=", value) rescue nil
       end
     end
-    
+        
     class << self
       def load(file_name, default_environment = "development")
         @@configurations      = read_configurations(file_name)
@@ -49,6 +51,7 @@ module PayPal::SDK::Core
           override_configuration = env
           env = default_environment
         end
+        override_configuration ||= {}
         override_configuration = configurations[env.to_s].dup.merge override_configuration
         new(override_configuration)
       end
