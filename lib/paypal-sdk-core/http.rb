@@ -7,14 +7,14 @@ module PayPal::SDK::Core
     include Configuration
       
     def initialize(host = nil, *args)
-      if [ Symbol, Hash, NilClass ].include? host.class
-        self.config= host unless host.nil?
+      if host.is_a? String
+        super
+      else
+        self.set_config(host, *args) if host
         uri = URI.parse(config.end_point)
         super(uri.host, uri.port)
-        configure_http_connection
-      else
-        super
       end
+      configure_http_connection
     end
     
     def configure_http_connection
