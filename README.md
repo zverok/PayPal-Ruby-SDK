@@ -13,17 +13,15 @@ And then execute:
     $ bundle
 
 Or install it yourself as:
-
     $ gem install paypal-sdk-core
 
 ## Usage
 
 ```ruby
-
 # Load Configurations from file
 PayPal::SDK::Core::Config.load('config/paypal.yml', 'development')
 
-# Get Configurration
+# Get Configuration
 config = PayPal::SDK::Core::Config.config # Load default configuration
 config = PayPal::SDK::Core::Config.config(:development) # Load specified environment configuration
 config = PayPal::SDK::Core::Config.config(:development, :app_id => "XYZ") # Override configuration
@@ -33,6 +31,12 @@ http      = PayPal::SDK::Core::HTTP.new
 http      = PayPal::SDK::Core::HTTP.new(:development)
 http      = PayPal::SDK::Core::HTTP.new("svcs.sandbox.paypal.com", 443)
 
-# To make HTTP request.
+# To make API request
 response  = http.get("/AdaptivePayments/GetPaymentOptions")
+
+# Include Core package
+include PayPal::SDK::Core
+set_config :development # Set configuration
+config  				# access configuration
+logger  				# access logger
 ```
