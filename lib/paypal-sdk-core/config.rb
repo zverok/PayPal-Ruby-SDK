@@ -29,6 +29,9 @@ module PayPal::SDK::Core
     end
         
     class << self
+      
+      @@config_cache = {}
+      
       def load(file_name, default_environment = "development")
         @@configurations      = read_configurations(file_name)
         @@default_environment = default_environment
@@ -51,10 +54,13 @@ module PayPal::SDK::Core
           override_configuration = env
           env = default_environment
         end
-        override_configuration ||= {}
-        override_configuration = configurations[env.to_s].dup.merge override_configuration
-        new(override_configuration)
+        env = env.to_s
+        if override_configuration.nil? or override_configuration.empty?
+          @@config_cache[env] ||= new configurations[env]
+        else
+          new configurations[env].merge(override_configuration)
+        end
       end
-    end    
+    end
   end
 end
