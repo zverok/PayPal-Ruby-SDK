@@ -11,6 +11,11 @@ Add this line to your application's Gemfile:
 And then execute:
 
     $ bundle
+    
+Run Testcase
+
+    $ bundle exec rspec
+
 
 ## Usage
 
