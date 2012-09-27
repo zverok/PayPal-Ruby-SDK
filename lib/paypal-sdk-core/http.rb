@@ -31,7 +31,9 @@ module PayPal::SDK::Core
         self.read_timeout = config.http_timeout
       end
       if config.cert_path
-        self.cert = OpenSSL::X509::Certificate.new(File.read(config.cert_path))
+        cert_content = File.read(config.cert_path)
+        self.cert = OpenSSL::X509::Certificate.new(cert_content)
+        self.key  = OpenSSL::PKey::RSA.new(cert_content)
       end
     end
         
