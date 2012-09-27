@@ -26,4 +26,15 @@ describe PayPal::SDK::Core::Config do
     config.app_id.should eql(override_configuration[:app_id])    
   end
   
+  it "get cached config" do
+    Config.config(:test).should eql Config.config(:test)
+    Config.config(:test).should_not eql Config.config(:development)
+  end
+  
+  it "should raise error on invalid environment" do
+    lambda {
+      Config.config(:invalid_env)
+    }.should raise_error "Configuration[invalid_env] NotFound"
+  end
+
 end

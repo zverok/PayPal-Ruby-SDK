@@ -55,6 +55,7 @@ module PayPal::SDK::Core
           env = default_environment
         end
         env = env.to_s
+        raise "Configuration[#{env}] NotFound" unless configurations[env]
         if override_configuration.nil? or override_configuration.empty?
           @@config_cache[env] ||= new configurations[env]
         else

@@ -6,6 +6,12 @@ module PayPal::SDK::Core
     include Logging
     include Configuration
       
+    class << self
+      def new(host = nil, *args)
+        super
+      end
+    end
+    
     def initialize(host = nil, *args)
       if host.is_a? String
         super
