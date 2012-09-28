@@ -6,7 +6,7 @@ Core library for PayPal ruby SDK.
 
 Add this line to your application's Gemfile:
 
-    gem 'paypal-sdk-core', :git => "https://github.com/paypalx/sdk-core.git", :branch => "ruby-sdk"
+    gem 'paypal-sdk-core', :git => "https://github.com/paypal/sdk-core.git", :branch => "ruby-sdk"
 
 And then execute:
 

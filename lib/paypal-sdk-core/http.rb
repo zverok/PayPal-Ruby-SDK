@@ -5,6 +5,7 @@ module PayPal::SDK::Core
     
     include Logging
     include Configuration
+    include Authentication
       
     class << self
       def new(host = nil, *args)
@@ -30,23 +31,12 @@ module PayPal::SDK::Core
         self.open_timeout = config.http_timeout
         self.read_timeout = config.http_timeout
       end
-      if config.cert_path
-        cert_content = File.read(config.cert_path)
-        self.cert = OpenSSL::X509::Certificate.new(cert_content)
-        self.key  = OpenSSL::PKey::RSA.new(cert_content)
-      end
+      add_certificate(self)
     end
         
     def request(req, *args)
       add_headers(req)
       super
-    end
-    
-    def add_headers(req)
-      req["X-PAYPAL-SECURITY-USERID"]     = config.username
-      req["X-PAYPAL-SECURITY-PASSWORD"]   = config.password
-      req["X-PAYPAL-APPLICATION-ID"]      = config.app_id
-      req["X-PAYPAL-SECURITY-SIGNATURE"]  = config.signature if config.signature
     end
     
   end

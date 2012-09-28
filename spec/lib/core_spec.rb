@@ -8,8 +8,8 @@ describe PayPal::SDK::Core do
   
   it "should include config and logger" do
     example = ExampleClass.new
-    example.logger.should be_a Logger
     example.config.should be_a PayPal::SDK::Core::Config
+    example.logger.should be_a Logger
   end
   
 end
