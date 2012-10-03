@@ -1,7 +1,8 @@
 module PayPal
   module SDK
     module Core
-      VERSION = "0.0.1"
+      API_VERSION = "94.0"
+      VERSION     = "0.#{API_VERSION}"
     end
   end
 end

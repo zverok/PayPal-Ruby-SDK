@@ -16,12 +16,15 @@ module PayPal::SDK::Core
       request["X-PAYPAL-SECURITY-SIGNATURE"]  = config.signature  if config.signature
       request
     end
-    
+            
     def add_certificate(http = self)
       if config.cert_path and http
         cert_content = File.read(config.cert_path)
         http.cert = OpenSSL::X509::Certificate.new(cert_content)
         http.key  = OpenSSL::PKey::RSA.new(cert_content)
+      else
+        http.cert = nil 
+        http.key  = nil
       end
     end
   end

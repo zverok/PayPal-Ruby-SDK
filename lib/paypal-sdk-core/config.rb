@@ -19,7 +19,7 @@ module PayPal::SDK::Core
     attr_accessor :username, :password, :signature, :app_id,
         :cert_key, :cert_path,
         :http_timeout, :http_retry, :http_trust, :http_proxy,
-        :end_point, :redirect_url, :dev_central_url,
+        :end_point, :soap_end_point, :nvp_end_point, :redirect_url, :dev_central_url,
         :logfile
     
     def initialize(options)
@@ -54,7 +54,7 @@ module PayPal::SDK::Core
           override_configuration = env
           env = default_environment
         end
-        env = env.to_s
+        env = (env || default_environment).to_s
         raise "Configuration[#{env}] NotFound" unless configurations[env]
         if override_configuration.nil? or override_configuration.empty?
           @@config_cache[env] ||= new configurations[env]

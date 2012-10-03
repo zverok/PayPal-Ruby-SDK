@@ -20,16 +20,19 @@ describe PayPal::SDK::Core::HTTP do
      
   it "request paypal API service" do
     lambda {
-      http      = HTTP.new(:development)
-      response  = http.get("/AdaptivePayments/GetPaymentOptions")
+      uri       = URI.parse(Config.config.end_point)
+      http      = HTTP.new(uri.host, uri.port)
+      response  = http.post("/AdaptivePayments/GetPaymentOptions", "")
+      response.body.should_not match /Authentication.failed/
     }.should_not raise_error
   end
   
   it "request paypal API service with ssl certificate" do
     lambda {
-      http      = HTTP.new(:test)
-      response  = http.get("/AdaptivePayments/GetPaymentOptions")
+      http      = HTTP.new(:with_certificate)
+      response  = http.post("/AdaptivePayments/GetPaymentOptions", "")
       http.cert.should_not be_nil
+      response.body.should_not match /Authentication.failed/
     }.should_not raise_error    
   end
     

@@ -24,6 +24,11 @@ module PayPal::SDK::Core
       configure_http_connection
     end
     
+    def set_config(*args)
+      super
+      configure_http_connection
+    end
+    
     def configure_http_connection
       self.use_ssl      = true
       self.verify_mode  = OpenSSL::SSL::VERIFY_NONE

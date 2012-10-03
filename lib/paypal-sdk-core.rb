@@ -3,6 +3,7 @@ require "paypal-sdk-core/config"
 require "paypal-sdk-core/logging"
 require "paypal-sdk-core/authentication"
 require "paypal-sdk-core/http"
+require "paypal-sdk-core/soap"
 
 module PayPal
   module SDK
