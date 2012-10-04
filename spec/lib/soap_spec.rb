@@ -16,8 +16,7 @@ describe PayPal::SDK::Core::SOAP do
   
   it "format soap body" do
     client    = SOAP.new
-    soap_body = client.body(:transaction_search, 
-      { :start_date => "2012-09-30T00:00:00+0530",
+    soap_body = client.body(:transaction_search, { :start_date => "2012-09-30T00:00:00+0530",
         :end_date => "2012-10-01T00:00:00+0530"})
     soap_body.to_s.should match "TransactionSearch"
     soap_body.to_s.should match "StartDate"
@@ -26,8 +25,7 @@ describe PayPal::SDK::Core::SOAP do
     
   it "make API call" do
     client    = SOAP.new(:development)
-    response  = client.request("TransactionSearch", 
-      { "StartDate" => "2012-09-30T00:00:00+0530",
+    response  = client.request("TransactionSearch", { "StartDate" => "2012-09-30T00:00:00+0530",
          "EndDate" => "2012-10-01T00:00:00+0530"})
     response["Ack"].should eql "Success"    
   end

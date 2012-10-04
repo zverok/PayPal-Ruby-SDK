@@ -11,6 +11,7 @@ test: &default
   redirect_url: "https://www.sandbox.paypal.com/webscr&cmd="
   dev_central_url: "https://developer.paypal.com"
   soap_end_point: "https://api-3t.sandbox.paypal.com/2.0/"
+  nvp_end_point: "https://svcs.sandbox.paypal.com/"
 development:
   <<: *default
   

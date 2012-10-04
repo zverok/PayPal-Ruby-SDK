@@ -44,10 +44,18 @@ logger  				# access logger
 
 # To make SOAP API call
 client   = PayPal::SDK::Core::SOAP.new
-response = client.request("TransactionSearch", 
-              { "StartDate" => "2012-09-30T00:00:00+0530",
-                "EndDate" => "2012-10-01T00:00:00+0530"})
+response = client.request("TransactionSearch", { "StartDate" => "2012-09-30T00:00:00+0530", "EndDate" => "2012-10-01T00:00:00+0530" })
 if response["Ack"] == "Success"
+  puts "Request made successfully"
+end
+
+# To make NVP API call
+client    = PayPal::SDK::Core::NVP.new("AdaptivePayments")
+response  = client.request("ConvertCurrency", {
+    "requestEnvelope"       => { "errorLanguage" => "en_US" }, 
+    "baseAmountList"        => { "currency" => [ { "code" => "USD", "amount" => "2.0"} ]},
+    "convertToCurrencyList" => { "currencyCode" => ["GBP"] } })
+if response["responseEnvelope"]["Ack"] == "Success"
   puts "Request made successfully"
 end
 ```

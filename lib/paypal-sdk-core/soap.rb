@@ -28,7 +28,7 @@ module PayPal::SDK::Core
       @http.set_config(config)
     end
 
-    def request(action, params)
+    def request(action, params = {})
       request_content = format_request(action, params)
       response        = @http.post(@uri.path, request_content)
       format_response(response, action)
