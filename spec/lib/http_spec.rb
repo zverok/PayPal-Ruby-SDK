@@ -23,7 +23,7 @@ describe PayPal::SDK::Core::HTTP do
       uri       = URI.parse(Config.config.end_point)
       http      = HTTP.new(uri.host, uri.port)
       response  = http.post("/AdaptivePayments/GetPaymentOptions", "")
-      response.body.should_not match /Authentication.failed/
+      response.body.should_not match "Authentication failed"
     }.should_not raise_error
   end
   
@@ -32,7 +32,7 @@ describe PayPal::SDK::Core::HTTP do
       http      = HTTP.new(:with_certificate)
       response  = http.post("/AdaptivePayments/GetPaymentOptions", "")
       http.cert.should_not be_nil
-      response.body.should_not match /Authentication.failed/
+      response.body.should_not match "Authentication failed"
     }.should_not raise_error    
   end
     

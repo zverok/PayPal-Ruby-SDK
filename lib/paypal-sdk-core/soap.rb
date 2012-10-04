@@ -1,11 +1,10 @@
 require 'paypal-sdk-core/version'
-require 'paypal-sdk-core/http'
+require 'paypal-sdk-core/api'
 require 'gyoku'
-require 'nokogiri'
 require 'nori'
 
 module PayPal::SDK::Core
-  class SOAP
+  class SOAP < API
     
     Namespaces = {
       "xmlns:soapenv" => "http://schemas.xmlsoap.org/soap/envelope/",
@@ -15,42 +14,20 @@ module PayPal::SDK::Core
       "xmlns:ed"      => "urn:ebay:apis:EnhancedDataTypes"
     }
     Gyoku.convert_symbols_to :camelcase
-        
-    include PayPal::SDK::Core::Configuration
-    include PayPal::SDK::Core::Logging
     
-    attr_accessor :http, :uri
-    
-    def initialize(environment = nil, options = {})
-      set_config(environment, options)
-      @uri  = URI.parse(config.soap_end_point || config.end_point)
-      @http = HTTP.new(@uri.host, @uri.port)
-      @http.set_config(config)
-    end
-
-    def request(action, params = {})
-      request_content = format_request(action, params)
-      response        = @http.post(@uri.path, request_content)
-      format_response(response, action)
+    def service_endpoint
+      config.soap_end_point || super
     end
     
-    def format_response(response, action)
-      response_action = /#{Gyoku::XMLKey.create(action)}Response$/i
-      hash = Nori.parse(response.body)
-      hash = hash.find{|k,v| k.to_s =~ /Envelope$/i }.last    if hash.is_a? Hash
-      hash = hash.find{|k,v| k.to_s =~ /Body$/i }.last        if hash.is_a? Hash
-      hash = hash.find{|k,v| k.to_s =~ response_action }.last if hash.is_a? Hash
-      hash || {}
-    end           
-   
     def format_request(action, params)
-      Gyoku.xml({ 
+      request_content = Gyoku.xml({ 
         "soapenv:Envelope" => {
           "soapenv:Header"  => header,
           "soapenv:Body"    => body(action, params)
         },
         :attributes!       => { "soapenv:Envelope" => Namespaces }
       })
+      [ @uri.path, request_content ]
     end
     
     def header
@@ -69,5 +46,15 @@ module PayPal::SDK::Core
       params.unshift(["ebl:Version", API_VERSION])
       { "#{action}Req" => { "#{action}Request" => Hash[params] } }
     end
+
+    def format_response(action, response)
+      response_action = /#{Gyoku::XMLKey.create(action)}Response$/i
+      hash = Nori.parse(response.body)
+      hash = hash.find{|k,v| k.to_s =~ /Envelope$/i }.last    if hash.is_a? Hash
+      hash = hash.find{|k,v| k.to_s =~ /Body$/i }.last        if hash.is_a? Hash
+      hash = hash.find{|k,v| k.to_s =~ response_action }.last if hash.is_a? Hash
+      hash || {}
+    end           
+   
   end
 end

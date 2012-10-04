@@ -1,35 +1,22 @@
-require 'paypal-sdk-core/http'
+require 'paypal-sdk-core/api'
 require 'json'
 
 module PayPal::SDK::Core
-  class NVP
+  class NVP < API
     
-    include PayPal::SDK::Core::Configuration
-    include PayPal::SDK::Core::Logging
-    
-    DefaultHeaders = {
+    NVP_HTTP_HEADER = {
       "X-PAYPAL-REQUEST-DATA-FORMAT"  => "JSON",
       "X-PAYPAL-RESPONSE-DATA-FORMAT" => "JSON" 
     }
-
-    attr_accessor :http, :uri
     
-    def initialize(prefix = "/", environment = nil, options = {})
-      unless prefix.is_a? String
-        environment, options, prefix = prefix, environment || {}, "/"
-      end
-      set_config(environment, options)
-      @uri  = URI.parse((config.nvp_end_point || config.end_point) + "/" + prefix)
-      @http = HTTP.new(@uri.host, @uri.port)
-      @http.set_config(config)
-    end
-        
-    def request(action, params = {}, headers = {})
-      url, content = format_request(action, params)
-      response     = @http.post(url, content, headers.merge(DefaultHeaders))
-      format_response(action, response)
+    def http_header
+      super.merge(NVP_HTTP_HEADER)
     end
     
+    def service_endpoint
+      config.nvp_end_point || super
+    end
+            
     def format_request(action, params)
       request_path = (@uri.path + "/" + action).gsub(/\/+/, "/")
       [ request_path, params.to_json ]
@@ -38,5 +25,6 @@ module PayPal::SDK::Core
     def format_response(action, response)
       JSON.parse(response.body)
     end
+    
   end
 end

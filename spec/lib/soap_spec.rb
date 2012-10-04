@@ -24,10 +24,16 @@ describe PayPal::SDK::Core::SOAP do
   end 
     
   it "make API call" do
-    client    = SOAP.new(:development)
+    client    = SOAP.new
     response  = client.request("TransactionSearch", { "StartDate" => "2012-09-30T00:00:00+0530",
          "EndDate" => "2012-10-01T00:00:00+0530"})
     response["Ack"].should eql "Success"    
+  end
+  
+  it "make incorrect API call" do
+    client    = SOAP.new
+    response  = client.request("TransactionSearch")
+    response["Ack"].should eql "Failure"
   end
   
 end
