@@ -4,9 +4,10 @@ describe PayPal::SDK::Core::Config do
   
   Config = PayPal::SDK::Core::Config
   
-  it "load configuration file" do
+  it "load configuration file and default environment" do
     lambda { 
       Config.load("spec/config/paypal.yml", "test")
+      Config.default_environment.should eql "test"
     }.should_not raise_error
   end
     
