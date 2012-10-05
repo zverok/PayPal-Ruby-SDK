@@ -3,6 +3,7 @@ require 'paypal-sdk-core/api'
 require 'gyoku'
 require 'nori'
 
+
 module PayPal::SDK::Core
   class SOAP < API
     
@@ -13,7 +14,14 @@ module PayPal::SDK::Core
       "xmlns:cc"      => "urn:ebay:apis:CoreComponentTypes",
       "xmlns:ed"      => "urn:ebay:apis:EnhancedDataTypes"
     }
+    XML_OPTIONS     = { :namespace => "urn", :element_form_default => :qualified }
+    DEFAULT_PARAMS  = { "ebl:Version" => API_VERSION }  
+    
     Gyoku.convert_symbols_to :camelcase
+    Nori.configure do |config|
+      config.strip_namespaces = true
+      config.convert_tags_to { |tag| tag.snakecase.to_sym }
+    end
     
     def service_endpoint
       config.soap_end_point || super
@@ -26,7 +34,7 @@ module PayPal::SDK::Core
           "soapenv:Body"    => body(action, params)
         },
         :attributes!       => { "soapenv:Envelope" => Namespaces }
-      })
+      }, XML_OPTIONS)
       [ @uri.path, request_content ]
     end
     
@@ -40,20 +48,14 @@ module PayPal::SDK::Core
     end
     
     def body(action, params = {})
-      key_options = { :namespace => "urn", :element_form_default => :qualified }
-      action = Gyoku::XMLKey.create(action, key_options)
-      params = params.map{|key,val| [Gyoku::XMLKey.create(key, key_options), val] }
-      params.unshift(["ebl:Version", API_VERSION])
-      { "#{action}Req" => { "#{action}Request" => Hash[params] } }
+      action = Gyoku::XMLKey.create(action, XML_OPTIONS)
+      { "#{action}Req" => { "#{action}Request" => params.merge(DEFAULT_PARAMS) } }
     end
 
     def format_response(action, response)
-      response_action = /#{Gyoku::XMLKey.create(action)}Response$/i
+      response_action = "#{action.snakecase}_response".to_sym
       hash = Nori.parse(response.body)
-      hash = hash.find{|k,v| k.to_s =~ /Envelope$/i }.last    if hash.is_a? Hash
-      hash = hash.find{|k,v| k.to_s =~ /Body$/i }.last        if hash.is_a? Hash
-      hash = hash.find{|k,v| k.to_s =~ response_action }.last if hash.is_a? Hash
-      hash || {}
+      hash[:envelope][:body][response_action]
     end           
    
   end

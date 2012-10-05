@@ -13,27 +13,33 @@ describe PayPal::SDK::Core::SOAP do
     client.http.should be_a PayPal::SDK::Core::HTTP
     client.config.should eql client.http.config
   end
-  
-  it "format soap body" do
-    client    = SOAP.new
-    soap_body = client.body(:transaction_search, { :start_date => "2012-09-30T00:00:00+0530",
-        :end_date => "2012-10-01T00:00:00+0530"})
-    soap_body.to_s.should match "TransactionSearch"
-    soap_body.to_s.should match "StartDate"
-    soap_body.to_s.should match "EndDate"
-  end 
-    
+      
   it "make API call" do
     client    = SOAP.new
     response  = client.request("TransactionSearch", { "StartDate" => "2012-09-30T00:00:00+0530",
          "EndDate" => "2012-10-01T00:00:00+0530"})
-    response["Ack"].should eql "Success"    
+    response[:ack].should eql "Success"    
   end
   
-  it "make incorrect API call" do
+  it "make API call with symbol as key" do
+    client    = SOAP.new
+    response  = client.request("TransactionSearch", { :start_date => "2012-09-30T00:00:00+0530",
+         :end_date => "2012-10-01T00:00:00+0530"})
+    response[:ack].should eql "Success"    
+  end
+
+  
+  it "make API call with invalid params" do
     client    = SOAP.new
     response  = client.request("TransactionSearch")
-    response["Ack"].should eql "Failure"
+    response[:ack].should eql "Failure"
+  end
+  
+  it "API call with invalid credentials" do
+    client    = SOAP.new(:username => "invalid")
+    response  = client.request("TransactionSearch", { "StartDate" => "2012-09-30T00:00:00+0530",
+         "EndDate" => "2012-10-01T00:00:00+0530"})
+    response[:ack].should eql "Failure"
   end
   
 end
