@@ -28,14 +28,6 @@ config = PayPal::SDK::Core::Config.config # Load default configuration
 config = PayPal::SDK::Core::Config.config(:development) # Load specified environment configuration
 config = PayPal::SDK::Core::Config.config(:development, :app_id => "XYZ") # Override configuration
 
-# Create HTTP object
-http = PayPal::SDK::Core::HTTP.new
-http = PayPal::SDK::Core::HTTP.new(:development)
-http = PayPal::SDK::Core::HTTP.new("svcs.sandbox.paypal.com", 443)
-
-# To make API request
-response  = http.get("/AdaptivePayments/GetPaymentOptions")
-
 # Include Core package
 include PayPal::SDK::Core
 set_config :development # Set configuration
@@ -44,8 +36,9 @@ logger  				# access logger
 
 # To make SOAP API call
 client   = PayPal::SDK::Core::SOAP.new
-response = client.request("TransactionSearch", { "StartDate" => "2012-09-30T00:00:00+0530", "EndDate" => "2012-10-01T00:00:00+0530" })
-if response["Ack"] == "Success"
+response = client.request("TransactionSearch", { 
+    "StartDate" => "2012-09-30T00:00:00+0530", "EndDate" => "2012-10-01T00:00:00+0530" })
+if response[:ack] == "Success"
   puts "Request made successfully"
 end
 
