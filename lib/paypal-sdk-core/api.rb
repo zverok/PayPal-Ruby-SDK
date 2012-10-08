@@ -64,9 +64,11 @@ module PayPal::SDK::Core
       path, content = format_request(action, params)
       response      = @http.post(path, content, http_header.merge(initheader))
       format_response(action, response)
+    rescue Net::HTTPBadGateway, Errno::ECONNRESET, Errno::ECONNABORTED, SocketError => error
+      format_error(error, error.message)
     end
 
-    # Format Request data
+    # Format Request data. It will be override by child class
     # == Arguments
     # * <tt>action</tt> -- Request action
     # * <tt>params</tt> -- Request parameters
@@ -77,12 +79,20 @@ module PayPal::SDK::Core
       [ @uri.path, params ]
     end
     
-    # Format Response object
+    # Format Response object. It will be override by child class
     # == Argument
     # * <tt>action</tt> -- Request action
     # * <tt>response</tt> -- HTTP response object
     def format_response(action, response)
       response
+    end
+    
+    # Format Error object. It will be override by child class.
+    # == Arguments
+    # * <tt>exception</tt> -- Exception object.
+    # * <tt>message</tt> -- Readable error message.
+    def format_error(exception, message)
+      raise exception
     end    
   end
 end

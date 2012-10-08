@@ -48,8 +48,19 @@ module PayPal::SDK::Core
     # === Return
     # Parse response content using JSON and return the Hash object
     def format_response(action, response)
-      JSON.parse(response.body)
+      if response.code == "200"
+        JSON.parse(response.body)
+      else
+        format_error(response, response.message)
+      end
     end
     
+    # Format Error object.
+    # == Arguments
+    # * <tt>exception</tt> -- Exception object or HTTP response object.
+    # * <tt>message</tt> -- Readable error message.
+    def format_error(exception, message)
+      {"responseEnvelope" => {"ack" => "Failure"}, "error" => [{"message" => message, "exception" => exception}]}
+    end
   end
 end

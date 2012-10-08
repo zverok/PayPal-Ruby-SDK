@@ -59,9 +59,13 @@ module PayPal::SDK::Core
     # === Return
     # Parse the SOAP response content and return Hash object
     def format_response(action, response)
-      response_action = "#{action.snakecase}_response".to_sym
-      hash = Nori.parse(response.body)
-      hash[:envelope][:body][response_action]
+      if response.code == "200"
+        response_action = "#{action.snakecase}_response".to_sym
+        hash = Nori.parse(response.body)
+        hash[:envelope][:body][response_action]
+      else
+        format_error(response, response.message)
+      end
     end           
    
     private
@@ -83,6 +87,14 @@ module PayPal::SDK::Core
     def body(action, params = {})
       action = Gyoku::XMLKey.create(action, XML_OPTIONS)
       { "#{action}Req" => { "#{action}Request" => DEFAULT_PARAMS.merge(params) } }
+    end
+
+    # Format Error object.
+    # == Arguments
+    # * <tt>exception</tt> -- Exception object or HTTP response object.
+    # * <tt>message</tt> -- Readable error message.
+    def format_error(exception, message)
+      { :ack => "Failure", :errors => { :short_message => message, :long_message => message, :exception => exception } }
     end
 
   end
