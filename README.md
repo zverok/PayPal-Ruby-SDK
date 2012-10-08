@@ -52,7 +52,6 @@ end
 # To make NVP API call
 client    = PayPal::SDK::Core::NVP.new("AdaptivePayments")
 response  = client.request("ConvertCurrency", {
-    "requestEnvelope"       => { "errorLanguage" => "en_US" }, 
     "baseAmountList"        => { "currency" => [ { "code" => "USD", "amount" => "2.0"} ]},
     "convertToCurrencyList" => { "currencyCode" => ["GBP"] } })
 if response["responseEnvelope"]["Ack"] == "Success"
