@@ -2,7 +2,7 @@ require 'net/http'
 
 module PayPal::SDK::Core
   
-  # Wrapper class Net::HTTP class
+  # Wrapper class for Net::HTTP class
   # == Example
   #   uri       = URI.parse("https://svcs.sandbox.paypal.com/")
   #   http      = HTTP.new(uri.host, uri.port)
@@ -38,7 +38,7 @@ module PayPal::SDK::Core
     
     # Add Authentication header for each request.    
     def request(req, *args)
-      add_headers(req)
+      http_auth_header(req)
       super
     end
     

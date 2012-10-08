@@ -10,7 +10,8 @@ module PayPal::SDK::Core
     
     include PayPal::SDK::Core::Configuration
     include PayPal::SDK::Core::Logging
-    
+    include PayPal::SDK::Core::Authentication
+
     HTTP_HEADER = {}
     
     attr_accessor :http, :uri

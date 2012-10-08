@@ -44,7 +44,7 @@ module PayPal::SDK::Core
     def format_request(action, params)
       request_content = Gyoku.xml({ 
         "soapenv:Envelope" => {
-          "soapenv:Header"  => header,
+          "soapenv:Header"  => soap_auth_header,
           "soapenv:Body"    => body(action, params)
         },
         :attributes!       => { "soapenv:Envelope" => Namespaces }
@@ -69,17 +69,7 @@ module PayPal::SDK::Core
     end           
    
     private
-    
-    # Default soap header
-    def header
-      { "urn:RequesterCredentials" => {
-          "ebl:Credentials" => {
-            "ebl:Username"  => config.username,
-            "ebl:Password"  => config.password,
-            "ebl:Signature" => config.signature         
-      } } }
-    end
-    
+        
     # Generate soap body
     # == Arguments
     # * <tt>action</tt> -- Request Action name

@@ -5,10 +5,10 @@ module PayPal::SDK::Core
   
   # Use NVP protocol to communicate with the Web services
   # == Example
-  # api       = NVP.new("AdaptivePayments")
-  # response  = client.request("ConvertCurrency", {
-  #   "baseAmountList"        => { "currency" => [ { "code" => "USD", "amount" => "2.0"} ]},
-  #   "convertToCurrencyList" => { "currencyCode" => ["GBP"] } })
+  #   api       = NVP.new("AdaptivePayments")
+  #   response  = client.request("ConvertCurrency", {
+  #     "baseAmountList"        => { "currency" => [ { "code" => "USD", "amount" => "2.0"} ]},
+  #     "convertToCurrencyList" => { "currencyCode" => ["GBP"] } })
   class NVP < API
     
     NVP_HTTP_HEADER = {
