@@ -1,4 +1,7 @@
-require 'paypal-sdk-core/http'
+require 'paypal-sdk-core/config'
+require 'paypal-sdk-core/logging'
+require 'paypal-sdk-core/authentication'
+require 'net/http'
 
 module PayPal::SDK::Core
   
@@ -12,8 +15,6 @@ module PayPal::SDK::Core
     include PayPal::SDK::Core::Logging
     include PayPal::SDK::Core::Authentication
 
-    HTTP_HEADER = {}
-    
     attr_accessor :http, :uri
     
     # Initlaize API object
@@ -41,9 +42,20 @@ module PayPal::SDK::Core
     def create_http_connection(service_path)
       service_path = "#{service_endpoint}/#{service_path}" unless service_path =~ /^https?:\/\//
       @uri  = URI.parse(service_path)
-      @http = HTTP.new(@uri.host, @uri.port)
-      @http.set_config(config)
-      @uri.path = @uri.path.gsub(/\/+/, "/")      
+      @http = Net::HTTP.new(@uri.host, @uri.port)
+      @uri.path = @uri.path.gsub(/\/+/, "/")
+      configure_http_connection      
+    end
+    
+    # Configure HTTP connection based on configuration.
+    def configure_http_connection
+      http.use_ssl      = true
+      http.verify_mode  = OpenSSL::SSL::VERIFY_NONE
+      if config.http_timeout
+        http.open_timeout = config.http_timeout
+        http.read_timeout = config.http_timeout
+      end
+      add_certificate(http)
     end
     
     # Get service end point
@@ -53,7 +65,7 @@ module PayPal::SDK::Core
     
     # Get default HTTP header
     def http_header
-      HTTP_HEADER
+      http_auth_header
     end
     
     # Generate HTTP request for given action and parameters

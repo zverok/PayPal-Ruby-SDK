@@ -19,25 +19,27 @@ module PayPal::SDK::Core
     # Get or Set HTTP authentication Header.
     # === Arguments 
     # * <tt>request</tt> -- HTTP Request object or new Hash.
-    def http_auth_header(request = {})
-      request["X-PAYPAL-SECURITY-USERID"]     = config.username
-      request["X-PAYPAL-SECURITY-PASSWORD"]   = config.password
-      request["X-PAYPAL-APPLICATION-ID"]      = config.app_id
-      request["X-PAYPAL-SECURITY-SIGNATURE"]  = config.signature  if config.signature
-      request
+    def http_auth_header
+      header = {}
+      header["X-PAYPAL-SECURITY-USERID"]     = config.username
+      header["X-PAYPAL-SECURITY-PASSWORD"]   = config.password
+      header["X-PAYPAL-APPLICATION-ID"]      = config.app_id
+      header["X-PAYPAL-SECURITY-SIGNATURE"]  = config.signature  if config.signature
+      header
     end
     
     # Get or Set SOAP authentication Header.
     # === Arguments 
     # * <tt>request</tt> -- request SOAP Hash or new Hash .
-    def soap_auth_header(request = {})
-      request["urn:RequesterCredentials"] = {
+    def soap_auth_header
+      header = {}
+      header["urn:RequesterCredentials"] = {
           "ebl:Credentials" => {
             "ebl:Username"  => config.username,
             "ebl:Password"  => config.password,
             "ebl:Signature" => config.signature         
       } }
-      request
+      header
     end    
     
     # Configure ssl certificate to HTTP object

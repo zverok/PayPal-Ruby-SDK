@@ -6,12 +6,6 @@ describe PayPal::SDK::Core::NVP do
   ConvertCurrencyParams = {
           "baseAmountList"        => { "currency" => [ { "code" => "USD", "amount" => "2.0"} ]},
           "convertToCurrencyList" => { "currencyCode" => ["GBP"] } }
-
-  it "create nvp client" do
-    client = NVP.new
-    client.http.should    be_a PayPal::SDK::Core::HTTP
-    client.config.should  eql client.http.config
-  end
   
   it "create nvp client with prefix url" do
     client = NVP.new("AdaptivePayments")

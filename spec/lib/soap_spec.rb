@@ -2,17 +2,6 @@ require 'spec_helper'
 
 describe PayPal::SDK::Core::SOAP do
   SOAP = PayPal::SDK::Core::SOAP
-  it "create a client object" do
-    client = SOAP.new
-    client.http.should be_a PayPal::SDK::Core::HTTP
-    client.config.should eql client.http.config
-  end
-  
-  it "create a client object based on environment" do
-    client = SOAP.new(:development)
-    client.http.should be_a PayPal::SDK::Core::HTTP
-    client.config.should eql client.http.config
-  end
       
   it "make API call" do
     client    = SOAP.new
