@@ -17,32 +17,34 @@ module PayPal::SDK::Core
 
     DEFAULT_HTTP_HEADER = {}
     
-    attr_accessor :http, :uri
+    attr_accessor :http, :uri, :service_name
     
     # Initialize API object
     # === Argument
-    # * <tt>service_path</tt> -- (Optional) Service end point or prefix path 
+    # * <tt>service_name</tt> -- (Optional) Service name
     # * <tt>environment</tt>  -- (Optional) Configuration environment to load
     # * <tt>options</tt> -- (Optional) Override configuration.
     # === Example
     #  new("AdaptivePayments")
-    #  new("https://svcs.sandbox.paypal.com/AdaptivePayments")
-    #  new("AdaptivePayments")
     #  new("AdaptivePayments", :development)
     #  new(:wsdl_service)       # It load wsdl_service configuration 
-    def initialize(service_path = "/", environment = nil, options = {})
-      unless service_path.is_a? String
-        environment, options, service_path = service_path, environment || {}, "/"
+    def initialize(service_name = "", environment = nil, options = {})
+      unless service_name.is_a? String
+        environment, options, service_name = service_name, environment || {}, ""
       end   
+      @service_name = service_name
       set_config(environment, options)
-      create_http_connection(service_path)
     end
     
-    # Create HTTP connection based on given service path or configured end point
-    # === Argument
-    # * <tt>service_path<tt> - Service path or Service End point
-    def create_http_connection(service_path)
-      service_path = "#{service_endpoint}/#{service_path}" unless service_path =~ /^https?:\/\//
+    # Override set_config method to create http connection on changing the configuration.
+    def set_config(*args)
+      super
+      create_http_connection      
+    end
+    
+    # Create HTTP connection based on given service name or configured end point
+    def create_http_connection
+      service_path = "#{service_endpoint}/#{service_name}"
       @uri  = URI.parse(service_path)
       @http = Net::HTTP.new(@uri.host, @uri.port)
       @uri.path = @uri.path.gsub(/\/+/, "/")

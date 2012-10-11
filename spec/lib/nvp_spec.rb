@@ -12,7 +12,23 @@ describe PayPal::SDK::Core::NVP do
     client.uri.path.should match "AdaptivePayments$"
   end
   
-  it "make AdaptivePayments API request" do
+  it "make API request" do
+    client   = NVP.new("AdaptivePayments")
+    response = client.request("ConvertCurrency", ConvertCurrencyParams)
+    response.should_not be_nil
+    response["responseEnvelope"].should_not be_nil
+    response["responseEnvelope"]["ack"].should eql "Success"
+  end
+  
+  it "make API request with certificate authentication" do
+    client   = NVP.new("AdaptivePayments", :with_certificate)
+    response = client.request("ConvertCurrency", ConvertCurrencyParams)
+    response.should_not be_nil
+    response["responseEnvelope"].should_not be_nil
+    response["responseEnvelope"]["ack"].should eql "Success"
+  end
+  
+  it "make API request with oauth token" do
     client   = NVP.new("Invoice", :with_oauth_token )
     response = client.request("CreateInvoice", "invoice" => {"merchantEmail"=>"jb-us-seller@paypal.com", "payerEmail"=>"sender@yahoo.com", "item_name1"=>"item1", "item_quantity1"=>"1", "item_unitPrice1"=>"1.00", "item_name2"=>"item2", "item_quantity2"=>"2", "item_unitPrice2"=>"2.00", "currencyCode"=>"USD", "paymentTerms"=>"DueOnReceipt"} )
     response.should_not be_nil
@@ -20,13 +36,6 @@ describe PayPal::SDK::Core::NVP do
     response["responseEnvelope"]["ack"].should eql "Success"
   end
   
-  it "make AdaptivePayments API request" do
-    client   = NVP.new("AdaptivePayments")
-    response = client.request("ConvertCurrency", ConvertCurrencyParams)
-    response.should_not be_nil
-    response["responseEnvelope"].should_not be_nil
-    response["responseEnvelope"]["ack"].should eql "Success"
-  end
   
   describe "Failure request" do
     
@@ -50,13 +59,13 @@ describe PayPal::SDK::Core::NVP do
     end
 
     it "invalid end point" do
-      client   = NVP.new("https://svcs-invalid.sandbox.paypal.com/AdaptivePayments")
+      client   = NVP.new(:nvp_end_point => "https://svcs-invalid.sandbox.paypal.com/AdaptivePayments")
       response = client.request("ConvertCurrency", ConvertCurrencyParams )
       should_be_failure(response, "No such host is known")
     end
     
     it "with soap endpoint" do
-      client   = NVP.new("https://api-3t.sandbox.paypal.com/2.0/")
+      client   = NVP.new(:nvp_end_point => "https://api-3t.sandbox.paypal.com/2.0/")
       response = client.request("ConvertCurrency", ConvertCurrencyParams )
       should_be_failure(response, "Not Found")      
     end
