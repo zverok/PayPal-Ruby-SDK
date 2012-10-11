@@ -37,8 +37,9 @@ module PayPal::SDK::Core
     # * <tt>request_path</tt> -- Generated URL for requested action
     # * <tt>request_content</tt> -- Format parameters in JSON with default values.          
     def format_request(action, params)
-      request_path = (@uri.path + "/" + action).gsub(/\/+/, "/")
-      [ request_path, DEFAULT_PARAMS.merge(params).to_json ]
+      uri = @uri.dup
+      uri.path = @uri.path.sub(/\/?$/, "/#{action}")
+      [ uri, DEFAULT_PARAMS.merge(params).to_json ]
     end
     
     # Format the Response object

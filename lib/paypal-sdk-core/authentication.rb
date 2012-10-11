@@ -1,4 +1,5 @@
 require 'paypal-sdk-core/config'
+require 'paypal-sdk-core/oauth_util'
 
 module PayPal::SDK::Core
   
@@ -16,29 +17,43 @@ module PayPal::SDK::Core
       end
     end
     
-    # Get or Set HTTP authentication Header.
+    # Get HTTP authentication Header.
     # === Arguments 
     # * <tt>request</tt> -- HTTP Request object or new Hash.
-    def http_auth_header
+    def http_auth_header(url)
       header = {}
-      header["X-PAYPAL-SECURITY-USERID"]     = config.username
-      header["X-PAYPAL-SECURITY-PASSWORD"]   = config.password
-      header["X-PAYPAL-APPLICATION-ID"]      = config.app_id
-      header["X-PAYPAL-SECURITY-SIGNATURE"]  = config.signature  if config.signature
+      if has_oauth_token?
+        header["X-PAYPAL-AUTHORIZATION"]       = oauth_signature(url)
+      else
+        header["X-PAYPAL-SECURITY-USERID"]     = config.username
+        header["X-PAYPAL-SECURITY-PASSWORD"]   = config.password
+        header["X-PAYPAL-SECURITY-SIGNATURE"]  = config.signature  if config.signature
+      end
+      header["X-PAYPAL-APPLICATION-ID"]       = config.app_id
       header
+    end
+
+    # Check the oauth token is configured or not.
+    def has_oauth_token?
+      config.token and config.token_secret
+    end
+    
+    # Generate Oauth Signature.
+    def oauth_signature(url)
+      oauth = OauthUtil.new(config, url)
+      oauth.authorization_string
     end
     
     # Get or Set SOAP authentication Header.
     # === Arguments 
     # * <tt>request</tt> -- request SOAP Hash or new Hash .
     def soap_auth_header
-      header = {}
-      header["urn:RequesterCredentials"] = {
-          "ebl:Credentials" => {
-            "ebl:Username"  => config.username,
-            "ebl:Password"  => config.password,
-            "ebl:Signature" => config.signature         
-      } }
+      header = { "urn:RequesterCredentials" => {} }
+      header["urn:RequesterCredentials"]["ebl:Credentials"] = {
+        "ebl:Username"  => config.username,
+        "ebl:Password"  => config.password,
+        "ebl:Signature" => config.signature         
+      } unless has_oauth_token? 
       header
     end    
     

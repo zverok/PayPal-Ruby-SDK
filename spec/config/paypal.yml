@@ -6,7 +6,7 @@ test: &default
   http_timeout: 30
   http_retry: 5
   http_trust: false
-  http_proxy: ""
+  http_proxy: 
   end_point: "https://svcs.sandbox.paypal.com/"
   redirect_url: "https://www.sandbox.paypal.com/webscr&cmd="
   dev_central_url: "https://developer.paypal.com"
@@ -23,4 +23,8 @@ with_certificate:
   cert_path: "spec/config/cert_key.pem"
   app_id: APP-80W284485P519543T
   soap_end_point: "https://api.sandbox.paypal.com/2.0/"
-  
+
+with_oauth_token:
+  <<: *default
+  token: H2kLxjm9lCxQdnOYxkH29I53TpZyIXez4GtHhAVGpiU3DiVTz5eNPQ
+  token_secret: MnZ-iPdDqGLEfQIuTIfUN4uK9lU

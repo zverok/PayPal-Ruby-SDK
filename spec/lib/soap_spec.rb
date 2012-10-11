@@ -2,6 +2,14 @@ require 'spec_helper'
 
 describe PayPal::SDK::Core::SOAP do
   SOAP = PayPal::SDK::Core::SOAP
+
+  it "make API call with oauth token" do
+    client   = SOAP.new( :with_oauth_token )
+    response  = client.request("TransactionSearch", { "StartDate" => "2012-09-30T00:00:00+0530",
+         "EndDate" => "2012-10-01T00:00:00+0530"})
+    response[:ack].should eql "Success"
+    exit(0)
+  end
       
   it "make API call" do
     client    = SOAP.new

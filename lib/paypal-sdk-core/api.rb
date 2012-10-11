@@ -15,9 +15,11 @@ module PayPal::SDK::Core
     include PayPal::SDK::Core::Logging
     include PayPal::SDK::Core::Authentication
 
+    DEFAULT_HTTP_HEADER = {}
+    
     attr_accessor :http, :uri
     
-    # Initlaize API object
+    # Initialize API object
     # === Argument
     # * <tt>service_path</tt> -- (Optional) Service end point or prefix path 
     # * <tt>environment</tt>  -- (Optional) Configuration environment to load
@@ -65,7 +67,7 @@ module PayPal::SDK::Core
     
     # Get default HTTP header
     def http_header
-      http_auth_header
+      DEFAULT_HTTP_HEADER
     end
     
     # Generate HTTP request for given action and parameters
@@ -74,8 +76,9 @@ module PayPal::SDK::Core
     # * <tt>params</tt> -- (Optional) Parameters for the action
     # * <tt>initheader</tt> -- (Optional) HTTP header
     def request(action, params = {}, initheader = {})
-      path, content = format_request(action, params)
-      response      = @http.post(path, content, http_header.merge(initheader))
+      uri, content = format_request(action, params)
+      initheader    = http_auth_header(uri.to_s).merge(http_header).merge(initheader)
+      response      = @http.post(uri.path, content, initheader)
       format_response(action, response)
     rescue Net::HTTPBadGateway, Errno::ECONNRESET, Errno::ECONNABORTED, SocketError => error
       format_error(error, error.message)
@@ -86,10 +89,10 @@ module PayPal::SDK::Core
     # * <tt>action</tt> -- Request action
     # * <tt>params</tt> -- Request parameters
     # == Return
-    # * <tt>path</tt> -- Formated request path
+    # * <tt>path</tt>   -- Formated request uri object
     # * <tt>params</tt> -- Formated request Parameters
     def format_request(action, params)
-      [ @uri.path, params ]
+      [ @uri, params ]
     end
     
     # Format Response object. It will be override by child class

@@ -49,7 +49,7 @@ module PayPal::SDK::Core
         },
         :attributes!       => { "soapenv:Envelope" => Namespaces }
       }, XML_OPTIONS)
-      [ @uri.path, request_content ]
+      [ @uri, request_content ]
     end
     
     # Format Response object

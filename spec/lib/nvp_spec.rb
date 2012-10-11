@@ -13,6 +13,14 @@ describe PayPal::SDK::Core::NVP do
   end
   
   it "make AdaptivePayments API request" do
+    client   = NVP.new("Invoice", :with_oauth_token )
+    response = client.request("CreateInvoice", "invoice" => {"merchantEmail"=>"jb-us-seller@paypal.com", "payerEmail"=>"sender@yahoo.com", "item_name1"=>"item1", "item_quantity1"=>"1", "item_unitPrice1"=>"1.00", "item_name2"=>"item2", "item_quantity2"=>"2", "item_unitPrice2"=>"2.00", "currencyCode"=>"USD", "paymentTerms"=>"DueOnReceipt"} )
+    response.should_not be_nil
+    response["responseEnvelope"].should_not be_nil
+    response["responseEnvelope"]["ack"].should eql "Success"
+  end
+  
+  it "make AdaptivePayments API request" do
     client   = NVP.new("AdaptivePayments")
     response = client.request("ConvertCurrency", ConvertCurrencyParams)
     response.should_not be_nil
@@ -74,3 +82,5 @@ describe PayPal::SDK::Core::NVP do
   end    
   
 end
+
+
