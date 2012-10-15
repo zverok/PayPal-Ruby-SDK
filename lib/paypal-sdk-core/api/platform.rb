@@ -11,19 +11,21 @@ module PayPal::SDK::Core
     #     "convertToCurrencyList" => { "currencyCode" => ["GBP"] } })
     class Platform < Base
       
-      NVP_HTTP_HEADER = {
+      NVP_AUTH_HEADER = {
+        :username       => "X-PAYPAL-SECURITY-USERID",
+        :password       => "X-PAYPAL-SECURITY-PASSWORD",
+        :signature      => "X-PAYPAL-SECURITY-SIGNATURE",
+        :app_id         => "X-PAYPAL-APPLICATION-ID",
+        :authorization  => "X-PAYPAL-AUTHORIZATION"
+      }
+      DEFAULT_NVP_HTTP_HEADER = {
         "X-PAYPAL-REQUEST-DATA-FORMAT"  => "JSON",
         "X-PAYPAL-RESPONSE-DATA-FORMAT" => "JSON" 
       }
       DEFAULT_PARAMS = {
         "requestEnvelope"       => { "errorLanguage" => "en_US" }
       } 
-      
-      # Get NVP HTTP header
-      def http_header
-        super.merge(NVP_HTTP_HEADER)
-      end
-      
+            
       # Get NVP service end point
       def service_endpoint
         config.nvp_end_point || super
@@ -39,7 +41,10 @@ module PayPal::SDK::Core
       def format_request(action, params)
         uri = @uri.dup
         uri.path = @uri.path.sub(/\/?$/, "/#{action}")
-        [ uri, DEFAULT_PARAMS.merge(params).to_json ]
+        credential_properties = credential(uri.to_s).properties
+        header   = set_header_value(NVP_AUTH_HEADER, credential_properties).
+          merge(DEFAULT_NVP_HTTP_HEADER)
+        [ uri, DEFAULT_PARAMS.merge(params).to_json, header ]
       end
       
       # Format the Response object

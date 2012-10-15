@@ -20,8 +20,17 @@ module PayPal::SDK::Core
         "xmlns:cc"      => "urn:ebay:apis:CoreComponentTypes",
         "xmlns:ed"      => "urn:ebay:apis:EnhancedDataTypes"
       }
-      XML_OPTIONS     = { :namespace => "urn", :element_form_default => :qualified }
-      DEFAULT_PARAMS  = { "ebl:Version" => API_VERSION }  
+      XML_OPTIONS       = { :namespace => "urn", :element_form_default => :qualified }
+      DEFAULT_PARAMS    = { "ebl:Version" => API_VERSION }
+      SOAP_HTTP_AUTH_HEADER  = {
+        :authorization  => "X-PP-AUTHORIZATION"
+      }
+      SOAP_AUTH_HEADER  = {
+        :username   => "ebl:Username",
+        :password   => "ebl:Password",
+        :signature  => "ebl:Signature",
+        :subject    => "ebl:Subject"
+      }
       
       Gyoku.convert_symbols_to :camelcase
       Nori.configure do |config|
@@ -42,14 +51,19 @@ module PayPal::SDK::Core
       # * <tt>request_path</tt> -- Soap request path. DEFAULT("/")
       # * <tt>request_content</tt> -- Request content in SOAP format.
       def format_request(action, params)
+        credential_properties  = credential(uri.to_s).properties
+        user_auth_header = set_header_value(SOAP_AUTH_HEADER, credential_properties)
         request_content = Gyoku.xml({ 
           "soapenv:Envelope" => {
-            "soapenv:Header"  => soap_auth_header(uri.to_s),
+            "soapenv:Header"  => { "urn:RequesterCredentials" => {
+                "ebl:Credentials" => user_auth_header
+             } },
             "soapenv:Body"    => body(action, params)
           },
           :attributes!       => { "soapenv:Envelope" => Namespaces }
         }, XML_OPTIONS)
-        [ @uri, request_content ]
+        header = set_header_value(SOAP_HTTP_AUTH_HEADER, credential_properties)
+        [ @uri, request_content, header ]
       end
       
       # Format Response object

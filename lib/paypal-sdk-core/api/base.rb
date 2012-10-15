@@ -12,8 +12,6 @@ module PayPal::SDK::Core
       include Configuration
       include Logging
       include Authentication
-  
-      DEFAULT_HTTP_HEADER = {}
       
       attr_accessor :http, :uri, :service_name
       
@@ -64,20 +62,15 @@ module PayPal::SDK::Core
       def service_endpoint
         config.end_point 
       end
-      
-      # Get default HTTP header
-      def http_header
-        DEFAULT_HTTP_HEADER
-      end
-      
+            
       # Generate HTTP request for given action and parameters
       # === Arguments
       # * <tt>action</tt> -- Action to perform
       # * <tt>params</tt> -- (Optional) Parameters for the action
       # * <tt>initheader</tt> -- (Optional) HTTP header
       def request(action, params = {}, initheader = {})
-        uri, content = format_request(action, params)
-        initheader    = http_auth_header(uri.to_s).merge(http_header).merge(initheader)
+        uri, content, header = format_request(action, params)
+        initheader    = header.merge(initheader)
         response      = @http.post(uri.path, content, initheader)
         format_response(action, response)
       rescue Net::HTTPBadGateway, Errno::ECONNRESET, Errno::ECONNABORTED, SocketError => error
@@ -91,8 +84,9 @@ module PayPal::SDK::Core
       # == Return
       # * <tt>path</tt>   -- Formated request uri object
       # * <tt>params</tt> -- Formated request Parameters
+      # * <tt>header</tt> -- HTTP Header 
       def format_request(action, params)
-        [ @uri, params ]
+        [ @uri, params, {} ]
       end
       
       # Format Response object. It will be override by child class

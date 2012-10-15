@@ -16,10 +16,10 @@ module PayPal::SDK::Core
     end
     
     def credential(url)
-      third_party_auth(url) || i_credential
+      third_party_credential(url) || base_credential
     end
     
-    def i_credential
+    def base_credential
       @credential ||=
         if config.cert_path
           Credential::Certificate.new(config)
@@ -28,68 +28,31 @@ module PayPal::SDK::Core
         end
     end
     
-    def third_party_auth(url)
+    def third_party_credential(url)
       @third_party_auth ||= 
         if config.token and config.token_secret
-          Credential::ThirdParty::Token.new(i_credential, config, url)
+          Credential::ThirdParty::Token.new(base_credential, config, url)
         elsif config.subject
-          Credential::ThirdParty::Subject.new(i_credential, config)
+          Credential::ThirdParty::Subject.new(base_credential, config)
         end
     end
     
-    HTTP_AUTH_HEADER = {
-      :username       => "X-PAYPAL-SECURITY-USERID",
-      :password       => "X-PAYPAL-SECURITY-PASSWORD",
-      :signature      => "X-PAYPAL-SECURITY-SIGNATURE",
-      :app_id         => "X-PAYPAL-APPLICATION-ID",
-      :authorization  => "X-PAYPAL-AUTHORIZATION"
-    }
-    
-    SOAP_AUTH_HEADER = {
-      :username   => "ebl:Username",
-      :password   => "ebl:Password",
-      :signature  => "ebl:Signature",
-      :subject    => "ebl:Subject"
-    }
-    
-    # Get HTTP authentication Header.
-    # === Arguments 
-    # * <tt>url</tt> -- Request url.
-    def http_auth_header(url)
+    def set_header_value(header_keys, properties)
       header = {}
-      credential(url).properties.each do |key, value|
-        key = HTTP_AUTH_HEADER[key]
+      properties.each do |key, value|
+        key = header_keys[key]
         header[key] = value if key
       end
-      header
+      header      
     end
-
-    # Check the oauth token is configured or not.
-    def has_oauth_token?
-      config.token and config.token_secret
-    end
-    
-    # Get or Set SOAP authentication Header.
-    # === Arguments 
-    # * <tt>url</tt> -- Request url.
-    def soap_auth_header(url)
-      header = { "urn:RequesterCredentials" => {} }
-      user_auth = {}
-      credential(url).properties.each do |key, value|
-        key = SOAP_AUTH_HEADER[key]
-        user_auth[key] = value if key
-      end
-      header["urn:RequesterCredentials"]["ebl:Credentials"] = user_auth 
-      header
-    end    
-    
+        
     # Configure ssl certificate to HTTP object
     # === Argument
     # * <tt>http</tt> -- Net::HTTP object         
     def add_certificate(http)
-      if i_credential.is_a? Credential::Certificate
-        http.cert = i_credential.cert
-        http.key  = i_credential.key
+      if base_credential.is_a? Credential::Certificate
+        http.cert = base_credential.cert
+        http.key  = base_credential.key
       else
         http.cert = nil 
         http.key  = nil
