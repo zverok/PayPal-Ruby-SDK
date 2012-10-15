@@ -34,16 +34,16 @@ set_config :development # Set configuration
 config  				# access configuration
 logger  				# access logger
 
-# To make SOAP API call
-client   = PayPal::SDK::Core::SOAP.new
+# To make Platform API call
+client   = PayPal::SDK::Core::API::Platform.new
 response = client.request("TransactionSearch", { 
     "StartDate" => "2012-09-30T00:00:00+0530", "EndDate" => "2012-10-01T00:00:00+0530" })
 if response[:ack] == "Success"
   puts "Request made successfully"
 end
 
-# To make NVP API call
-client    = PayPal::SDK::Core::NVP.new("AdaptivePayments")
+# To make Merchant API call
+client    = PayPal::SDK::Core::API::Merchant.new("AdaptivePayments")
 response  = client.request("ConvertCurrency", {
     "baseAmountList"        => { "currency" => [ { "code" => "USD", "amount" => "2.0"} ]},
     "convertToCurrencyList" => { "currencyCode" => ["GBP"] } })

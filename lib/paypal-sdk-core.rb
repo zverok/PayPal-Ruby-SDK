@@ -7,15 +7,18 @@ module PayPal
     module Core
       
       autoload :Authentication, "paypal-sdk-core/authentication"
-      autoload :SOAP, "paypal-sdk-core/soap"
-      autoload :NVP,  "paypal-sdk-core/nvp"
+      
+      module API
+        autoload :Base,     "paypal-sdk-core/api/base"
+        autoload :Merchant, "paypal-sdk-core/api/merchant"
+        autoload :Platform, "paypal-sdk-core/api/platform"
+      end
       
       module Util
         autoload :OauthSignature, "paypal-sdk-core/util/oauth_signature"
       end
       
       module Credential
-        
         autoload :Base,         "paypal-sdk-core/credential/base"
         autoload :Certificate,  "paypal-sdk-core/credential/certificate"
         autoload :Signature,    "paypal-sdk-core/credential/signature"
@@ -24,7 +27,6 @@ module PayPal
           autoload :Token,    "paypal-sdk-core/credential/third_party/token"
           autoload :Subject,  "paypal-sdk-core/credential/third_party/subject"
         end
-        
       end
       
       def self.included(klass)
