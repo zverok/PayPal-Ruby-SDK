@@ -44,7 +44,7 @@ module PayPal::SDK::Core
     def format_request(action, params)
       request_content = Gyoku.xml({ 
         "soapenv:Envelope" => {
-          "soapenv:Header"  => soap_auth_header,
+          "soapenv:Header"  => soap_auth_header(uri.to_s),
           "soapenv:Body"    => body(action, params)
         },
         :attributes!       => { "soapenv:Envelope" => Namespaces }

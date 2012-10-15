@@ -1,5 +1,3 @@
-require 'paypal-sdk-core/config'
-require 'paypal-sdk-core/oauth_util'
 
 module PayPal::SDK::Core
   
@@ -17,19 +15,52 @@ module PayPal::SDK::Core
       end
     end
     
+    def credential(url)
+      third_party_auth(url) || i_credential
+    end
+    
+    def i_credential
+      @credential ||=
+        if config.cert_path
+          Credential::Certificate.new(config)
+        else
+          Credential::Signature.new(config)
+        end
+    end
+    
+    def third_party_auth(url)
+      @third_party_auth ||= 
+        if config.token and config.token_secret
+          Credential::ThirdParty::Token.new(i_credential, config, url)
+        elsif config.subject
+          Credential::ThirdParty::Subject.new(i_credential, config)
+        end
+    end
+    
+    HTTP_AUTH_HEADER = {
+      :username       => "X-PAYPAL-SECURITY-USERID",
+      :password       => "X-PAYPAL-SECURITY-PASSWORD",
+      :signature      => "X-PAYPAL-SECURITY-SIGNATURE",
+      :app_id         => "X-PAYPAL-APPLICATION-ID",
+      :authorization  => "X-PAYPAL-AUTHORIZATION"
+    }
+    
+    SOAP_AUTH_HEADER = {
+      :username   => "ebl:Username",
+      :password   => "ebl:Password",
+      :signature  => "ebl:Signature",
+      :subject    => "ebl:Subject"
+    }
+    
     # Get HTTP authentication Header.
     # === Arguments 
-    # * <tt>request</tt> -- HTTP Request object or new Hash.
+    # * <tt>url</tt> -- Request url.
     def http_auth_header(url)
       header = {}
-      if has_oauth_token?
-        header["X-PAYPAL-AUTHORIZATION"]       = oauth_signature(url)
-      else
-        header["X-PAYPAL-SECURITY-USERID"]     = config.username
-        header["X-PAYPAL-SECURITY-PASSWORD"]   = config.password
-        header["X-PAYPAL-SECURITY-SIGNATURE"]  = config.signature  if config.signature
+      credential(url).properties.each do |key, value|
+        key = HTTP_AUTH_HEADER[key]
+        header[key] = value if key
       end
-      header["X-PAYPAL-APPLICATION-ID"]       = config.app_id
       header
     end
 
@@ -38,33 +69,27 @@ module PayPal::SDK::Core
       config.token and config.token_secret
     end
     
-    # Generate Oauth Signature.
-    def oauth_signature(url)
-      oauth = OauthUtil.new(config, url)
-      oauth.authorization_string
-    end
-    
     # Get or Set SOAP authentication Header.
     # === Arguments 
-    # * <tt>request</tt> -- request SOAP Hash or new Hash .
-    def soap_auth_header
+    # * <tt>url</tt> -- Request url.
+    def soap_auth_header(url)
       header = { "urn:RequesterCredentials" => {} }
-      header["urn:RequesterCredentials"]["ebl:Credentials"] = {
-        "ebl:Username"  => config.username,
-        "ebl:Password"  => config.password,
-        "ebl:Signature" => config.signature         
-      } unless has_oauth_token? 
+      user_auth = {}
+      credential(url).properties.each do |key, value|
+        key = SOAP_AUTH_HEADER[key]
+        user_auth[key] = value if key
+      end
+      header["urn:RequesterCredentials"]["ebl:Credentials"] = user_auth 
       header
     end    
     
     # Configure ssl certificate to HTTP object
     # === Argument
     # * <tt>http</tt> -- Net::HTTP object         
-    def add_certificate(http = self)
-      if config.cert_path and http
-        cert_content = File.read(config.cert_path)
-        http.cert = OpenSSL::X509::Certificate.new(cert_content)
-        http.key  = OpenSSL::PKey::RSA.new(cert_content)
+    def add_certificate(http)
+      if i_credential.is_a? Credential::Certificate
+        http.cert = i_credential.cert
+        http.key  = i_credential.key
       else
         http.cert = nil 
         http.key  = nil
