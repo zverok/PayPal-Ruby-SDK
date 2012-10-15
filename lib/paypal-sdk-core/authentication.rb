@@ -4,23 +4,25 @@ module PayPal::SDK::Core
   # Contains methods to format credentials for HTTP protocol.
   # == Example
   #  include Authentication
-  #  add_header(request)
+  #  credential(url)
+  #  base_credential
+  #  third_party_credential(url)
+  #  
   #  add_certificate(http)
   module Authentication
     
-    # Load configuration when 
-    def self.included(klass)
-      klass.class_eval do
-        include Configuration
-      end
-    end
+    include Configuration
     
+    # Get credential object
+    # === Argument
+    # * <tt>url</tt> -- API request url 
     def credential(url)
       third_party_credential(url) || base_credential
     end
     
+    # Get base credential
     def base_credential
-      @credential ||=
+      @base_credential ||=
         if config.cert_path
           Credential::Certificate.new(config)
         else
@@ -28,16 +30,31 @@ module PayPal::SDK::Core
         end
     end
     
+    # Get third party credential
     def third_party_credential(url)
-      @third_party_auth ||= 
-        if config.token and config.token_secret
-          Credential::ThirdParty::Token.new(base_credential, config, url)
-        elsif config.subject
-          Credential::ThirdParty::Subject.new(base_credential, config)
-        end
+      if config.token and config.token_secret
+        Credential::ThirdParty::Token.new(base_credential, config, url)
+      elsif config.subject
+        Credential::ThirdParty::Subject.new(base_credential, config)
+      end
     end
     
-    def set_header_value(header_keys, properties)
+    # Clear cached variables on changing the configuration.
+    def set_config(*args)
+      super
+      @base_credential = nil
+    end
+    
+    # Generate header based on given header keys and properties
+    # === Arguments
+    # * <tt>header_keys</tt> -- List of Header keys for the properties
+    # * <tt>properties</tt>  -- properties 
+    # === Return
+    #  Hash with header as key property as value
+    # === Example
+    # map_header_value( { :username => "X-PAYPAL-USERNAME"}, { :username => "guest" })
+    # # Return: { "X-PAYPAL-USERNAME" => "guest" }
+    def map_header_value(header_keys, properties)
       header = {}
       properties.each do |key, value|
         key = header_keys[key]

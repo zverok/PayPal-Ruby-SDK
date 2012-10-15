@@ -52,7 +52,7 @@ module PayPal::SDK::Core
       # * <tt>request_content</tt> -- Request content in SOAP format.
       def format_request(action, params)
         credential_properties  = credential(uri.to_s).properties
-        user_auth_header = set_header_value(SOAP_AUTH_HEADER, credential_properties)
+        user_auth_header = map_header_value(SOAP_AUTH_HEADER, credential_properties)
         request_content = Gyoku.xml({ 
           "soapenv:Envelope" => {
             "soapenv:Header"  => { "urn:RequesterCredentials" => {
@@ -62,7 +62,7 @@ module PayPal::SDK::Core
           },
           :attributes!       => { "soapenv:Envelope" => Namespaces }
         }, XML_OPTIONS)
-        header = set_header_value(SOAP_HTTP_AUTH_HEADER, credential_properties)
+        header = map_header_value(SOAP_HTTP_AUTH_HEADER, credential_properties)
         [ @uri, request_content, header ]
       end
       

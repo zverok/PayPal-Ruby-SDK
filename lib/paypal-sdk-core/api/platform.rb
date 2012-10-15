@@ -42,7 +42,7 @@ module PayPal::SDK::Core
         uri = @uri.dup
         uri.path = @uri.path.sub(/\/?$/, "/#{action}")
         credential_properties = credential(uri.to_s).properties
-        header   = set_header_value(NVP_AUTH_HEADER, credential_properties).
+        header   = map_header_value(NVP_AUTH_HEADER, credential_properties).
           merge(DEFAULT_NVP_HTTP_HEADER)
         [ uri, DEFAULT_PARAMS.merge(params).to_json, header ]
       end
