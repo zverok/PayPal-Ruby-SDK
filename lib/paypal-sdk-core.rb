@@ -29,13 +29,6 @@ module PayPal
         end
       end
       
-      def self.included(klass)
-        klass.class_eval do 
-          include Logging
-          include Configuration
-        end
-      end
-      
     end
   end
 end
