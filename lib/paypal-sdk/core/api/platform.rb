@@ -28,7 +28,7 @@ module PayPal::SDK::Core
             
       # Get NVP service end point
       def service_endpoint
-        config.nvp_end_point || super
+        config.platform_end_point || super || default_end_point(:platform)
       end
       
       # Format the Request.

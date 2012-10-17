@@ -52,13 +52,13 @@ describe PayPal::SDK::Core::API::Merchant do
     end
 
     it "invalid end point" do
-      client   = Merchant.new(:soap_end_point => "https://invalid-api-3t.sandbox.paypal.com/2.0/")
+      client   = Merchant.new(:merchant_end_point => "https://invalid-api-3t.sandbox.paypal.com/2.0/")
       response = client.request("TransactionSearch", TransactionSearchParams )
       should_be_failure(response, "No such host is known")
     end
     
     it "with nvp endpoint" do
-      client   = Merchant.new(:soap_end_point => "https://svcs.sandbox.paypal.com/AdaptivePayments")
+      client   = Merchant.new(:merchant_end_point => "https://svcs.sandbox.paypal.com/AdaptivePayments")
       response = client.request("TransactionSearch", TransactionSearchParams )
       should_be_failure(response, "Internal Server Error")      
     end

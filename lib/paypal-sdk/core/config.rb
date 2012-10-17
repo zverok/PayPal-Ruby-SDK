@@ -50,7 +50,7 @@ module PayPal::SDK::Core
     attr_accessor :username, :password, :signature, :app_id, :cert_path,
         :token, :token_secret, :subject,
         :http_timeout, :http_retry, :http_trust, :http_proxy,
-        :end_point, :soap_end_point, :nvp_end_point, :redirect_url, :dev_central_url,
+        :mode, :end_point, :merchant_end_point, :platform_end_point, :redirect_url, :dev_central_url,
         :logfile
     
     # Create Config object   

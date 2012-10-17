@@ -15,6 +15,29 @@ module PayPal::SDK::Core
       
       attr_accessor :http, :uri, :service_name
       
+      DEFAULT_END_POINTS = {
+        :sandbox => {
+          :platform => { # NVP EndPoint
+            :three_token  => "https://svcs.sandbox.paypal.com/",
+            :certificate  => "https://svcs.sandbox.paypal.com/"  
+          },
+          :merchant => { # SOAP EndPoint
+            :three_token  => "https://api-3t.sandbox.paypal.com/2.0",
+            :certificate  => "https://api.sandbox.paypal.com/2.0"  
+          }
+        },
+        :live => {
+          :platform => { # NVP EndPoint 
+            :three_token  => "https://svcs.paypal.com/",
+            :certificate  => "https://svcs.paypal.com/"  
+          },
+          :merchant => { # SOAP EndPoint
+            :three_token  => "https://api-3t.paypal.com/2.0",
+            :certificate  => "https://api.paypal.com/2.0"  
+          }
+        }
+      }
+      
       # Initialize API object
       # === Argument
       # * <tt>service_name</tt> -- (Optional) Service name
@@ -58,9 +81,28 @@ module PayPal::SDK::Core
         add_certificate(http)
       end
       
+      # Get configured API mode( sandbox or live)
+      def api_mode
+        config_mode = config.mode.to_sym 
+        api_modes   = DEFAULT_END_POINTS.keys
+        api_modes.include?(config.mode) ? config.mode : api_modes.first
+      end
+      
+      # Get default endpoint for the given service name
+      # === Argument
+      # * <tt>name</tt> -- Service name ( platform or merchant)
+      # === Returns
+      # Return service end point based on the configured API mode.
+      def default_end_point(name)
+        default_end_point = DEFAULT_END_POINTS[api_mode][name]
+        if default_end_point
+          config.cert_path ? default_end_point[:certificate] : default_end_point[:three_token]
+        end        
+      end
+      
       # Get service end point
       def service_endpoint
-        config.end_point 
+        config.end_point ? default_end_point(config.end_point.to_sym) : config.end_point
       end
             
       # Generate HTTP request for given action and parameters

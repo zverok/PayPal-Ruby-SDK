@@ -7,7 +7,7 @@ describe PayPal::SDK::Core::API::Platform do
           "baseAmountList"        => { "currency" => [ { "code" => "USD", "amount" => "2.0"} ]},
           "convertToCurrencyList" => { "currencyCode" => ["GBP"] } }
   
-  it "create nvp client with prefix url" do
+  it "create client with Service name" do
     client = Platform.new("AdaptivePayments")
     client.uri.path.should match "AdaptivePayments$"
   end
@@ -59,13 +59,13 @@ describe PayPal::SDK::Core::API::Platform do
     end
 
     it "invalid end point" do
-      client   = Platform.new(:nvp_end_point => "https://svcs-invalid.sandbox.paypal.com/AdaptivePayments")
+      client   = Platform.new(:platform_end_point => "https://svcs-invalid.sandbox.paypal.com/AdaptivePayments")
       response = client.request("ConvertCurrency", ConvertCurrencyParams )
       should_be_failure(response, "No such host is known")
     end
     
     it "with soap endpoint" do
-      client   = Platform.new(:nvp_end_point => "https://api-3t.sandbox.paypal.com/2.0/")
+      client   = Platform.new(:platform_end_point => "https://api-3t.sandbox.paypal.com/2.0/")
       response = client.request("ConvertCurrency", ConvertCurrencyParams )
       should_be_failure(response, "Not Found")      
     end

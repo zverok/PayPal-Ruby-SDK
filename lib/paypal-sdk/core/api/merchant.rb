@@ -40,7 +40,7 @@ module PayPal::SDK::Core
       
       # Get SOAP or default end point
       def service_endpoint
-        config.soap_end_point || super
+        config.merchant_end_point || super || default_end_point(:merchant)
       end
       
       # Format the HTTP request content
