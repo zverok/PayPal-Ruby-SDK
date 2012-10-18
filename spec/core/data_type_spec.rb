@@ -14,11 +14,17 @@ describe PayPal::SDK::Core::API::DataType do
     array_of  :toCurrency,   TestCurrency
   end
   
-  it "should convert the given data to configured object" do
+  it "should convert the given data to configured type" do
     test_type = TestType.new( :fromCurrency => { :code => "USD", :amount => "50.0"})
     test_type.fromCurrency.should be_a TestCurrency
     test_type.fromCurrency.code.should    eql "USD"
     test_type.fromCurrency.amount.should  eql "50.0"    
+  end
+  
+  it "should allow configured Class object" do
+    test_currency = TestCurrency.new( :code => "USD", :amount => "50" )
+    test_type = TestType.new( :fromCurrency => test_currency )
+    test_type.fromCurrency.should eql test_currency
   end
   
   it "should allow snakecase" do

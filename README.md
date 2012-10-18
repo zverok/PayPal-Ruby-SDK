@@ -34,19 +34,19 @@ set_config :development # Set configuration
 config  				# access configuration
 logger  				# access logger
 
-# To make Platform API call
-client   = PayPal::SDK::Core::API::Platform.new
+# To make Merchant API call
+client   = PayPal::SDK::Core::API::Merchant.new
 response = client.request("TransactionSearch", { 
     "StartDate" => "2012-09-30T00:00:00+0530", "EndDate" => "2012-10-01T00:00:00+0530" })
 
-# To make Merchant API call
-client    = PayPal::SDK::Core::API::Merchant.new("AdaptivePayments")
+# To make Platform API call
+client    = PayPal::SDK::Core::API::Platform.new("AdaptivePayments")
 response  = client.request("ConvertCurrency", {
     "baseAmountList"        => { "currency" => [ { "code" => "USD", "amount" => "2.0"} ]},
     "convertToCurrencyList" => { "currencyCode" => ["GBP"] } })
 ```
 
-# Implement AdaptivePayments by inheriting the Platform class
+## Implement AdaptivePayments by inheriting the Platform class
 
 ```ruby
 class AdaptivePayments < PayPal::SDK::Core::API::Platform
