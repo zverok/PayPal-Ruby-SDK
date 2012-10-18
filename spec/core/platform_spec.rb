@@ -36,6 +36,13 @@ describe PayPal::SDK::Core::API::Platform do
     response["responseEnvelope"]["ack"].should eql "Success"
   end
   
+  it "make API request with proxy" do
+    client   = Platform.new("AdaptivePayments", :with_proxy)
+    response = client.request("ConvertCurrency", ConvertCurrencyParams)
+    response.should_not be_nil
+    response["responseEnvelope"].should_not be_nil
+    response["responseEnvelope"]["ack"].should eql "Success"
+  end 
   
   describe "Failure request" do
     

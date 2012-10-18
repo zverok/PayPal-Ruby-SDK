@@ -6,7 +6,6 @@ test: &default
   http_timeout: 30
   http_retry: 5
   http_trust: false
-  http_proxy:
   mode: sandbox 
   redirect_url: "https://www.sandbox.paypal.com/webscr&cmd="
   dev_central_url: "https://developer.paypal.com"
@@ -26,3 +25,7 @@ with_oauth_token:
   <<: *default
   token: H2kLxjm9lCxQdnOYxkH29I53TpZyIXez4GtHhAVGpiU3DiVTz5eNPQ
   token_secret: MnZ-iPdDqGLEfQIuTIfUN4uK9lU
+  
+with_proxy:
+  <<: *default
+  http_proxy: <%= ENV['http_proxy'] %>

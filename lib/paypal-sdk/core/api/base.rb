@@ -65,7 +65,12 @@ module PayPal::SDK::Core
       def create_http_connection
         service_path = "#{service_endpoint}/#{service_name}"
         @uri  = URI.parse(service_path)
-        @http = Net::HTTP.new(@uri.host, @uri.port)
+        if config.http_proxy
+          proxy = URI.parse(config.http_proxy)
+          @http = Net::HTTP.new(@uri.host, @uri.port, proxy.host, proxy.port, proxy.user, proxy.password)
+        else
+          @http = Net::HTTP.new(@uri.host, @uri.port)
+        end
         @uri.path = @uri.path.gsub(/\/+/, "/")
         configure_http_connection      
       end
