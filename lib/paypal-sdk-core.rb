@@ -12,6 +12,8 @@ module PayPal
         autoload :Base,     "paypal-sdk/core/api/base"
         autoload :Merchant, "paypal-sdk/core/api/merchant"
         autoload :Platform, "paypal-sdk/core/api/platform"
+        
+        autoload :DataType, "paypal-sdk/core/api/data_type"
       end
       
       module Util

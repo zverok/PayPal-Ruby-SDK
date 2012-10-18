@@ -54,9 +54,9 @@ class AdaptivePayments < PayPal::SDK::Core::API::Platform
     super("AdaptivePayments", *args)
   end
   
-  def currency_convert(object, http_headers = {})
-    object   = ConvertCurrencyRequest.new(object) unless object.is_a? ConvertCurrencyRequest
-    response = request("ConvertCurrency", object.to_hash, http_headers)
+  def convert_currency(object_or_hash, http_headers = {})
+    object_or_hash = ConvertCurrencyRequest.new(object_or_hash) unless object_or_hash.is_a? ConvertCurrencyRequest
+    response_hash  = request("ConvertCurrency", object_or_hash.to_hash, http_headers)
     ConvertCurrencyResponse.new(response)
   end
   ....
@@ -64,6 +64,6 @@ end
 
 # Using AdaptivePayments class
 ap = AdaptivePayment.new
-response = ap.currency_convert( {...} )
+response = ap.convert_currency( {...} )
 response.response_envelope.ack
 ```
