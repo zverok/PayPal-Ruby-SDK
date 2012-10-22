@@ -77,8 +77,14 @@ module PayPal::SDK::Core
       
       # Initialize options.
       def initialize(options = {})
-        options.each do |key, value|
-          send("#{key}=", value)
+        if options.is_a? Hash
+          options.each do |key, value|
+            send("#{key}=", value)
+          end
+        elsif fields[:value] and options.is_a? fields[:value]
+          self.value = options
+        else
+          raise ArgumentError, "invalid datatype"
         end
       end
       
