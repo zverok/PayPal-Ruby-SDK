@@ -79,12 +79,12 @@ module PayPal::SDK::Core
       def initialize(options = {})
         if options.is_a? Hash
           options.each do |key, value|
-            send("#{key}=", value)
+            send("#{key}=", value) unless key =~ /^@/
           end
         elsif fields[:value] and options.is_a? fields[:value]
           self.value = options
         else
-          raise ArgumentError, "invalid datatype"
+          raise ArgumentError, "invalid data(#{options.inspect}) for #{self.class.name}"
         end
       end
       
@@ -92,8 +92,12 @@ module PayPal::SDK::Core
       # === Example
       # covert_array([{ :amount => "55", :code => "USD"}], CurrencyType)
       def convert_array(array, klass)
-        array.map do |object|
-          convert_object(object, klass)
+        if array.is_a? Array
+          array.map do |object|
+            convert_object(object, klass)
+          end
+        else
+          [ convert_object(array, klass) ]
         end
       end
       
@@ -101,7 +105,7 @@ module PayPal::SDK::Core
       # === Example
       # covert_array({ :amount => "55", :code => "USD"}, CurrencyType )
       def convert_object(object, klass)
-        object.is_a?(klass) ? object : klass.new(object)
+        object.nil? or object.is_a?(klass) ? object : klass.new(object)
       end
       
       # Alias instance method for the class method.
