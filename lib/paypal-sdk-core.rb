@@ -13,7 +13,11 @@ module PayPal
         autoload :Merchant, "paypal-sdk/core/api/merchant"
         autoload :Platform, "paypal-sdk/core/api/platform"
         
-        autoload :DataType, "paypal-sdk/core/api/data_type"
+        module DataTypes
+          autoload :Base, "paypal-sdk/core/api/data_types/base"
+          autoload :Enum, "paypal-sdk/core/api/data_types/enum"
+          autoload :SimpleTypes, "paypal-sdk/core/api/data_types/simple_types"
+        end
       end
       
       module Util

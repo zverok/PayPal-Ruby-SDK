@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe PayPal::SDK::Core::API::DataType do
+describe PayPal::SDK::Core::API::DataTypes::Base do
   
-  DataType = PayPal::SDK::Core::API::DataType
+  DataType = PayPal::SDK::Core::API::DataTypes::Base
   
   class TestCurrency < DataType
     object_of :amount, String
