@@ -35,7 +35,6 @@ module PayPal::SDK::Core
       Gyoku.convert_symbols_to :camelcase
       Nori.configure do |config|
         config.strip_namespaces = true
-        config.convert_tags_to { |tag| tag.snakecase.to_sym }
       end
       
       # Get SOAP or default end point
@@ -74,9 +73,8 @@ module PayPal::SDK::Core
       # Parse the SOAP response content and return Hash object
       def format_response(action, response)
         if response.code == "200"
-          response_action = "#{action.snakecase}_response".to_sym
           hash = Nori.parse(response.body)
-          hash[:envelope][:body][response_action]
+          hash["Envelope"]["Body"].find{|key_val| key_val[0] =~ /^[^@]/ }[1] 
         else
           format_error(response, response.message)
         end
@@ -98,7 +96,7 @@ module PayPal::SDK::Core
       # * <tt>exception</tt> -- Exception object or HTTP response object.
       # * <tt>message</tt> -- Readable error message.
       def format_error(exception, message)
-        { :ack => "Failure", :errors => { :short_message => message, :long_message => message, :exception => exception } }
+        { "Ack" => "Failure", "Errors" => { "ShortMessage" => message, "LongMessage" => exception.to_s } }
       end
     end
   end

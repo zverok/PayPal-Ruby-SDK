@@ -79,12 +79,16 @@ module PayPal::SDK::Core
       def initialize(options = {})
         if options.is_a? Hash
           options.each do |key, value|
-            send("#{key}=", value) unless key =~ /^@/
+            begin
+              send("#{key}=", value) unless key =~ /^@/
+            rescue TypeError => error
+              raise TypeError, "Invalid data(#{value.inspect}) for #{self.class.name}.#{key} field"
+            end
           end
-        elsif fields[:value] and options.is_a? fields[:value]
+        elsif fields[:value]
           self.value = options
         else
-          raise ArgumentError, "invalid data(#{options.inspect}) for #{self.class.name}"
+          raise ArgumentError, "invalid data(#{options.inspect}) for #{self.class.name} class"
         end
       end
       
