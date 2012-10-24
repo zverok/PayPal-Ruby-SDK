@@ -19,56 +19,85 @@ module PayPal::SDK::Core
 
         class << self
 
-          # Fields list for the DataTye
-          def fields
-            @fields ||= 
+          # Get Attribute list
+          def attributes
+            @attributes ||= 
               begin
-                parent_fields = superclass.instance_variable_get("@fields")
-                parent_fields ? parent_fields.dup : {}
+                parent_attributes = superclass.instance_variable_get("@attributes")
+                parent_attributes ? parent_attributes.dup : {}
+              end
+          end
+
+          # Add attribute
+          # === Arguments
+          # * <tt>name</tt>  -- attribute name
+          # * <tt>options</tt> -- options
+          def add_attribute(name, options = {})
+            name = name.to_sym
+            attributes[name] = options
+            attr_accessor name
+            snakecase_name = snakecase(name)
+            alias_method snakecase_name, name
+            alias_method "#{snakecase_name}=", "#{name}="
+            alias_method "@#{name}=", "#{name}="
+            if options[:namespace]
+              alias_method "#{options[:namespace]}:#{name}=", "#{name}="
+              alias_method "@#{options[:namespace]}:#{name}=", "#{name}="
+            end
+          end
+
+
+          # Fields list for the DataTye
+          def members
+            @members ||= 
+              begin
+                parent_members = superclass.instance_variable_get("@members")
+                parent_members ? parent_members.dup : {}
               end
           end
 
           # Add Field to class variable hash and generate methods
           # === Example
-          #   add_field(:errorMessage, String)  # Generate Code
+          #   add_member(:errorMessage, String)  # Generate Code
           #   # attr_reader   :errorMessage
           #   # alias_method  :error_message,  :errorMessage
           #   # alias_method  :error_message=, :errorMessage=
-          def add_field(field_name, klass)
-            field_name = field_name.to_sym
-            fields[field_name] = klass
-            attr_reader field_name
-            snakecase_name = snakecase(field_name)
-            alias_method snakecase_name, field_name
-            alias_method "#{snakecase_name}=", "#{field_name}="
+          def add_member(member_name, klass, options = {})
+            member_name = member_name.to_sym
+            members[member_name] = options.merge( :type => klass )
+            attr_reader member_name
+            snakecase_name = snakecase(member_name)
+            alias_method snakecase_name, member_name
+            alias_method "#{snakecase_name}=", "#{member_name}="
+            alias_method "#{options[:namespace]}:#{member_name}=", "#{member_name}=" if options[:namespace]
           end
 
-          # define method for given field and the class name
+          # define method for given member and the class name
           # === Example
           #   object_of(:errorMessage, ErrorMessage) # Generate Code
           #   # def errorMessage=(options)
           #   #   @errorMessage = ErrorMessage.new(options)
           #   # end
-          #   # add_field :errorMessage, ErrorMessage
-          def object_of(key, klass)
+          #   # add_member :errorMessage, ErrorMessage
+          def object_of(key, klass, options = {})
             define_method "#{key}=" do |value|
               instance_variable_set("@#{key}", convert_object(value, klass))
             end
-            add_field(key, klass)
+            add_member(key, klass, options)
           end
 
-          # define method for given field and the class name
+          # define method for given member and the class name
           # === Example
           #   array_of(:errorMessage, ErrorMessage) # It Generate below code 
           #   # def errorMessage=(array)
           #   #   @errorMessage = array.map{|options| ErrorMessage.new(options) }
           #   # end
-          #   # add_field :errorMessage, ErrorMessage
-          def array_of(key, klass)
+          #   # add_member :errorMessage, ErrorMessage
+          def array_of(key, klass, options = {})
             define_method "#{key}=" do |value|
               instance_variable_set("@#{key}", convert_array(value, klass))
             end
-            add_field(key, klass)
+            add_member(key, klass, options)
           end
 
           # Generate snakecase string.
@@ -86,12 +115,12 @@ module PayPal::SDK::Core
           if options.is_a? Hash
             options.each do |key, value|
               begin
-                send("#{key}=", value) unless key =~ /^@/
+                send("#{key}=", value)
               rescue TypeError => error
-                raise TypeError, "Invalid data(#{value.inspect}) for #{self.class.name}.#{key} field"
+                raise TypeError, "Invalid data(#{value.inspect}) for #{self.class.name}.#{key} member"
               end
             end
-          elsif fields[:value]
+          elsif members[:value]
             self.value = options
           else
             raise ArgumentError, "invalid data(#{options.inspect}) for #{self.class.name} class"
@@ -119,22 +148,26 @@ module PayPal::SDK::Core
         end
 
         # Alias instance method for the class method.
-        def fields
-          self.class.fields
+        def members
+          self.class.members
         end
 
-        # Get configured field names
-        def field_names
-          fields.keys
+        # Get configured member names
+        def member_names
+          members.keys
         end
 
-        # Create Hash based configured fields
+        # Create Hash based configured members
         def to_hash
-          field_names.inject({}) do |hash, field|
-            value       = send(field)
-            hash[field] = value_to_hash(value) if value
+          member_names.inject({}) do |hash, member|
+            value = send(member)
+            hash[hash_key(member)] = value_to_hash(value) if value
             hash
           end
+        end
+
+        def hash_key(key)
+          members[key][:namespace] ? "#{members[key][:namespace]}:#{key}".to_sym : key
         end
 
         # Covert the object to hash based on class.
