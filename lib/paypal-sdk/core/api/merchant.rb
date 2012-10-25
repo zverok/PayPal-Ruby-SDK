@@ -3,16 +3,16 @@ require 'nori'
 
 
 module PayPal::SDK::Core
-  
+
   module API
-  
+
     # Use SOAP protocol to communicate with the Merchant Web services
     # == Example
     #   api       = API::Merchant.new
     #   response  = api.request("TransactionSearch", { "StartDate" => "2012-09-30T00:00:00+0530",
     #      "EndDate" => "2012-10-01T00:00:00+0530" })
     class Merchant < Base
-      
+
       Namespaces = {
         "xmlns:soapenv" => "http://schemas.xmlsoap.org/soap/envelope/",
         "xmlns:urn"     => "urn:ebay:api:PayPalAPI",
@@ -21,7 +21,7 @@ module PayPal::SDK::Core
         "xmlns:ed"      => "urn:ebay:apis:EnhancedDataTypes"
       }
       XML_OPTIONS       = { :namespace => "urn", :element_form_default => :qualified }
-      DEFAULT_PARAMS    = { "ebl:Version" => API_VERSION }
+      DEFAULT_PARAMS    = { :"ebl:Version" => API_VERSION }
       SOAP_HTTP_AUTH_HEADER  = {
         :authorization  => "X-PP-AUTHORIZATION"
       }
@@ -31,17 +31,17 @@ module PayPal::SDK::Core
         :signature  => "ebl:Signature",
         :subject    => "ebl:Subject"
       }
-      
+
       Gyoku.convert_symbols_to :camelcase
       Nori.configure do |config|
         config.strip_namespaces = true
       end
-      
+
       # Get SOAP or default end point
       def service_endpoint
         config.merchant_end_point || super || default_end_point(:merchant)
       end
-      
+
       # Format the HTTP request content
       # === Arguments
       # * <tt>action</tt> -- Request action
@@ -52,7 +52,7 @@ module PayPal::SDK::Core
       def format_request(action, params)
         credential_properties  = credential(uri.to_s).properties
         user_auth_header = map_header_value(SOAP_AUTH_HEADER, credential_properties)
-        request_content = Gyoku.xml({ 
+        request_content = Gyoku.xml({
           "soapenv:Envelope" => {
             "soapenv:Header"  => { "urn:RequesterCredentials" => {
                 "ebl:Credentials" => user_auth_header
@@ -64,7 +64,7 @@ module PayPal::SDK::Core
         header = map_header_value(SOAP_HTTP_AUTH_HEADER, credential_properties)
         [ @uri, request_content, header ]
       end
-      
+
       # Format Response object
       # === Arguments
       # * <tt>action</tt> -- Request action
@@ -78,10 +78,10 @@ module PayPal::SDK::Core
         else
           format_error(response, response.message)
         end
-      end           
-     
+      end
+
       private
-          
+
       # Generate soap body
       # == Arguments
       # * <tt>action</tt> -- Request Action name
@@ -90,7 +90,7 @@ module PayPal::SDK::Core
         action = Gyoku::XMLKey.create(action, XML_OPTIONS)
         { "#{action}Req" => { "#{action}Request" => DEFAULT_PARAMS.merge(params) } }
       end
-  
+
       # Format Error object.
       # == Arguments
       # * <tt>exception</tt> -- Exception object or HTTP response object.
