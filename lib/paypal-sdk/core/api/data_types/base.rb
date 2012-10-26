@@ -21,7 +21,7 @@ module PayPal::SDK::Core
 
           # Get Attribute list
           def attributes
-            @attributes ||= 
+            @attributes ||=
               begin
                 parent_attributes = superclass.instance_variable_get("@attributes")
                 parent_attributes ? parent_attributes.dup : {}
@@ -49,7 +49,7 @@ module PayPal::SDK::Core
 
           # Fields list for the DataTye
           def members
-            @members ||= 
+            @members ||=
               begin
                 parent_members = superclass.instance_variable_get("@members")
                 parent_members ? parent_members.dup : {}
@@ -69,6 +69,8 @@ module PayPal::SDK::Core
             snakecase_name = snakecase(member_name)
             alias_method snakecase_name, member_name
             alias_method "#{snakecase_name}=", "#{member_name}="
+            alias_method "#{snakecase_name}_attributes=", "#{member_name}="
+            alias_method "#{member_name}_attributes=", "#{member_name}="
             alias_method "#{options[:namespace]}:#{member_name}=", "#{member_name}=" if options[:namespace]
           end
 
@@ -88,7 +90,7 @@ module PayPal::SDK::Core
 
           # define method for given member and the class name
           # === Example
-          #   array_of(:errorMessage, ErrorMessage) # It Generate below code 
+          #   array_of(:errorMessage, ErrorMessage) # It Generate below code
           #   # def errorMessage=(array)
           #   #   @errorMessage = array.map{|options| ErrorMessage.new(options) }
           #   # end
@@ -130,9 +132,17 @@ module PayPal::SDK::Core
         # Create array of objects.
         # === Example
         # covert_array([{ :amount => "55", :code => "USD"}], CurrencyType)
+        # covert_array({ "0" => { :amount => "55", :code => "USD"} }, CurrencyType)
+        # covert_array({ :amount => "55", :code => "USD"}, CurrencyType)
+        # # @return
+        # # [ <CurrencyType#object @amount="55" @code="USD" > ]
         def convert_array(array, klass)
           if array.is_a? Array
             array.map do |object|
+              convert_object(object, klass)
+            end
+          elsif array.is_a? Hash and array.keys.first =~ /^\d+$/
+            array.map do |key, object|
               convert_object(object, klass)
             end
           else
