@@ -118,8 +118,8 @@ module PayPal::SDK::Core
             options.each do |key, value|
               begin
                 send("#{key}=", value)
-              rescue TypeError => error
-                raise TypeError, "Invalid data(#{value.inspect}) for #{self.class.name}.#{key} member"
+              rescue TypeError, ArgumentError => error
+                raise TypeError, "#{error.message}(#{value.inspect}) for #{self.class.name}.#{key} member"
               end
             end
           elsif members[:value]
@@ -152,9 +152,11 @@ module PayPal::SDK::Core
 
         # Create object based on given data.
         # === Example
-        # covert_array({ :amount => "55", :code => "USD"}, CurrencyType )
+        # covert_object({ :amount => "55", :code => "USD"}, CurrencyType )
+        # # @return
+        # # <CurrencyType#object @amount="55" @code="USD" >
         def convert_object(object, klass)
-          object.nil? or object.is_a?(klass) ? object : klass.new(object)
+          object.is_a?(klass) ? object : ( object.nil? or object == "" ? nil : klass.new(object) )
         end
 
         # Alias instance method for the class method.
