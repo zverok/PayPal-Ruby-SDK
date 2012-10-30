@@ -46,11 +46,11 @@ describe PayPal::SDK::Core::API::Platform do
 
   describe "Failure request" do
 
-    def should_be_failure(response, message)
+    def should_be_failure(response, message = nil)
       response.should_not be_nil
       response["responseEnvelope"].should_not be_nil
       response["responseEnvelope"]["ack"].should eql "Failure"
-      response["error"][0]["message"].should match message
+      response["error"][0]["message"].should match message if message
     end
 
     it "invalid 3 token authentication" do
@@ -68,7 +68,7 @@ describe PayPal::SDK::Core::API::Platform do
     it "invalid end point" do
       client   = Platform.new(:platform_end_point => "https://svcs-invalid.sandbox.paypal.com/AdaptivePayments")
       response = client.request("ConvertCurrency", ConvertCurrencyParams )
-      should_be_failure(response, "No such host is known")
+      should_be_failure(response)
     end
 
     it "with soap endpoint" do

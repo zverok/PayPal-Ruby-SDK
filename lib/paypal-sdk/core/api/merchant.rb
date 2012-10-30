@@ -32,7 +32,6 @@ module PayPal::SDK::Core
         :subject    => "ebl:Subject"
       }
 
-      Gyoku.convert_symbols_to :camelcase
       Nori.configure do |config|
         config.strip_namespaces = true
       end

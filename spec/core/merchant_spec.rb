@@ -26,12 +26,12 @@ describe PayPal::SDK::Core::API::Merchant do
 
   describe "Failure request" do
 
-    def should_be_failure(response, message)
+    def should_be_failure(response, message = nil)
       response.should_not be_nil
       response["Ack"].should eql "Failure"
       response["Errors"].should_not be_nil
       errors = response["Errors"].is_a?(Array) ? response["Errors"][0] : response["Errors"]
-      errors["ShortMessage"].should match message
+      errors["ShortMessage"].should match message if message
     end
 
     it "invalid 3 token authentication" do
@@ -49,7 +49,7 @@ describe PayPal::SDK::Core::API::Merchant do
     it "invalid end point" do
       client   = Merchant.new(:merchant_end_point => "https://invalid-api-3t.sandbox.paypal.com/2.0/")
       response = client.request("TransactionSearch", TransactionSearchParams )
-      should_be_failure(response, "No such host is known")
+      should_be_failure(response)
     end
 
     it "with nvp endpoint" do
