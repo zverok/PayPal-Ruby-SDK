@@ -1,43 +1,43 @@
 require 'net/http'
 
 module PayPal::SDK::Core
-  
+
   module API
     # API class provide default functionality for accessing the API web services.
     # == Example
     #   api      = API::Base.new("AdaptivePayments")
     #   response = api.request("GetPaymentOptions", "")
     class Base
-      
+
       include Configuration
       include Logging
       include Authentication
-      
+
       attr_accessor :http, :uri, :service_name
-      
+
       DEFAULT_END_POINTS = {
         :sandbox => {
           :platform => { # NVP EndPoint
             :three_token  => "https://svcs.sandbox.paypal.com/",
-            :certificate  => "https://svcs.sandbox.paypal.com/"  
+            :certificate  => "https://svcs.sandbox.paypal.com/"
           },
           :merchant => { # SOAP EndPoint
             :three_token  => "https://api-3t.sandbox.paypal.com/2.0",
-            :certificate  => "https://api.sandbox.paypal.com/2.0"  
+            :certificate  => "https://api.sandbox.paypal.com/2.0"
           }
         },
         :live => {
-          :platform => { # NVP EndPoint 
+          :platform => { # NVP EndPoint
             :three_token  => "https://svcs.paypal.com/",
-            :certificate  => "https://svcs.paypal.com/"  
+            :certificate  => "https://svcs.paypal.com/"
           },
           :merchant => { # SOAP EndPoint
             :three_token  => "https://api-3t.paypal.com/2.0",
-            :certificate  => "https://api.paypal.com/2.0"  
+            :certificate  => "https://api.paypal.com/2.0"
           }
         }
       }
-      
+
       # Initialize API object
       # === Argument
       # * <tt>service_name</tt> -- (Optional) Service name
@@ -46,21 +46,21 @@ module PayPal::SDK::Core
       # === Example
       #  new("AdaptivePayments")
       #  new("AdaptivePayments", :development)
-      #  new(:wsdl_service)       # It load wsdl_service configuration 
+      #  new(:wsdl_service)       # It load wsdl_service configuration
       def initialize(service_name = "", environment = nil, options = {})
         unless service_name.is_a? String
           environment, options, service_name = service_name, environment || {}, ""
-        end   
+        end
         @service_name = service_name
         set_config(environment, options)
       end
-      
+
       # Override set_config method to create http connection on changing the configuration.
       def set_config(*args)
         super
-        create_http_connection      
+        create_http_connection
       end
-      
+
       # Create HTTP connection based on given service name or configured end point
       def create_http_connection
         service_path = "#{service_endpoint}/#{service_name}"
@@ -72,9 +72,9 @@ module PayPal::SDK::Core
           @http = Net::HTTP.new(@uri.host, @uri.port)
         end
         @uri.path = @uri.path.gsub(/\/+/, "/")
-        configure_http_connection      
+        configure_http_connection
       end
-      
+
       # Configure HTTP connection based on configuration.
       def configure_http_connection
         http.use_ssl      = true
@@ -85,14 +85,14 @@ module PayPal::SDK::Core
         end
         add_certificate(http)
       end
-      
+
       # Get configured API mode( sandbox or live)
       def api_mode
-        config_mode = config.mode.to_sym 
+        config_mode = config.mode.to_sym
         api_modes   = DEFAULT_END_POINTS.keys
         api_modes.include?(config.mode) ? config.mode : api_modes.first
       end
-      
+
       # Get default endpoint for the given service name
       # === Argument
       # * <tt>name</tt> -- Service name ( platform or merchant)
@@ -102,14 +102,14 @@ module PayPal::SDK::Core
         default_end_point = DEFAULT_END_POINTS[api_mode][name]
         if default_end_point
           config.cert_path ? default_end_point[:certificate] : default_end_point[:three_token]
-        end        
+        end
       end
-      
+
       # Get service end point
       def service_endpoint
         config.end_point ? default_end_point(config.end_point.to_sym) : config.end_point
       end
-            
+
       # Generate HTTP request for given action and parameters
       # === Arguments
       # * <tt>action</tt> -- Action to perform
@@ -123,7 +123,7 @@ module PayPal::SDK::Core
       rescue Net::HTTPBadGateway, Errno::ECONNRESET, Errno::ECONNABORTED, SocketError => error
         format_error(error, error.message)
       end
-  
+
       # Format Request data. It will be override by child class
       # == Arguments
       # * <tt>action</tt> -- Request action
@@ -131,11 +131,11 @@ module PayPal::SDK::Core
       # == Return
       # * <tt>path</tt>   -- Formated request uri object
       # * <tt>params</tt> -- Formated request Parameters
-      # * <tt>header</tt> -- HTTP Header 
+      # * <tt>header</tt> -- HTTP Header
       def format_request(action, params)
         [ @uri, params, {} ]
       end
-      
+
       # Format Response object. It will be override by child class
       # == Argument
       # * <tt>action</tt> -- Request action
@@ -143,7 +143,7 @@ module PayPal::SDK::Core
       def format_response(action, response)
         response
       end
-      
+
       # Format Error object. It will be override by child class.
       # == Arguments
       # * <tt>exception</tt> -- Exception object.
@@ -151,6 +151,6 @@ module PayPal::SDK::Core
       def format_error(exception, message)
         raise exception
       end
-    end    
+    end
   end
 end

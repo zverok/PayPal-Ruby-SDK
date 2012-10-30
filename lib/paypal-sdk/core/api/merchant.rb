@@ -74,7 +74,7 @@ module PayPal::SDK::Core
       def format_response(action, response)
         if response.code == "200"
           hash = Nori.parse(response.body)
-          hash["Envelope"]["Body"].find{|key_val| key_val[0] =~ /^[^@]/ }[1] 
+          hash["Envelope"]["Body"].find{|key_val| key_val[0] =~ /^[^@]/ }[1]
         else
           format_error(response, response.message)
         end

@@ -2,9 +2,9 @@ module PayPal::SDK::Core
   module Credential
     module ThirdParty
       class Token
-        
+
         attr_accessor :token, :token_secret, :credential, :url
-        
+
         # Initialize Token credentials
         # === Arguments
         # * <tt>credential</tt> -- Credential Object
@@ -16,9 +16,9 @@ module PayPal::SDK::Core
           @token_secret = config.token_secret
           @url          = url
         end
-        
+
         RemoveProperties = [ :username, :password, :signature ]
-        
+
         # Return credential properties for authentication.
         def properties
           certificate_properties = {}
@@ -27,12 +27,12 @@ module PayPal::SDK::Core
         end
 
         private
-        # Return OAuth authentication string.  
+        # Return OAuth authentication string.
         def oauth_authentication
-          Util::OauthSignature.new(credential.username, credential.password, token, token_secret, url).        
+          Util::OauthSignature.new(credential.username, credential.password, token, token_secret, url).
             authorization_string
         end
-                    
+
       end
     end
   end

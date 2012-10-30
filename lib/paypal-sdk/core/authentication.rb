@@ -1,25 +1,25 @@
 
 module PayPal::SDK::Core
-  
+
   # Contains methods to format credentials for HTTP protocol.
   # == Example
   #  include Authentication
   #  credential(url)
   #  base_credential
   #  third_party_credential(url)
-  #  
+  #
   #  add_certificate(http)
   module Authentication
-    
+
     include Configuration
-    
+
     # Get credential object
     # === Argument
-    # * <tt>url</tt> -- API request url 
+    # * <tt>url</tt> -- API request url
     def credential(url)
       third_party_credential(url) || base_credential
     end
-    
+
     # Get base credential
     def base_credential
       @base_credential ||=
@@ -29,7 +29,7 @@ module PayPal::SDK::Core
           Credential::Signature.new(config)
         end
     end
-    
+
     # Get third party credential
     def third_party_credential(url)
       if config.token and config.token_secret
@@ -38,17 +38,17 @@ module PayPal::SDK::Core
         Credential::ThirdParty::Subject.new(base_credential, config)
       end
     end
-    
+
     # Clear cached variables on changing the configuration.
     def set_config(*args)
       super
       @base_credential = nil
     end
-    
+
     # Generate header based on given header keys and properties
     # === Arguments
     # * <tt>header_keys</tt> -- List of Header keys for the properties
-    # * <tt>properties</tt>  -- properties 
+    # * <tt>properties</tt>  -- properties
     # === Return
     #  Hash with header as key property as value
     # === Example
@@ -60,18 +60,18 @@ module PayPal::SDK::Core
         key = header_keys[key]
         header[key] = value if key
       end
-      header      
+      header
     end
-        
+
     # Configure ssl certificate to HTTP object
     # === Argument
-    # * <tt>http</tt> -- Net::HTTP object         
+    # * <tt>http</tt> -- Net::HTTP object
     def add_certificate(http)
       if base_credential.is_a? Credential::Certificate
         http.cert = base_credential.cert
         http.key  = base_credential.key
       else
-        http.cert = nil 
+        http.cert = nil
         http.key  = nil
       end
     end

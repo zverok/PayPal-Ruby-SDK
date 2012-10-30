@@ -11,7 +11,7 @@ Add this line to your application's Gemfile:
 And then execute:
 
     $ bundle
-    
+
 Run Testcase
 
     $ bundle exec rspec
@@ -36,7 +36,7 @@ logger  				# access logger
 
 # To make Merchant API call
 client   = PayPal::SDK::Core::API::Merchant.new
-response = client.request("TransactionSearch", { 
+response = client.request("TransactionSearch", {
     "StartDate" => "2012-09-30T00:00:00+0530", "EndDate" => "2012-10-01T00:00:00+0530" })
 
 # To make Platform API call
@@ -53,7 +53,7 @@ class AdaptivePayments < PayPal::SDK::Core::API::Platform
   def initlaize(*args)
     super("AdaptivePayments", *args)
   end
-  
+
   def convert_currency(object_or_hash, http_headers = {})
     object_or_hash = ConvertCurrencyRequest.new(object_or_hash) unless object_or_hash.is_a? ConvertCurrencyRequest
     response_hash  = request("ConvertCurrency", object_or_hash.to_hash, http_headers)

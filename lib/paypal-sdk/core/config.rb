@@ -2,25 +2,25 @@ require 'erb'
 require 'yaml'
 
 module PayPal::SDK::Core
-  
+
   # Include Configuration module to access configuration from any object
   # == Examples
   #   # Include in any class
   #   include Configuration
-  #   
-  #   # Access config object and attributes 
+  #
+  #   # Access config object and attributes
   #   config
   #   config.username
-  #   
+  #
   #   # Change configuration
   #   set_config(:development)
   module Configuration
-    
+
     # To get default Config object.
     def config
       @config ||= Config.config
     end
-    
+
     # To change the configuration to given environment or configuration
     # === Arguments
     # * <tt>env</tt> -- Environment
@@ -28,59 +28,59 @@ module PayPal::SDK::Core
     def set_config(env, override_configurations = {})
       @config = env.is_a?(Config) ? env : Config.config(env, override_configurations)
     end
-    
+
     alias_method :config=, :set_config
   end
-  
+
   # Config class is used to hold the configurations.
   # == Examples
   #   # To load configurations from file
   #   Config.load('config/paypal.yml', 'development')
-  #   
+  #
   #   # Get configuration
   #   Config.config   # load default configuration
   #   Config.config(:development) # load development configuration
   #   Config.config(:development, :app_id => "XYZ") # Override configuration
-  #   
+  #
   #   # Read configuration attributes
   #   config = Config.config
   #   config.username
   #   config.end_point
-  class Config    
+  class Config
     attr_accessor :username, :password, :signature, :app_id, :cert_path,
         :token, :token_secret, :subject,
         :http_timeout, :http_retry, :http_trust, :http_proxy,
         :mode, :end_point, :merchant_end_point, :platform_end_point, :redirect_url, :dev_central_url,
         :logfile
-    
-    # Create Config object   
+
+    # Create Config object
     # === Options(Hash)
     # * <tt>username</tt>   -- Username
     # * <tt>password</tt>   -- Password
-    # * <tt>signature</tt> (Optional if certificate present) -- Signature 
-    # * <tt>app_id</tt>     -- Application ID 
-    # * <tt>cert_path</tt> (Optional if signature present)  -- Certificate file path 
+    # * <tt>signature</tt> (Optional if certificate present) -- Signature
+    # * <tt>app_id</tt>     -- Application ID
+    # * <tt>cert_path</tt> (Optional if signature present)  -- Certificate file path
     def initialize(options)
       options.each do |key, value|
         send("#{key}=", value) rescue nil
       end
     end
-        
+
     class << self
-      
+
       @@config_cache = {}
-      
+
       # Load configurations from file
       # === Arguments
       # * <tt>file_name</tt>             -- Configuration file path
       # * <tt>default_environment</tt> (Optional)    -- default environment configuration to load
-      # === Example 
+      # === Example
       #   Config.load('config/paypal.yml', 'development')
       def load(file_name, default_environment = "development")
         @@configurations      = read_configurations(file_name)
         @@default_environment = default_environment
       end
-      
+
       # Get default environment name
       def default_environment
         @@default_environment ||= "development"
@@ -108,14 +108,14 @@ module PayPal::SDK::Core
         end
       end
 
-      private      
+      private
       # Read configurations from the given file name
       # === Arguments
       # * <tt>file_name</tt> (Optional) -- Configuration file path
       def read_configurations(file_name = "config/paypal.yml")
         YAML.load(ERB.new(File.read(file_name)).result)
       end
-      
+
       # Get raw configurations in Hash format.
       def configurations
         @@configurations ||= read_configurations
