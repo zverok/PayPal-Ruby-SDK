@@ -66,6 +66,10 @@ module PayPal::SDK::Core
             member_name = member_name.to_sym
             members[member_name] = options.merge( :type => klass )
             attr_reader member_name
+            define_method "#{member_name}=" do |value|
+              object = options[:array] ? convert_array(value, klass) : convert_object(value, klass)
+              instance_variable_set("@#{member_name}", object)
+            end
             snakecase_name = snakecase(member_name)
             alias_method snakecase_name, member_name
             alias_method "#{snakecase_name}=", "#{member_name}="
@@ -82,9 +86,6 @@ module PayPal::SDK::Core
           #   # end
           #   # add_member :errorMessage, ErrorMessage
           def object_of(key, klass, options = {})
-            define_method "#{key}=" do |value|
-              instance_variable_set("@#{key}", convert_object(value, klass))
-            end
             add_member(key, klass, options)
           end
 
@@ -96,10 +97,7 @@ module PayPal::SDK::Core
           #   # end
           #   # add_member :errorMessage, ErrorMessage
           def array_of(key, klass, options = {})
-            define_method "#{key}=" do |value|
-              instance_variable_set("@#{key}", convert_array(value, klass))
-            end
-            add_member(key, klass, options)
+            add_member(key, klass, options.merge(:array => true))
           end
 
           # Generate snakecase string.
