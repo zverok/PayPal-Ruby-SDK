@@ -73,8 +73,6 @@ module PayPal::SDK::Core
             snakecase_name = snakecase(member_name)
             alias_method snakecase_name, member_name
             alias_method "#{snakecase_name}=", "#{member_name}="
-            alias_method "#{snakecase_name}_attributes=", "#{member_name}="
-            alias_method "#{member_name}_attributes=", "#{member_name}="
             alias_method "#{options[:namespace]}:#{member_name}=", "#{member_name}=" if options[:namespace]
           end
 
