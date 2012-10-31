@@ -88,9 +88,9 @@ module PayPal::SDK::Core
 
       # Get configured API mode( sandbox or live)
       def api_mode
-        config_mode = config.mode.to_sym
         api_modes   = DEFAULT_END_POINTS.keys
-        api_modes.include?(config.mode) ? config.mode : api_modes.first
+        config_mode = ( config.mode || api_modes.first ).to_sym
+        api_modes.include?(config_mode) ? config_mode : api_modes.first
       end
 
       # Get default endpoint for the given service name
