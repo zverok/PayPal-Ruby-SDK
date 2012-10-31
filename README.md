@@ -29,7 +29,8 @@ config = PayPal::SDK::Core::Config.config(:development) # Load specified environ
 config = PayPal::SDK::Core::Config.config(:development, :app_id => "XYZ") # Override configuration
 
 # Include Core package
-include PayPal::SDK::Core
+include PayPal::SDK::Core::Configuration
+include PayPal::SDK::Core::Logging
 set_config :development # Set configuration
 config  				# access configuration
 logger  				# access logger
@@ -44,6 +45,32 @@ client    = PayPal::SDK::Core::API::Platform.new("AdaptivePayments")
 response  = client.request("ConvertCurrency", {
     "baseAmountList"        => { "currency" => [ { "code" => "USD", "amount" => "2.0"} ]},
     "convertToCurrencyList" => { "currencyCode" => ["GBP"] } })
+```
+
+## Configuration
+The Core library will try to load the configuration from default location `config/paypal.yml` and the default environment is `development`
+
+```yaml
+development: &default
+  username: jb-us-seller_api1.paypal.com
+  password: WX4WTU3S8MY44S7F
+  signature: AFcWxV21C7fd0v3bYYYRCpSSRl31A7yDhhsPUU2XhtMoZXsWHFxu-RWy
+  app_id: APP-80W284485P519543T
+  http_timeout: 30
+  http_retry: 5
+  http_trust: false
+  mode: sandbox
+test:
+  <<: *default
+production:
+  mode: live
+  ...
+```
+
+To override configuration on particular API client:
+
+```ruby
+client    = PayPal::SDK::Core::API::Platform.new("AdaptivePayments", :test, :app_id => "XYZ")
 ```
 
 ## Implement AdaptivePayments by inheriting the Platform class
