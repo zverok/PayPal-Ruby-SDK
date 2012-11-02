@@ -139,7 +139,7 @@ module PayPal::SDK::Core
         # # @return
         # # <CurrencyType#object @amount="55" @code="USD" >
         def convert_object(object, klass)
-          object.is_a?(klass) ? object : ( object.nil? or object == "" ? nil : klass.new(object) )
+          object.is_a?(klass) ? object : ( ( object.nil? or object == "" ) ? nil : klass.new(object) )
         end
 
         # Alias instance method for the class method.
