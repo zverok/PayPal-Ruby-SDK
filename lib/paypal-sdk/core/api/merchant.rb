@@ -1,6 +1,4 @@
-require 'gyoku'
-require 'nori'
-
+require 'xmlsimple'
 
 module PayPal::SDK::Core
 
@@ -13,15 +11,20 @@ module PayPal::SDK::Core
     #      "EndDate" => "2012-10-01T00:00:00+0530" })
     class Merchant < Base
 
+
       Namespaces = {
-        "xmlns:soapenv" => "http://schemas.xmlsoap.org/soap/envelope/",
-        "xmlns:urn"     => "urn:ebay:api:PayPalAPI",
-        "xmlns:ebl"     => "urn:ebay:apis:eBLBaseComponents",
-        "xmlns:cc"      => "urn:ebay:apis:CoreComponentTypes",
-        "xmlns:ed"      => "urn:ebay:apis:EnhancedDataTypes"
+        "@xmlns:soapenv" => "http://schemas.xmlsoap.org/soap/envelope/",
+        "@xmlns:urn"     => "urn:ebay:api:PayPalAPI",
+        "@xmlns:ebl"     => "urn:ebay:apis:eBLBaseComponents",
+        "@xmlns:cc"      => "urn:ebay:apis:CoreComponentTypes",
+        "@xmlns:ed"      => "urn:ebay:apis:EnhancedDataTypes"
       }
-      XML_OPTIONS       = { :namespace => "urn", :element_form_default => :qualified }
-      DEFAULT_PARAMS    = { :"ebl:Version" => API_VERSION }
+      ContentKey = API::DataTypes::Base::ContentKey.to_s
+      DEFAULT_API_VERSION = "94.0"
+      XML_OUT_OPTIONS   = { 'RootName' => nil, 'AttrPrefix' => true, 'ContentKey' => ContentKey }
+      XML_IN_OPTIONS    = { 'AttrPrefix' => true, 'ForceArray' => false, 'ContentKey' => ContentKey }
+      DEFAULT_PARAMS    = { :"ebl:Version" => DEFAULT_API_VERSION }
+      SKIP_ATTRIBUTES   = [ "@xmlns", "@xsi:type" ]
       SOAP_HTTP_AUTH_HEADER  = {
         :authorization  => "X-PP-AUTHORIZATION"
       }
@@ -31,10 +34,6 @@ module PayPal::SDK::Core
         :signature  => "ebl:Signature",
         :subject    => "ebl:Subject"
       }
-
-      Nori.configure do |config|
-        config.strip_namespaces = true
-      end
 
       # Get SOAP or default end point
       def service_endpoint
@@ -51,15 +50,15 @@ module PayPal::SDK::Core
       def format_request(action, params)
         credential_properties  = credential(uri.to_s).properties
         user_auth_header = map_header_value(SOAP_AUTH_HEADER, credential_properties)
-        request_content = Gyoku.xml({
+        content_key      = params.keys.first.is_a?(Symbol) ? ContentKey.to_sym : ContentKey.to_s
+        request_content = XmlSimple.xml_out({
           "soapenv:Envelope" => {
             "soapenv:Header"  => { "urn:RequesterCredentials" => {
                 "ebl:Credentials" => user_auth_header
              } },
             "soapenv:Body"    => body(action, params)
-          },
-          :attributes!       => { "soapenv:Envelope" => Namespaces }
-        }, XML_OPTIONS)
+          }.merge(Namespaces)
+        }, XML_OUT_OPTIONS.merge( 'ContentKey' => content_key ))
         header = map_header_value(SOAP_HTTP_AUTH_HEADER, credential_properties)
         [ @uri, request_content, header ]
       end
@@ -72,8 +71,9 @@ module PayPal::SDK::Core
       # Parse the SOAP response content and return Hash object
       def format_response(action, response)
         if response.code == "200"
-          hash = Nori.parse(response.body)
-          hash["Envelope"]["Body"].find{|key_val| key_val[0] =~ /^[^@]/ }[1]
+          hash = XmlSimple.xml_in(response.body, XML_IN_OPTIONS)
+          hash = skip_attributes(hash)
+          hash["Body"].find{|key_val| key_val[0] =~ /^[^@]/ }[1]
         else
           format_error(response, response.message)
         end
@@ -86,8 +86,23 @@ module PayPal::SDK::Core
       # * <tt>action</tt> -- Request Action name
       # * <tt>params</tt> -- Parameters for the action.
       def body(action, params = {})
-        action = Gyoku::XMLKey.create(action, XML_OPTIONS)
-        { "#{action}Req" => { "#{action}Request" => DEFAULT_PARAMS.merge(params) } }
+        { "urn:#{action}Req" => { "urn:#{action}Request" => DEFAULT_PARAMS.merge(params) } }
+      end
+
+      # Remove specified attributes from the given Hash
+      # === Arguments
+      # * <tt>hash</tt>   -- Hash object
+      # * <tt>attrs</tt>  -- (Optional) Attribute list
+      # * <tt>content_key</tt> -- (Optional) content key
+      def skip_attributes(hash, attrs = SKIP_ATTRIBUTES, content_key = ContentKey)
+        hash.each do |key, value|
+          if attrs.include? key
+            hash.delete(key)
+          elsif value.is_a? Hash
+            hash[key] = skip_attributes(value, attrs, content_key)
+          end
+        end
+        ( hash.size == 1 and hash[content_key] ) ? hash[content_key] : hash
       end
 
       # Format Error object.

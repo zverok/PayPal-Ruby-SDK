@@ -59,11 +59,30 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
     test_currency.to_hash.should eql(:amount => "500")
   end
 
+  it "should convert to hash with key as string" do
+    test_currency = TestCurrency.new(:amount => "500")
+    test_currency.to_hash(:symbol => false).should eql("amount" => "500")
+  end
+
+  it "Should convert attribute key with @" do
+    test_currency = TestCurrency.new( :code => "USD", :amount => "50" )
+    test_currency.to_hash[:@code].should eql "USD"
+  end
+
+  it "Should convert attribute key without @" do
+    test_currency = TestCurrency.new( :code => "USD", :amount => "50" )
+    test_currency.to_hash(:attribute => false)[:code].should eql "USD"
+  end
+
+
   it "should convert to hash with namespace" do
     test_currency = TestCurrency.new(:amount => "500", :type => "USD" )
     hash = test_currency.to_hash
     hash[:amount].should eql "500"
     hash[:"ns:type"].should eql "USD"
+    hash = test_currency.to_hash(:namespace => false)
+    hash[:amount].should eql "500"
+    hash[:type].should eql "USD"
   end
 
   it "should allow namespace" do

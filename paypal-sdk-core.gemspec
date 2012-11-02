@@ -17,8 +17,6 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency('nokogiri')
-  gem.add_dependency('gyoku')
-  gem.add_dependency('nori')
+  gem.add_dependency('xml-simple')
 
 end

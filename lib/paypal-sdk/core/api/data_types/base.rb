@@ -15,37 +15,20 @@ module PayPal::SDK::Core
       #   end
       class Base
 
+        HashOptions = { :attribute => true, :namespace => true, :symbol => true }
+        ContentKey  = :value
+
         include SimpleTypes
 
         class << self
-
-          # Get Attribute list
-          def attributes
-            @attributes ||=
-              begin
-                parent_attributes = superclass.instance_variable_get("@attributes")
-                parent_attributes ? parent_attributes.dup : {}
-              end
-          end
 
           # Add attribute
           # === Arguments
           # * <tt>name</tt>  -- attribute name
           # * <tt>options</tt> -- options
           def add_attribute(name, options = {})
-            name = name.to_sym
-            attributes[name] = options
-            attr_accessor name
-            snakecase_name = snakecase(name)
-            alias_method snakecase_name, name
-            alias_method "#{snakecase_name}=", "#{name}="
-            alias_method "@#{name}=", "#{name}="
-            if options[:namespace]
-              alias_method "#{options[:namespace]}:#{name}=", "#{name}="
-              alias_method "@#{options[:namespace]}:#{name}=", "#{name}="
-            end
+            add_member(name, String, options.merge( :attribute => true ))
           end
-
 
           # Fields list for the DataTye
           def members
@@ -74,6 +57,10 @@ module PayPal::SDK::Core
             alias_method snakecase_name, member_name
             alias_method "#{snakecase_name}=", "#{member_name}="
             alias_method "#{options[:namespace]}:#{member_name}=", "#{member_name}=" if options[:namespace]
+            if options[:attribute]
+              alias_method "@#{member_name}=", "#{member_name}="
+              alias_method "@#{options[:namespace]}:#{member_name}=", "#{member_name}=" if options[:namespace]
+            end
           end
 
           # define method for given member and the class name
@@ -118,7 +105,7 @@ module PayPal::SDK::Core
                 raise TypeError, "#{error.message}(#{value.inspect}) for #{self.class.name}.#{key} member"
               end
             end
-          elsif members[:value]
+          elsif members[ContentKey]
             self.value = options
           else
             raise ArgumentError, "invalid data(#{options.inspect}) for #{self.class.name} class"
@@ -166,25 +153,35 @@ module PayPal::SDK::Core
         end
 
         # Create Hash based configured members
-        def to_hash
+        def to_hash(options = {})
+          options = HashOptions.merge(options)
           member_names.inject({}) do |hash, member|
             value = send(member)
-            hash[hash_key(member)] = value_to_hash(value) if value
+            hash[hash_key(member, options)] = value_to_hash(value, options) if value
             hash
           end
         end
 
-        def hash_key(key)
-          members[key][:namespace] ? "#{members[key][:namespace]}:#{key}".to_sym : key
+        # Generate Hash key for given member name based on configuration
+        # === Example
+        # hash_key(:amount) # @return :"ebl:amount"
+        # hash_key(:type)   # @return :"@type"
+        def hash_key(key, options = {})
+          unless key == ContentKey
+            member_option = members[key]
+            key = "#{member_option[:namespace]}:#{key}" if member_option[:namespace] and options[:namespace]
+            key = "@#{key}" if member_option[:attribute] and options[:attribute]
+          end
+          options[:symbol] ? key.to_sym : key.to_s
         end
 
         # Covert the object to hash based on class.
-        def value_to_hash(value)
+        def value_to_hash(value, options = {})
           case value
           when Array
-            value.map{|object| value_to_hash(object) }
+            value.map{|object| value_to_hash(object, options) }
           when Base
-            value.to_hash
+            value.to_hash(options)
           else
             value
           end
