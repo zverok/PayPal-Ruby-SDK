@@ -12,9 +12,9 @@ And then execute:
 
     $ bundle
 
-Run Testcase
+Or install it yourself as:
 
-    $ bundle exec rspec
+    $ gem install paypal-sdk-core
 
 ## Configuration
 The Core library will try to load the configuration from default location `config/paypal.yml` and environment `development`
@@ -27,7 +27,6 @@ development: &default
   app_id: APP-80W284485P519543T
   http_timeout: 30
   http_retry: 5
-  http_trust: false
   mode: sandbox
 test:
   <<: *default
@@ -42,6 +41,12 @@ Load Configurations from specified file:
 PayPal::SDK::Core::Config.load('config/paypal.yml',  ENV['RACK_ENV'] || 'development')
 ```
 
+Logger configuration:
+
+```ruby
+PayPal::SDK::Core::Logging.logger = Logger.new(STDERR)
+```
+
 Override configuration on particular API client:
 
 ```ruby
@@ -50,11 +55,20 @@ client    = PayPal::SDK::Core::API::Platform.new("AdaptivePayments", :test, :app
 client    = PayPal::SDK::Core::API::Platform.new("AdaptivePayments", :app_id => "XYZ")
 ```
 
-Change client API configuration
+Change client configuration:
 
 ```ruby
 client.set_config :development
 client.set_config :development, :api_id => "XYZ"
+```
+
+For token and subject authentication:
+
+```ruby
+# Token Authentication
+client    = PayPal::SDK::Core::API::Platform.new("AdaptivePayments", :token => "xyz", :token_secret => "xyz")
+# Subject Authentication
+client    = PayPal::SDK::Core::API::Merchant.new( :subject => "xyz@example.com" )
 ```
 
 ## Usage API services
@@ -66,15 +80,21 @@ client.set_config :development, :api_id => "XYZ"
 client   = PayPal::SDK::Core::API::Merchant.new
 response = client.request("TransactionSearch", {
     "StartDate" => "2012-09-30T00:00:00+0530", "EndDate" => "2012-10-01T00:00:00+0530" })
+if response["Ack"] == "Success"
+  # ...
+end
 
 # To make Platform API call
 client    = PayPal::SDK::Core::API::Platform.new("AdaptivePayments")
 response  = client.request("ConvertCurrency", {
     "baseAmountList"        => { "currency" => [ { "code" => "USD", "amount" => "2.0"} ]},
     "convertToCurrencyList" => { "currencyCode" => ["GBP"] } })
+if response["responseEnvelope"]["ack"] == "Success"
+  # ...
+end
 ```
 
-## Using Core class
+## Using Core package
 
 ```ruby
 # Get Configuration
