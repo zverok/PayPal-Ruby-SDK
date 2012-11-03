@@ -24,6 +24,43 @@ describe PayPal::SDK::Core::API::Merchant do
     response["Ack"].should eql "Success"
   end
 
+  describe "Format request" do
+    it "should handle :value member" do
+      client    = Merchant.new
+      uri, request, http_header = client.format_request("TransactionSearch", :amount => { :value => "50" } )
+      request.should match '<amount>50</amount>'
+      uri, request, http_header = client.format_request("TransactionSearch", "amount" => { "value" => "50" } )
+      request.should match '<amount>50</amount>'
+    end
+
+    it "should handle attribute" do
+      client    = Merchant.new
+      uri, request, http_header = client.format_request("TransactionSearch", :amount => { :"@currencyID" => "USD", :value => "50" } )
+      request.should match '<amount currencyID="USD">50</amount>'
+      uri, request, http_header = client.format_request("TransactionSearch", "amount" => { "@currencyID" => "USD", "value" => "50" } )
+      request.should match '<amount currencyID="USD">50</amount>'
+    end
+
+    it "should handle members" do
+      client    = Merchant.new
+      uri, request, http_header = client.format_request("TransactionSearch", :list => { :amount => { :"@currencyID" => "USD", :value => "50" } } )
+      request.should match '<list><amount currencyID="USD">50</amount></list>'
+    end
+
+    it "should handle array of members" do
+      client    = Merchant.new
+      uri, request, http_header = client.format_request("TransactionSearch", 
+        :list => { :amount => [ { :"@currencyID" => "USD", :value => "50" }, { :"@currencyID" => "USD", :value => "25" } ] }  )
+      request.should match '<list><amount currencyID="USD">50</amount><amount currencyID="USD">25</amount></list>'
+    end
+
+    it "should handle namespace" do
+      client    = Merchant.new
+      uri, request, http_header = client.format_request("TransactionSearch", :"ebl:amount" => { :"@cc:currencyID" => "USD", :value => "50" } )
+      request.should match '<ebl:amount cc:currencyID="USD">50</ebl:amount>'
+    end
+  end
+
   describe "Failure request" do
 
     def should_be_failure(response, message = nil)

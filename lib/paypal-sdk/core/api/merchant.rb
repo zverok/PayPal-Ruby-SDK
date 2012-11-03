@@ -21,7 +21,7 @@ module PayPal::SDK::Core
       }
       ContentKey = API::DataTypes::Base::ContentKey.to_s
       DEFAULT_API_VERSION = "94.0"
-      XML_OUT_OPTIONS   = { 'RootName' => nil, 'AttrPrefix' => true, 'ContentKey' => ContentKey }
+      XML_OUT_OPTIONS   = { 'RootName' => nil, 'AttrPrefix' => true, 'ContentKey' => ContentKey, 'noindent' => true }
       XML_IN_OPTIONS    = { 'AttrPrefix' => true, 'ForceArray' => false, 'ContentKey' => ContentKey }
       DEFAULT_PARAMS    = { :"ebl:Version" => DEFAULT_API_VERSION }
       SKIP_ATTRIBUTES   = [ "@xmlns", "@xsi:type" ]
@@ -100,6 +100,10 @@ module PayPal::SDK::Core
             hash.delete(key)
           elsif value.is_a? Hash
             hash[key] = skip_attributes(value, attrs, content_key)
+          elsif value.is_a? Array and value[0].is_a? Hash
+            value.each_with_index do |array_value, index|
+              value[index] = skip_attributes(array_value, attrs, content_key)
+            end
           end
         end
         ( hash.size == 1 and hash[content_key] ) ? hash[content_key] : hash
