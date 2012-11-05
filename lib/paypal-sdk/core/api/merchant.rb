@@ -14,7 +14,7 @@ module PayPal::SDK::Core
 
       Namespaces = {
         "@xmlns:soapenv" => "http://schemas.xmlsoap.org/soap/envelope/",
-        "@xmlns:urn"     => "urn:ebay:api:PayPalAPI",
+        "@xmlns:ns"      => "urn:ebay:api:PayPalAPI",
         "@xmlns:ebl"     => "urn:ebay:apis:eBLBaseComponents",
         "@xmlns:cc"      => "urn:ebay:apis:CoreComponentTypes",
         "@xmlns:ed"      => "urn:ebay:apis:EnhancedDataTypes"
@@ -53,7 +53,7 @@ module PayPal::SDK::Core
         content_key      = params.keys.first.is_a?(Symbol) ? ContentKey.to_sym : ContentKey.to_s
         request_content = XmlSimple.xml_out({
           "soapenv:Envelope" => {
-            "soapenv:Header"  => { "urn:RequesterCredentials" => {
+            "soapenv:Header"  => { "ns:RequesterCredentials" => {
                 "ebl:Credentials" => user_auth_header
              } },
             "soapenv:Body"    => body(action, params)
@@ -86,7 +86,7 @@ module PayPal::SDK::Core
       # * <tt>action</tt> -- Request Action name
       # * <tt>params</tt> -- Parameters for the action.
       def body(action, params = {})
-        { "urn:#{action}Req" => { "urn:#{action}Request" => DEFAULT_PARAMS.merge(params) } }
+        { "ns:#{action}Req" => { "ns:#{action}Request" => DEFAULT_PARAMS.merge(params) } }
       end
 
       # Remove specified attributes from the given Hash
