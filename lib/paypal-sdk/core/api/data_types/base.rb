@@ -187,11 +187,13 @@ module PayPal::SDK::Core
         # Create Hash based configured members
         def to_hash(options = {})
           options = HashOptions.merge(options)
-          member_names.inject({}) do |hash, member|
+          hash    = {}
+          member_names.each do |member|
             value = instance_variable_get("@#{member}")
-            hash[hash_key(member, options)] = value_to_hash(value, options) if value
-            hash
+            value = value_to_hash(value, options)   if value
+            hash[hash_key(member, options)] = value if value
           end
+          hash.size == 0 ? nil : hash
         end
 
         # Generate Hash key for given member name based on configuration

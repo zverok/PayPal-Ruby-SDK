@@ -84,7 +84,7 @@ module PayPal::SDK::Core
 
       # Get default environment name
       def default_environment
-        @@default_environment ||= ENV['RACK_ENV'] || ENV['RAILS_ENV'] || ENV['ENV'] || "development"
+        @@default_environment ||= ENV['PAYPAL_ENV'] || ENV['RACK_ENV'] || ENV['RAILS_ENV'] || ENV['ENV'] || "development"
       end
 
       # Create or Load Config object based on given environment and configurations.

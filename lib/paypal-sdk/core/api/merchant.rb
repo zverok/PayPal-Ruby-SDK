@@ -21,7 +21,8 @@ module PayPal::SDK::Core
       }
       ContentKey = API::DataTypes::Base::ContentKey.to_s
       DEFAULT_API_VERSION = "94.0"
-      XML_OUT_OPTIONS   = { 'RootName' => nil, 'AttrPrefix' => true, 'ContentKey' => ContentKey, 'noindent' => true }
+      XML_OUT_OPTIONS   = { 'RootName' => nil, 'AttrPrefix' => true, 'ContentKey' => ContentKey,
+        'noindent' => true, 'SuppressEmpty' => true }
       XML_IN_OPTIONS    = { 'AttrPrefix' => true, 'ForceArray' => false, 'ContentKey' => ContentKey }
       DEFAULT_PARAMS    = { :"ebl:Version" => DEFAULT_API_VERSION }
       SKIP_ATTRIBUTES   = [ "@xmlns", "@xsi:type" ]
