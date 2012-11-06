@@ -49,7 +49,7 @@ module PayPal::SDK::Core
   class Config
     attr_accessor :username, :password, :signature, :app_id, :cert_path,
         :token, :token_secret, :subject,
-        :http_timeout, :http_retry, :http_trust, :http_proxy,
+        :http_timeout, :http_retry, :http_proxy, :ca_file,
         :mode, :end_point, :merchant_end_point, :platform_end_point, :redirect_url, :dev_central_url,
         :logfile
 

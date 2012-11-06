@@ -77,8 +77,8 @@ module PayPal::SDK::Core
 
       # Configure HTTP connection based on configuration.
       def configure_http_connection
-        http.use_ssl      = true
-        http.verify_mode  = OpenSSL::SSL::VERIFY_NONE
+        http.use_ssl  = true
+        http.ca_file  = config.ca_file if config.ca_file
         if config.http_timeout
           http.open_timeout = config.http_timeout
           http.read_timeout = config.http_timeout
