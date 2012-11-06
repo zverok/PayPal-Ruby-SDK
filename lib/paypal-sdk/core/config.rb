@@ -76,14 +76,15 @@ module PayPal::SDK::Core
       # * <tt>default_environment</tt> (Optional)    -- default environment configuration to load
       # === Example
       #   Config.load('config/paypal.yml', 'development')
-      def load(file_name, default_environment = "development")
+      def load(file_name, default_env = default_environment)
         @@configurations      = read_configurations(file_name)
-        @@default_environment = default_environment
+        @@default_environment = default_env
+        config
       end
 
       # Get default environment name
       def default_environment
-        @@default_environment ||= "development"
+        @@default_environment ||= ENV['RACK_ENV'] || ENV['RAILS_ENV'] || ENV['ENV'] || "development"
       end
 
       # Create or Load Config object based on given environment and configurations.
