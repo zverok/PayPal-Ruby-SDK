@@ -48,11 +48,20 @@ module PayPal::SDK::Core
           def add_member(member_name, klass, options = {})
             member_name = member_name.to_sym
             members[member_name] = options.merge( :type => klass )
-            attr_reader member_name
+            member_variable_name = "@#{member_name}"
             define_method "#{member_name}=" do |value|
               object = options[:array] ? convert_array(value, klass) : convert_object(value, klass)
-              instance_variable_set("@#{member_name}", object)
+              instance_variable_set(member_variable_name, object)
             end
+            default_value = ( options[:array] ? [] : ( klass < Base ? {} : nil ) )
+            define_method member_name do
+              instance_variable_get(member_variable_name) || ( default_value && send("#{member_name}=", default_value) )
+            end
+            define_alias_methods(member_name, options)
+          end
+
+          # Define alias methods for getter and setter
+          def define_alias_methods(member_name, options)
             snakecase_name = snakecase(member_name)
             alias_method snakecase_name, member_name
             alias_method "#{snakecase_name}=", "#{member_name}="
@@ -112,6 +121,37 @@ module PayPal::SDK::Core
           end
         end
 
+        # Create Array with default value.
+        class ArrayWithDefault < ::Array
+          def initialize(&block)
+            @block   = block
+            super()
+          end
+
+          def [](key)
+            super(key) || send(:"[]=", key, nil)
+          end
+
+          def []=(key, value)
+            super(key, @block ? @block.call(value) : value )
+          end
+
+          def merge!(array)
+            if array.is_a? Array
+              array.each_with_index do |object, index|
+                self[index] = object
+              end
+            elsif array.is_a? Hash and array.keys.first.to_s =~ /^\d+$/
+              array.each do |key, object|
+                self[key.to_i] = object
+              end
+            else
+              self[0] = array
+            end
+            self
+          end
+        end
+
         # Create array of objects.
         # === Example
         # covert_array([{ :amount => "55", :code => "USD"}], CurrencyType)
@@ -120,17 +160,9 @@ module PayPal::SDK::Core
         # # @return
         # # [ <CurrencyType#object @amount="55" @code="USD" > ]
         def convert_array(array, klass)
-          if array.is_a? Array
-            array.map do |object|
-              convert_object(object, klass)
-            end
-          elsif array.is_a? Hash and array.keys.first =~ /^\d+$/
-            array.map do |key, object|
-              convert_object(object, klass)
-            end
-          else
-            [ convert_object(array, klass) ]
-          end
+          default_value = ( klass < Base ? {} : nil )
+          data_type_array = ArrayWithDefault.new{|object| convert_object(object || default_value, klass) }
+          data_type_array.merge!(array)
         end
 
         # Create object based on given data.
@@ -156,7 +188,7 @@ module PayPal::SDK::Core
         def to_hash(options = {})
           options = HashOptions.merge(options)
           member_names.inject({}) do |hash, member|
-            value = send(member)
+            value = instance_variable_get("@#{member}")
             hash[hash_key(member, options)] = value_to_hash(value, options) if value
             hash
           end

@@ -18,6 +18,17 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
     array_of  :toCurrency,   TestCurrency
   end
 
+  it "should create member object automatically" do
+    test_type = TestType.new
+    test_type.fromCurrency.should   be_a TestCurrency
+    test_type.toCurrency.should     be_a Array
+    test_type.toCurrency[0].should  be_a TestCurrency
+    test_type.toCurrency[1].should  be_a TestCurrency
+    test_type.toCurrency[0].amount.should eql nil
+    test_type.fromCurrency.amount.should  eql nil
+    test_type.fromCurrency.type.should    eql nil
+  end
+
   it "should convert the given data to configured type" do
     test_type = TestType.new( :fromCurrency => { :code => "USD", :amount => "50.0"})
     test_type.fromCurrency.should be_a TestCurrency
