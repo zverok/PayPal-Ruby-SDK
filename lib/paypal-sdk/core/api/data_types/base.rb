@@ -27,7 +27,7 @@ module PayPal::SDK::Core
           # * <tt>name</tt>  -- attribute name
           # * <tt>options</tt> -- options
           def add_attribute(name, options = {})
-            add_member(name, String, options.merge( :attribute => true ))
+            add_member(name, SimpleTypes::String, options.merge( :attribute => true ))
           end
 
           # Fields list for the DataTye
