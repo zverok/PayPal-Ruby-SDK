@@ -190,9 +190,14 @@ module PayPal::SDK::Core
           hash    = {}
           member_names.each do |member|
             value = value_to_hash(instance_variable_get("@#{member}"), options)
-            hash[hash_key(member, options)] = value unless value.nil?
+            hash[hash_key(member, options)] = value unless skip_value?(value)
           end
-          hash.size == 0 ? nil : hash
+          hash
+        end
+
+        # Skip nil, empty array and empty hash.
+        def skip_value?(value)
+          value.nil? || ( ( value.is_a?(Array) || value.is_a?(Hash) ) && value.empty? )
         end
 
         # Generate Hash key for given member name based on configuration

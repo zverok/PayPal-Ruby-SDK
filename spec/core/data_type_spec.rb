@@ -65,6 +65,21 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
     end.should raise_error
   end
 
+  it "should not convert empty hash" do
+    test_type = TestType.new( :fromCurrency => {} )
+    test_type.to_hash.should eql({})
+  end
+
+  it "should not convert empty array" do
+    test_type = TestType.new( :toCurrency => [] )
+    test_type.to_hash.should eql({})
+  end
+
+  it "should return empty hash" do
+    test_type = TestType.new
+    test_type.to_hash.should eql({})
+  end
+
   it "should convert to hash" do
     test_currency = TestCurrency.new(:amount => "500")
     test_currency.to_hash.should eql(:amount => "500")
@@ -75,12 +90,12 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
     test_currency.to_hash(:symbol => false).should eql("amount" => "500")
   end
 
-  it "Should convert attribute key with @" do
+  it "should convert attribute key with @" do
     test_currency = TestCurrency.new( :code => "USD", :amount => "50" )
     test_currency.to_hash[:@code].should eql "USD"
   end
 
-  it "Should convert attribute key without @" do
+  it "should convert attribute key without @" do
     test_currency = TestCurrency.new( :code => "USD", :amount => "50" )
     test_currency.to_hash(:attribute => false)[:code].should eql "USD"
   end
