@@ -189,9 +189,8 @@ module PayPal::SDK::Core
           options = HashOptions.merge(options)
           hash    = {}
           member_names.each do |member|
-            value = instance_variable_get("@#{member}")
-            value = value_to_hash(value, options)   if value
-            hash[hash_key(member, options)] = value if value
+            value = value_to_hash(instance_variable_get("@#{member}"), options)
+            hash[hash_key(member, options)] = value unless value.nil?
           end
           hash.size == 0 ? nil : hash
         end
