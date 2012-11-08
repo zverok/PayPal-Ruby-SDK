@@ -75,6 +75,11 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
     test_type.to_hash.should eql({})
   end
 
+  it "should not convert array of empty hash" do
+    test_type = TestType.new( :toCurrency => [ {} ] )
+    test_type.to_hash.should eql({})
+  end
+
   it "should return empty hash" do
     test_type = TestType.new
     test_type.to_hash.should eql({})

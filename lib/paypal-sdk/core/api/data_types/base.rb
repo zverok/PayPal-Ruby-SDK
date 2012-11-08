@@ -217,7 +217,9 @@ module PayPal::SDK::Core
         def value_to_hash(value, options = {})
           case value
           when Array
-            value.map{|object| value_to_hash(object, options) }
+            value = value.map{|object| value_to_hash(object, options) }
+            value.delete_if{|v| skip_value?(v) }
+            value
           when Base
             value.to_hash(options)
           else
