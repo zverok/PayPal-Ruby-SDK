@@ -30,7 +30,7 @@ describe PayPal::SDK::Core::API::Platform do
 
   it "make API request with oauth token" do
     client   = Platform.new("Invoice", :with_oauth_token )
-    response = client.request("CreateInvoice", "invoice" => {"merchantEmail"=>"platfo_1255170694_biz@gmail.com", "payerEmail"=>"sender@yahoo.com", "item_name1"=>"item1", "item_quantity1"=>"1", "item_unitPrice1"=>"1.00", "item_name2"=>"item2", "item_quantity2"=>"2", "item_unitPrice2"=>"2.00", "currencyCode"=>"USD", "paymentTerms"=>"DueOnReceipt"} )
+    response = client.request("CreateInvoice", "invoice" => {"merchantEmail"=>"platfo_1255077030_biz@gmail.com", "payerEmail"=>"sender@yahoo.com", "itemList" => { "item" => [ { "name"=>"item1", "quantity"=>"1", "unitPrice"=>"1.00" }, { "name"=>"item2", "quantity"=>"2", "unitPrice"=>"2.00" } ] }, "currencyCode"=>"USD", "paymentTerms"=>"DueOnReceipt"})
     response.should_not be_nil
     response["responseEnvelope"].should_not be_nil
     response["responseEnvelope"]["ack"].should eql "Success"
@@ -54,7 +54,7 @@ describe PayPal::SDK::Core::API::Platform do
     end
 
     it "invalid 3 token authentication" do
-      client   = Platform.new("AdaptivePayments", :username => "invalid")
+      client   = Platform.new("AdaptivePayments", :password => "invalid")
       response = client.request("ConvertCurrency", ConvertCurrencyParams )
       should_be_failure(response, "Authentication failed")
     end

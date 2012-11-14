@@ -23,8 +23,8 @@ with_certificate:
 
 with_oauth_token:
   <<: *default
-  token: H2kLxjm9lCxQdnOYxkH29I53TpZyIXez4GtHhAVGpiU3DiVTz5eNPQ
-  token_secret: MnZ-iPdDqGLEfQIuTIfUN4uK9lU
+  token: ESTy2hio5WJQo1iixkH29I53RJxaS0Gvno1A6.YQXZgktxbY4I2Tdg
+  token_secret: ZKPhUYuwJwYsfWdzorozWO2U9pI
 
 with_proxy:
   <<: *default

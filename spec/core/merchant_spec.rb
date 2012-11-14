@@ -4,7 +4,7 @@ describe PayPal::SDK::Core::API::Merchant do
 
   Merchant = PayPal::SDK::Core::API::Merchant
 
-  TransactionSearchParams = { "StartDate" => "2012-09-30T00:00:00+0530", "EndDate" => "2012-10-01T00:00:00+0530"}
+  TransactionSearchParams = { "StartDate" => "2012-09-30T00:00:00+0530", "EndDate" => "2012-09-30T00:01:00+0530"}
 
   it "make API call" do
     client    = Merchant.new
@@ -50,7 +50,7 @@ describe PayPal::SDK::Core::API::Merchant do
     end
 
     it "should handle array of members" do
-      uri, request, http_header = @client.format_request("Action", 
+      uri, request, http_header = @client.format_request("Action",
         :list => { :amount => [ { :"@currencyID" => "USD", :value => "50" }, { :"@currencyID" => "USD", :value => "25" } ] }  )
       request.should match '<list><amount currencyID="USD">50</amount><amount currencyID="USD">25</amount></list>'
     end
