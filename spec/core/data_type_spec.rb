@@ -36,6 +36,27 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
     test_type.fromCurrency.amount.should  eql "50.0"
   end
 
+  it "should allow block with initializer" do
+    test_type = TestType.new do
+      fromCurrency do
+        self.code   = "USD"
+        self.amount = "50.0"
+      end
+    end
+    test_type.fromCurrency.code.should    eql "USD"
+    test_type.fromCurrency.amount.should  eql "50.0"
+  end
+
+  it "should allow block with member" do
+    test_type = TestType.new
+    test_type.fromCurrency do
+      self.code = "USD"
+      self.amount = "50.0"
+    end
+    test_type.fromCurrency.code.should    eql "USD"
+    test_type.fromCurrency.amount.should  eql "50.0"
+  end
+
   it "should assign value to attribute" do
     test_currency = TestCurrency.new( :@code => "USD", :amount => "50" )
     test_currency.code.should eql "USD"

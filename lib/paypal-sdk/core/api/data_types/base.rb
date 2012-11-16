@@ -54,8 +54,10 @@ module PayPal::SDK::Core
               instance_variable_set(member_variable_name, object)
             end
             default_value = ( options[:array] ? [] : ( klass < Base ? {} : nil ) )
-            define_method member_name do
-              instance_variable_get(member_variable_name) || ( default_value && send("#{member_name}=", default_value) )
+            define_method member_name do |&block|
+              value = instance_variable_get(member_variable_name) || ( default_value && send("#{member_name}=", default_value) )
+              value.instance_eval(&block) if block
+              value
             end
             define_alias_methods(member_name, options)
           end
@@ -105,7 +107,7 @@ module PayPal::SDK::Core
         end
 
         # Initialize options.
-        def initialize(options = {})
+        def initialize(options = {}, &block)
           if options.is_a? Hash
             options.each do |key, value|
               begin
@@ -119,6 +121,7 @@ module PayPal::SDK::Core
           else
             raise ArgumentError, "invalid data(#{options.inspect}) for #{self.class.name} class"
           end
+          self.instance_eval(&block) if block
         end
 
         # Create Array with default value.
