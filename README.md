@@ -17,7 +17,16 @@ Or install it yourself as:
     $ gem install paypal-sdk-core
 
 ## Configuration
+
+To generate configuration in Rails application:
+
+```sh
+rails g paypal:sdk:install
+```
+
 The Core library will try to load the configuration from default location `config/paypal.yml` and environment `development`
+
+Example configuration:
 
 ```yaml
 development: &default
@@ -26,7 +35,6 @@ development: &default
   signature: AFcWxV21C7fd0v3bYYYRCpSSRl31A7yDhhsPUU2XhtMoZXsWHFxu-RWy
   app_id: APP-80W284485P519543T
   http_timeout: 30
-  http_retry: 5
   mode: sandbox
 test:
   <<: *default
