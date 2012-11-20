@@ -7,7 +7,7 @@ module PayPal::SDK::Core
       module SimpleTypes
         class String < ::String
           def self.new(string = "")
-            string.is_a?(::String) ? super : super("")
+            string.is_a?(::String) ? super : super(string.to_s)
           end
         end
 
@@ -31,7 +31,7 @@ module PayPal::SDK::Core
 
         class DateTime < ::DateTime
           def self.new(date_time)
-            date_time.is_a?(::DateTime) ? date_time : parse(date_time)
+            date_time.is_a?(::DateTime) ? date_time : parse(date_time.to_s)
           end
         end
       end

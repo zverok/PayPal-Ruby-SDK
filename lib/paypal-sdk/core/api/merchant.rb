@@ -74,7 +74,7 @@ module PayPal::SDK::Core
         if response.code == "200"
           hash = XmlSimple.xml_in(response.body, XML_IN_OPTIONS)
           hash = skip_attributes(hash)
-          hash["Body"].find{|key_val| key_val[0] =~ /^[^@]/ }[1]
+          hash["Body"].find{|key_val| key_val[0] =~ /^[^@]/ }[1] || {}
         else
           format_error(response, response.message)
         end
@@ -107,7 +107,7 @@ module PayPal::SDK::Core
             end
           end
         end
-        ( hash.size == 1 and hash[content_key] ) ? hash[content_key] : hash
+        ( hash.one? and hash[content_key] ) ? hash[content_key] : ( hash.empty? ? nil : hash )
       end
 
       # Format Error object.
