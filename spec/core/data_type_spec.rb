@@ -18,6 +18,12 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
     array_of  :toCurrency,   TestCurrency
   end
 
+  class TestSimpleType < DataType
+    include PayPal::SDK::Core::API::DataTypes::SimpleTypes
+    object_of :created_on, Date
+    object_of :created_at, DateTime
+  end
+
   it "should create member object automatically" do
     test_type = TestType.new
     test_type.fromCurrency.should   be_a TestCurrency
@@ -140,6 +146,13 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
   it "should allow namespace" do
     test_currency = TestCurrency.new(:amount => "500", :"ns:type" => "USD" )
     test_currency.type.should eql "USD"
+  end
+
+  it "should allow date" do
+    date_time = "2010-10-10T10:10:10"
+    test_simple_type = TestSimpleType.new( :created_on => date_time, :created_at => date_time )
+    test_simple_type.created_on.should be_a Date
+    test_simple_type.created_at.should be_a DateTime
   end
 
 end

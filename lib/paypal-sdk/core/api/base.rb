@@ -37,6 +37,7 @@ module PayPal::SDK::Core
           }
         }
       }
+      DEFAULT_HTTP_HEADER = {}
 
       # Initialize API object
       # === Argument
@@ -110,6 +111,11 @@ module PayPal::SDK::Core
         config.end_point ? default_end_point(config.end_point.to_sym) : config.end_point
       end
 
+      # Default Http header
+      def default_http_header
+        DEFAULT_HTTP_HEADER
+      end
+
       # Generate HTTP request for given action and parameters
       # === Arguments
       # * <tt>action</tt> -- Action to perform
@@ -117,7 +123,7 @@ module PayPal::SDK::Core
       # * <tt>initheader</tt> -- (Optional) HTTP header
       def request(action, params = {}, initheader = {})
         uri, content, header = format_request(action, params)
-        initheader    = header.merge(initheader)
+        initheader    = default_http_header.merge(header).merge(initheader)
         response      = @http.post(uri.path, content, initheader)
         format_response(action, response)
       rescue Net::HTTPBadGateway, Errno::ECONNRESET, Errno::ECONNABORTED, SocketError => error

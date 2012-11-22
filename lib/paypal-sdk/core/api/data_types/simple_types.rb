@@ -29,6 +29,12 @@ module PayPal::SDK::Core
           end
         end
 
+        class Date < ::Date
+          def self.new(date)
+            date.is_a?(::Date) ? date : Date.parse(date.to_s)
+          end
+        end
+
         class DateTime < ::DateTime
           def self.new(date_time)
             date_time.is_a?(::DateTime) ? date_time : parse(date_time.to_s)
