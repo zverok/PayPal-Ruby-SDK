@@ -4,11 +4,8 @@ test: &default
   signature: AFcWxV21C7fd0v3bYYYRCpSSRl31A7yDhhsPUU2XhtMoZXsWHFxu-RWy
   app_id: APP-80W284485P519543T
   http_timeout: 30
-  http_retry: 5
-  http_trust: false
   mode: sandbox
-  redirect_url: "https://www.sandbox.paypal.com/webscr&cmd="
-  dev_central_url: "https://developer.paypal.com"
+  sandbox_email_address: Platform.sdk.seller@gmail.com
 
 development:
   <<: *default

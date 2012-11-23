@@ -16,7 +16,9 @@ module PayPal::SDK::Core
         :password       => "X-PAYPAL-SECURITY-PASSWORD",
         :signature      => "X-PAYPAL-SECURITY-SIGNATURE",
         :app_id         => "X-PAYPAL-APPLICATION-ID",
-        :authorization  => "X-PAYPAL-AUTHORIZATION"
+        :authorization  => "X-PAYPAL-AUTHORIZATION",
+        :sandbox_email_address => "X-PAYPAL-SANDBOX-EMAIL-ADDRESS",
+        :device_ipaddress      => "X-PAYPAL-DEVICE-IPADDRESS"
       }
       DEFAULT_NVP_HTTP_HEADER = {
         "X-PAYPAL-REQUEST-DATA-FORMAT"  => "JSON",

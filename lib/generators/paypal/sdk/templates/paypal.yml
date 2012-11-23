@@ -5,6 +5,7 @@ test: &default
   app_id: APP-80W284485P519543T
   http_timeout: 30
   mode: sandbox
+  sandbox_email_address: Platform.sdk.seller@gmail.com
 
 development:
   <<: *default

@@ -50,6 +50,7 @@ module PayPal::SDK::Core
     attr_accessor :username, :password, :signature, :app_id, :cert_path,
         :token, :token_secret, :subject,
         :http_timeout, :http_retry, :http_proxy, :ca_file,
+        :device_ipaddress, :sandbox_email_address,
         :mode, :end_point, :merchant_end_point, :platform_end_point, :redirect_url, :dev_central_url,
         :logfile
 
@@ -62,7 +63,7 @@ module PayPal::SDK::Core
     # * <tt>cert_path</tt> (Optional if signature present)  -- Certificate file path
     def initialize(options)
       options.each do |key, value|
-        send("#{key}=", value) rescue nil
+        send("#{key}=", value)
       end
     end
 

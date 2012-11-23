@@ -124,6 +124,7 @@ module PayPal::SDK::Core
       def request(action, params = {}, initheader = {})
         uri, content, header = format_request(action, params)
         initheader    = default_http_header.merge(header).merge(initheader)
+        initheader.delete_if{|key, val| val.nil? }
         response      = @http.post(uri.path, content, initheader)
         format_response(action, response)
       rescue Net::HTTPBadGateway, Errno::ECONNRESET, Errno::ECONNABORTED, SocketError => error
