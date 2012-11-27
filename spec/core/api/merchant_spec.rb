@@ -6,22 +6,24 @@ describe PayPal::SDK::Core::API::Merchant do
 
   TransactionSearchParams = { "StartDate" => "2012-09-30T00:00:00+0530", "EndDate" => "2012-09-30T00:01:00+0530"}
 
-  it "make API call" do
-    client    = Merchant.new
-    response  = client.request("TransactionSearch", TransactionSearchParams )
-    response["Ack"].should eql "Success"
-  end
+  describe "Success request" do
+    it "with default configuration" do
+      client    = Merchant.new
+      response  = client.request("TransactionSearch", TransactionSearchParams )
+      response["Ack"].should eql "Success"
+    end
 
-  it "make API call with ssl certificate" do
-    client   = Merchant.new(:with_certificate)
-    response  = client.request("TransactionSearch", TransactionSearchParams)
-    response["Ack"].should eql "Success"
-  end
+    it "with ssl certificate" do
+      client   = Merchant.new(:with_certificate)
+      response  = client.request("TransactionSearch", TransactionSearchParams)
+      response["Ack"].should eql "Success"
+    end
 
-  it "make API call with oauth token" do
-    client   = Merchant.new(:with_oauth_token)
-    response  = client.request("TransactionSearch", TransactionSearchParams)
-    response["Ack"].should eql "Success"
+    it "with oauth token" do
+      client   = Merchant.new(:with_oauth_token)
+      response  = client.request("TransactionSearch", TransactionSearchParams)
+      response["Ack"].should eql "Success"
+    end
   end
 
   describe "Format request" do

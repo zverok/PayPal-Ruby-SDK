@@ -6,46 +6,51 @@ describe PayPal::SDK::Core::API::Platform do
   ConvertCurrencyParams = {
           "baseAmountList"        => { "currency" => [ { "code" => "USD", "amount" => "2.0"} ]},
           "convertToCurrencyList" => { "currencyCode" => ["GBP"] } }
+  CreateInvoiceParams   = {
+    "invoice" => {
+        "merchantEmail" => "platfo_1255077030_biz@gmail.com", "payerEmail" => "sender@yahoo.com",
+        "itemList" => { "item" => [ { "name"=>"item1", "quantity"=>"1", "unitPrice"=>"1.00" },
+                                    { "name"=>"item2", "quantity"=>"2", "unitPrice"=>"2.00" } ] },
+        "currencyCode" => "USD", "paymentTerms" => "DueOnReceipt" } }
 
   it "create client with Service name" do
     client = Platform.new("AdaptivePayments")
     client.uri.path.should match "AdaptivePayments$"
   end
 
-  it "make API request" do
-    client   = Platform.new("AdaptivePayments")
-    response = client.request("ConvertCurrency", ConvertCurrencyParams)
-    response.should_not be_nil
-    response["responseEnvelope"].should_not be_nil
-    response["responseEnvelope"]["ack"].should eql "Success"
-  end
+  describe "Success request" do
+    def should_be_success(response)
+      response.should_not be_nil
+      response["responseEnvelope"].should_not be_nil
+      response["responseEnvelope"]["ack"].should eql "Success"
+    end
 
-  it "make API request with certificate authentication" do
-    client   = Platform.new("AdaptivePayments", :with_certificate)
-    response = client.request("ConvertCurrency", ConvertCurrencyParams)
-    response.should_not be_nil
-    response["responseEnvelope"].should_not be_nil
-    response["responseEnvelope"]["ack"].should eql "Success"
-  end
+    it "with default configuration" do
+      client   = Platform.new("AdaptivePayments")
+      response = client.request("ConvertCurrency", ConvertCurrencyParams)
+      should_be_success(response)
+    end
 
-  it "make API request with oauth token" do
-    client   = Platform.new("Invoice", :with_oauth_token )
-    response = client.request("CreateInvoice", "invoice" => {"merchantEmail"=>"platfo_1255077030_biz@gmail.com", "payerEmail"=>"sender@yahoo.com", "itemList" => { "item" => [ { "name"=>"item1", "quantity"=>"1", "unitPrice"=>"1.00" }, { "name"=>"item2", "quantity"=>"2", "unitPrice"=>"2.00" } ] }, "currencyCode"=>"USD", "paymentTerms"=>"DueOnReceipt"})
-    response.should_not be_nil
-    response["responseEnvelope"].should_not be_nil
-    response["responseEnvelope"]["ack"].should eql "Success"
-  end
+    it "with certificate authentication" do
+      client   = Platform.new("AdaptivePayments", :with_certificate)
+      response = client.request("ConvertCurrency", ConvertCurrencyParams)
+      should_be_success(response)
+    end
 
-  it "make API request with proxy" do
-    client   = Platform.new("AdaptivePayments", :with_proxy)
-    response = client.request("ConvertCurrency", ConvertCurrencyParams)
-    response.should_not be_nil
-    response["responseEnvelope"].should_not be_nil
-    response["responseEnvelope"]["ack"].should eql "Success"
+    it "with oauth token" do
+      client   = Platform.new("Invoice", :with_oauth_token )
+      response = client.request("CreateInvoice", CreateInvoiceParams)
+      should_be_success(response)
+    end
+
+    it "with proxy" do
+      client   = Platform.new("AdaptivePayments", :with_proxy)
+      response = client.request("ConvertCurrency", ConvertCurrencyParams)
+      should_be_success(response)
+    end
   end
 
   describe "Failure request" do
-
     def should_be_failure(response, message = nil)
       response.should_not be_nil
       response["responseEnvelope"].should_not be_nil
@@ -78,9 +83,10 @@ describe PayPal::SDK::Core::API::Platform do
     end
 
     it "invalid service" do
-      client   = Platform.new("InvalidService")
-      response = client.request("ConvertCurrency", ConvertCurrencyParams )
-      should_be_failure(response, "An established connection was aborted")
+      lambda{
+        client   = Platform.new("InvalidService")
+        response = client.request("ConvertCurrency", ConvertCurrencyParams )
+      }.should raise_error
     end
 
     it "invalid action" do
@@ -94,7 +100,6 @@ describe PayPal::SDK::Core::API::Platform do
       response = client.request("ConvertCurrency", { "inValidCurrencyParams" => {} })
       should_be_failure(response, "Invalid request parameter")
     end
-
   end
 
 end
