@@ -110,6 +110,14 @@ module PayPal::SDK::Core
         end
       end
 
+      def logger=(logger)
+        Logging.logger = logger
+      end
+
+      def logger
+        Logging.logger
+      end
+
       private
       # Read configurations from the given file name
       # === Arguments

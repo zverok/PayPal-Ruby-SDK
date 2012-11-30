@@ -38,4 +38,11 @@ describe PayPal::SDK::Core::Config do
     }.should raise_error "Configuration[invalid_env] NotFound"
   end
 
+  it "set logger" do
+    require 'logger'
+    my_logger = Logger.new(STDERR)
+    Config.logger = my_logger
+    Config.logger.should eql my_logger
+  end
+
 end
