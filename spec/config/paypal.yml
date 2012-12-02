@@ -15,7 +15,7 @@ with_certificate:
   username: platfo_1255170694_biz_api1.gmail.com
   password: 2DPPKUPKB7DQLXNR
   signature:
-  cert_path: "spec/config/cert_key.pem"
+  cert_path: <%= File.expand_path("../cert_key.pem", __FILE__) %>
   app_id: APP-80W284485P519543T
 
 with_oauth_token:

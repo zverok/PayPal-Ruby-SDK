@@ -123,7 +123,9 @@ module PayPal::SDK::Core
       # === Arguments
       # * <tt>file_name</tt> (Optional) -- Configuration file path
       def read_configurations(file_name = "config/paypal.yml")
-        YAML.load(ERB.new(File.read(file_name)).result)
+        erb = ERB.new(File.read(file_name))
+        erb.filename = file_name
+        YAML.load(erb.result)
       end
 
       # Get raw configurations in Hash format.
