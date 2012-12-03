@@ -15,6 +15,11 @@ module PayPal::SDK::Core
       @logger ||= Logging.logger_for(self.class.name)
     end
 
+    def log_event(message, start_time, end_time = Time.now)
+      duration = sprintf("%.3f", end_time - start_time)
+      logger.info "[#{duration}] #{message}"
+    end
+
     # Use a hash class-ivar to cache a unique Logger per class
     @loggers  = {}
 
