@@ -210,6 +210,7 @@ module PayPal::SDK::Core
         def hash_key(key, options = {})
           unless key == ContentKey
             member_option = members[key]
+            key = member_option[:name] if member_option.include? :name
             key = "#{member_option[:namespace]}:#{key}" if member_option[:namespace] and options[:namespace]
             key = "@#{key}" if member_option[:attribute] and options[:attribute]
           end

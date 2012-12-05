@@ -16,6 +16,7 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
   class TestType < DataType
     object_of :fromCurrency, TestCurrency
     array_of  :toCurrency,   TestCurrency
+    object_of :firstname,    String, :name => "first-name"
   end
 
   class TestSimpleType < DataType
@@ -132,7 +133,6 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
     test_currency.to_hash(:attribute => false)[:code].should eql "USD"
   end
 
-
   it "should convert to hash with namespace" do
     test_currency = TestCurrency.new(:amount => "500", :type => "USD" )
     hash = test_currency.to_hash
@@ -146,6 +146,11 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
   it "should allow namespace" do
     test_currency = TestCurrency.new(:amount => "500", :"ns:type" => "USD" )
     test_currency.type.should eql "USD"
+  end
+
+  it "should use name option in members" do
+    test_type = TestType.new( :firstname => "FirstName")
+    test_type.to_hash.should eql({:"first-name" => "FirstName" })
   end
 
   it "should allow date" do
