@@ -96,6 +96,10 @@ response  = client.request("ConvertCurrency", {
 if response["responseEnvelope"]["ack"] == "Success"
   # ...
 end
+
+# To Verify IPN message
+PayPal::SDK::Core::IPN.verify?(request.raw_post) # return true or false
+
 ```
 
 ## Using Core package
