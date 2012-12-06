@@ -7,6 +7,7 @@ module PayPal
     module Core
 
       autoload :Authentication, "paypal-sdk/core/authentication"
+      autoload :IPN, "paypal-sdk/core/ipn"
 
       module API
         autoload :Base,     "paypal-sdk/core/api/base"
