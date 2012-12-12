@@ -12,36 +12,54 @@ module PayPal
         VERIFIED   = "VERIFIED"
         INVALID    = "INVALID"
 
-        class << self
+        class Message
           include PayPal::SDK::Core::Configuration
+
+          attr_accessor :message
+
+          def initialize(message, env = nil, options = {})
+            @message = message
+            set_config(env, options)
+          end
 
           # Fetch end point
           def ipn_end_point
+            config.ipn_end_point || default_ipn_end_point
+          end
+
+          # Default IPN end point
+          def default_ipn_end_point
             end_point = END_POINTS[(config.mode || :sandbox).to_sym] rescue nil
             end_point || END_POINTS[:sandbox]
           end
 
           # Request IPN service for validating the content
-          # === Arguments
-          # * <tt>content<tt> Raw post content
           # === Return
           # return http response object
-          def request(content)
+          def request
             uri  = URI(ipn_end_point)
             http = Net::HTTP.new(uri.host, uri.port)
             http.use_ssl = true
             http.ca_file =  config.ca_file if config.ca_file
-            query_string = "cmd=_notify-validate&" + content
+            query_string = "cmd=_notify-validate&#{message}"
             http.post(uri.path, query_string)
           end
 
-          # Verify the given content
-          # === Arguments
-          # * <tt>content<tt> Raw post content
+          # Validate the given content
           # === Return
           # return true or false
-          def verify?(content)
-            request(content).body == VERIFIED
+          def valid?
+            request.body == VERIFIED
+          end
+        end
+
+        class << self
+          def valid?(*args)
+            Message.new(*args).valid?
+          end
+
+          def request(*args)
+            Message.new(*args).request
           end
         end
 

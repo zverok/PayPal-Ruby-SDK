@@ -51,7 +51,8 @@ module PayPal::SDK::Core
         :token, :token_secret, :subject,
         :http_timeout, :http_retry, :http_proxy, :ca_file,
         :device_ipaddress, :sandbox_email_address,
-        :mode, :end_point, :merchant_end_point, :platform_end_point, :redirect_url, :dev_central_url,
+        :mode, :end_point, :merchant_end_point, :platform_end_point, :ipn_end_point,
+        :redirect_url, :dev_central_url,
         :logfile
 
     # Create Config object
