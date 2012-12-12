@@ -7,7 +7,7 @@ Gem::Specification.new do |gem|
   gem.name          = "paypal-sdk-core"
   gem.version       = PayPal::SDK::Core::VERSION
   gem.authors       = ["PayPal"]
-  gem.email         = ["DL-PP-Platform-Ruby-SDK@paypal.com"]
+  gem.email         = ["DL-PP-Platform-Ruby-SDK@ebay.com"]
   gem.description   = %q{Core library for PayPal ruby SDK}
   gem.summary       = %q{Core library for PayPal ruby SDK}
   gem.homepage      = "https://www.x.com/"
