@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe PayPal::SDK::Core::IPN do
+describe PayPal::SDK::Core::API::IPN do
 
-  IPN = PayPal::SDK::Core::IPN
+  IPN = PayPal::SDK::Core::API::IPN
 
   describe "Configuration" do
     it "set IPN end_point" do
