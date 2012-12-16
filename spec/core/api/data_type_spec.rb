@@ -8,9 +8,9 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
 
     # Members
     object_of :amount, String
-    object_of :type,   String, :namespace => "ns"
+    object_of :desciption, String, :namespace => "ns"
     # Attributes
-    add_attribute :code
+    add_attribute :currencyID, :namespace => "cc"
   end
 
   class TestType < DataType
@@ -33,44 +33,45 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
     test_type.toCurrency[1].should  be_a TestCurrency
     test_type.toCurrency[0].amount.should eql nil
     test_type.fromCurrency.amount.should  eql nil
-    test_type.fromCurrency.type.should    eql nil
+    test_type.fromCurrency.desciption.should    eql nil
+    test_type.fromCurrency.currencyID.should    eql nil
   end
 
   it "should convert the given data to configured type" do
-    test_type = TestType.new( :fromCurrency => { :code => "USD", :amount => "50.0"})
+    test_type = TestType.new( :fromCurrency => { :currencyID => "USD", :amount => "50.0"})
     test_type.fromCurrency.should be_a TestCurrency
-    test_type.fromCurrency.code.should    eql "USD"
+    test_type.fromCurrency.currencyID.should    eql "USD"
     test_type.fromCurrency.amount.should  eql "50.0"
   end
 
   it "should allow block with initializer" do
     test_type = TestType.new do
       fromCurrency do
-        self.code   = "USD"
+        self.currencyID = "USD"
         self.amount = "50.0"
       end
     end
-    test_type.fromCurrency.code.should    eql "USD"
+    test_type.fromCurrency.currencyID.should    eql "USD"
     test_type.fromCurrency.amount.should  eql "50.0"
   end
 
   it "should allow block with member" do
     test_type = TestType.new
     test_type.fromCurrency do
-      self.code = "USD"
+      self.currencyID = "USD"
       self.amount = "50.0"
     end
-    test_type.fromCurrency.code.should    eql "USD"
+    test_type.fromCurrency.currencyID.should    eql "USD"
     test_type.fromCurrency.amount.should  eql "50.0"
   end
 
   it "should assign value to attribute" do
-    test_currency = TestCurrency.new( :@code => "USD", :amount => "50" )
-    test_currency.code.should eql "USD"
+    test_currency = TestCurrency.new( :@currencyID => "USD", :amount => "50" )
+    test_currency.currencyID.should eql "USD"
   end
 
   it "should allow configured Class object" do
-    test_currency = TestCurrency.new( :code => "USD", :amount => "50" )
+    test_currency = TestCurrency.new( :currencyID => "USD", :amount => "50" )
     test_type = TestType.new( :fromCurrency => test_currency )
     test_type.fromCurrency.should eql test_currency
   end
@@ -82,7 +83,7 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
   end
 
   it "should allow array" do
-    test_type = TestType.new( :toCurrency => [{ :code => "USD", :amount => "50.0" }] )
+    test_type = TestType.new( :toCurrency => [{ :currencyID => "USD", :amount => "50.0" }] )
     test_type.toCurrency.should be_a Array
     test_type.toCurrency.first.should be_a TestCurrency
   end
@@ -124,28 +125,30 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
   end
 
   it "should convert attribute key with @" do
-    test_currency = TestCurrency.new( :code => "USD", :amount => "50" )
-    test_currency.to_hash[:@code].should eql "USD"
+    test_currency = TestCurrency.new( :currencyID => "USD", :amount => "50" )
+    test_currency.to_hash[:@currencyID].should eql "USD"
   end
 
   it "should convert attribute key without @" do
-    test_currency = TestCurrency.new( :code => "USD", :amount => "50" )
-    test_currency.to_hash(:attribute => false)[:code].should eql "USD"
+    test_currency = TestCurrency.new( :currencyID => "USD", :amount => "50" )
+    test_currency.to_hash(:attribute => false)[:currencyID].should eql "USD"
   end
 
   it "should convert to hash with namespace" do
-    test_currency = TestCurrency.new(:amount => "500", :type => "USD" )
+    test_currency = TestCurrency.new(:currencyID => "USD", :amount => "500", :desciption => "Testing" )
     hash = test_currency.to_hash
     hash[:amount].should eql "500"
-    hash[:"ns:type"].should eql "USD"
+    hash[:"ns:desciption"].should eql "Testing"
+    hash[:@currencyID].should eql "USD"
     hash = test_currency.to_hash(:namespace => false)
     hash[:amount].should eql "500"
-    hash[:type].should eql "USD"
+    hash[:desciption].should eql "Testing"
+    hash[:@currencyID].should eql "USD"
   end
 
   it "should allow namespace" do
-    test_currency = TestCurrency.new(:amount => "500", :"ns:type" => "USD" )
-    test_currency.type.should eql "USD"
+    test_currency = TestCurrency.new(:amount => "500", :"ns:desciption" => "Testing" )
+    test_currency.desciption.should eql "Testing"
   end
 
   it "should use name option in members" do

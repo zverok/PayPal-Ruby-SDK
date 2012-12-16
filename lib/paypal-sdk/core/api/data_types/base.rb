@@ -211,7 +211,9 @@ module PayPal::SDK::Core
           unless key == ContentKey
             member_option = members[key]
             key = member_option[:name] if member_option.include? :name
-            key = "#{member_option[:namespace]}:#{key}" if member_option[:namespace] and options[:namespace]
+            if !member_option[:attribute] and member_option[:namespace] and options[:namespace]
+              key = "#{member_option[:namespace]}:#{key}"
+            end
             key = "@#{key}" if member_option[:attribute] and options[:attribute]
           end
           options[:symbol] ? key.to_sym : key.to_s
