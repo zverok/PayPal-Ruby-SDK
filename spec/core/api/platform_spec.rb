@@ -70,25 +70,6 @@ describe PayPal::SDK::Core::API::Platform do
       should_be_failure(response, "Authentication failed")
     end
 
-    it "invalid end point" do
-      client   = Platform.new(:platform_end_point => "https://svcs-invalid.sandbox.paypal.com/AdaptivePayments")
-      response = client.request("ConvertCurrency", ConvertCurrencyParams )
-      should_be_failure(response)
-    end
-
-    it "with soap endpoint" do
-      client   = Platform.new(:platform_end_point => "https://api-3t.sandbox.paypal.com/2.0/")
-      response = client.request("ConvertCurrency", ConvertCurrencyParams )
-      should_be_failure(response, "Not Found")
-    end
-
-    it "invalid service" do
-      lambda{
-        client   = Platform.new("InvalidService")
-        response = client.request("ConvertCurrency", ConvertCurrencyParams )
-      }.should raise_error
-    end
-
     it "invalid action" do
       client   = Platform.new("AdaptivePayments")
       response = client.request("InvalidAction", ConvertCurrencyParams)

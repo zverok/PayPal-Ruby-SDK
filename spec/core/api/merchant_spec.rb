@@ -85,18 +85,6 @@ describe PayPal::SDK::Core::API::Merchant do
       should_be_failure(response, "Authorization Failed")
     end
 
-    it "invalid end point" do
-      client   = Merchant.new(:merchant_end_point => "https://invalid-api-3t.sandbox.paypal.com/2.0/")
-      response = client.request("TransactionSearch", TransactionSearchParams )
-      should_be_failure(response)
-    end
-
-    it "with nvp endpoint" do
-      client   = Merchant.new(:merchant_end_point => "https://svcs.sandbox.paypal.com/AdaptivePayments")
-      response = client.request("TransactionSearch", TransactionSearchParams )
-      should_be_failure(response, "Internal Server Error")
-    end
-
     it "invalid action" do
       client   = Merchant.new
       response = client.request("InvalidAction", TransactionSearchParams )
