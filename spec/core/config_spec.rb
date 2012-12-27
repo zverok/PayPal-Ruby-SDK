@@ -11,6 +11,28 @@ describe PayPal::SDK::Core::Config do
     }.should_not raise_error
   end
 
+  it "Set default environment" do
+    begin
+      backup_default_environment = Config.default_environment
+      Config.default_environment = "new_env"
+      Config.default_environment.should eql "new_env"
+    ensure 
+      Config.default_environment = backup_default_environment
+    end
+  end
+
+  it "Set configurations" do
+    begin
+      backup_configurations = Config.configurations
+      Config.configurations = { Config.default_environment => { :username => "direct", :password => "direct" } }
+      Config.config.username.should eql "direct"
+      Config.config.password.should eql "direct"
+      Config.config.signature.should be_nil
+    ensure 
+      Config.configurations = backup_configurations
+    end
+  end
+
   it "return default environment configuration" do
     Config.config.should be_a Config
   end

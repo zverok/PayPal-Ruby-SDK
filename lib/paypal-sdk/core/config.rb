@@ -79,6 +79,7 @@ module PayPal::SDK::Core
       # === Example
       #   Config.load('config/paypal.yml', 'development')
       def load(file_name, default_env = default_environment)
+        @@config_cache        = {}
         @@configurations      = read_configurations(file_name)
         @@default_environment = default_env
         config
@@ -87,6 +88,11 @@ module PayPal::SDK::Core
       # Get default environment name
       def default_environment
         @@default_environment ||= ENV['PAYPAL_ENV'] || ENV['RACK_ENV'] || ENV['RAILS_ENV'] || ENV['ENV'] || "development"
+      end
+
+      # Set default environment
+      def default_environment=(env)
+        @@default_environment = env.to_s
       end
 
       # Create or Load Config object based on given environment and configurations.
@@ -111,12 +117,25 @@ module PayPal::SDK::Core
         end
       end
 
+      # Set logger
       def logger=(logger)
         Logging.logger = logger
       end
 
+      # Get logger
       def logger
         Logging.logger
+      end
+
+      # Get raw configurations in Hash format.
+      def configurations
+        @@configurations ||= read_configurations
+      end
+
+      # Set configuration
+      def configurations=(configs)
+        @@config_cache   = {}
+        @@configurations = Hash[configs.map{|k,v| [k.to_s, v] }]
       end
 
       private
@@ -127,11 +146,6 @@ module PayPal::SDK::Core
         erb = ERB.new(File.read(file_name))
         erb.filename = file_name
         YAML.load(erb.result)
-      end
-
-      # Get raw configurations in Hash format.
-      def configurations
-        @@configurations ||= read_configurations
       end
 
     end
