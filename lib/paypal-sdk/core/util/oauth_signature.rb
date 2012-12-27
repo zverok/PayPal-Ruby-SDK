@@ -26,7 +26,7 @@ module PayPal::SDK::Core
         key = [
           paypal_encode(password),
           paypal_encode(token_secret),
-        ].join("&")
+        ].join("&").gsub(/%[0-9A-F][0-9A-F]/, &:downcase )
 
         digest = OpenSSL::HMAC.digest('sha1', key, base_string)
         Base64.encode64(digest).chomp
