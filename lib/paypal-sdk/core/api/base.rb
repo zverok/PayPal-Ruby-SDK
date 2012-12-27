@@ -125,13 +125,13 @@ module PayPal::SDK::Core
         uri, content, header = format_request(action, params)
         initheader    = default_http_header.merge(header).merge(initheader)
         initheader.delete_if{|key, val| val.nil? }
-        start_time    = Time.now
-        response      = @http.post(uri.path, content, initheader)
+        response      = 
+          log_event("Request: #{action}") do
+            @http.post(uri.path, content, initheader)
+          end
         format_response(action, response)
       rescue Net::HTTPBadGateway, Errno::ECONNRESET, Errno::ECONNABORTED, SocketError => error
         format_error(error, error.message)
-      ensure
-        log_event("Request: #{action}", start_time)
       end
 
       # Format Request data. It will be override by child class

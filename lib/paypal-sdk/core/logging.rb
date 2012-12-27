@@ -15,9 +15,11 @@ module PayPal::SDK::Core
       @logger ||= Logging.logger
     end
 
-    def log_event(message, start_time, end_time = Time.now)
-      duration = sprintf("%.3f", end_time - start_time)
-      logger.info "[#{duration}] #{message}"
+    def log_event(message, &block)
+      start_time = Time.now
+      block.call
+    ensure
+      logger.info sprintf("[%.3fs] %s", Time.now - start_time, message)
     end
 
     class << self
