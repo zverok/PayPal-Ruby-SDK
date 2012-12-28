@@ -1,4 +1,4 @@
-# Paypal::Sdk::Core
+# PayPal SDK Core
 
 Core library for PayPal ruby SDKs.
 
