@@ -8,7 +8,7 @@ describe PayPal::SDK::Core::API::Platform do
           "convertToCurrencyList" => { "currencyCode" => ["GBP"] } }
   CreateInvoiceParams   = {
     "invoice" => {
-        "merchantEmail" => "platfo_1255077030_biz@gmail.com", "payerEmail" => "sender@yahoo.com",
+        "merchantEmail" => "sdk.token.test@paypal.com", "payerEmail" => "sender@yahoo.com",
         "itemList" => { "item" => [ { "name"=>"item1", "quantity"=>"1", "unitPrice"=>"1.00" },
                                     { "name"=>"item2", "quantity"=>"2", "unitPrice"=>"2.00" } ] },
         "currencyCode" => "USD", "paymentTerms" => "DueOnReceipt" } }
@@ -37,16 +37,26 @@ describe PayPal::SDK::Core::API::Platform do
       should_be_success(response)
     end
 
-    it "with oauth token" do
-      client   = Platform.new("Invoice", :with_oauth_token )
-      response = client.request("CreateInvoice", CreateInvoiceParams)
-      should_be_success(response)
-    end
-
     it "with proxy" do
       client   = Platform.new("AdaptivePayments", :with_proxy)
       response = client.request("ConvertCurrency", ConvertCurrencyParams)
       should_be_success(response)
+    end
+
+    describe "with token" do
+      it "create invoice" do
+        client   = Platform.new("Invoice", :with_oauth_token )
+        response = client.request("CreateInvoice", CreateInvoiceParams)
+        should_be_success(response)
+      end
+
+      it "get basic personal data" do
+        client   = Platform.new("Permissions", :with_oauth_token )
+        response = client.request("GetBasicPersonalData", { "attributeList" => { "attribute" => [
+          "http://axschema.org/namePerson/first"
+        ]}})
+        should_be_success(response)
+      end
     end
   end
 

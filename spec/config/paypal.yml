@@ -7,6 +7,8 @@ test: &default
   mode: sandbox
   sandbox_email_address: Platform.sdk.seller@gmail.com
   logfile: spec/log/test.log
+  ca_file: <%= File.expand_path("../cacert.pem", __FILE__) %>
+  ipn_end_point: https://www.sandbox.paypal.com/cgi-bin/webscr
 
 development:
   <<: *default
@@ -21,8 +23,8 @@ with_certificate:
 
 with_oauth_token:
   <<: *default
-  token: ESTy2hio5WJQo1iixkH29I53RJxaS0Gvno1A6.YQXZgktxbY4I2Tdg
-  token_secret: ZKPhUYuwJwYsfWdzorozWO2U9pI
+  token: 3rMSi3kCmK1Q3.BKxkH29I53R0TRLrSuCO..l8AMOAFM6cQhPTTrfQ
+  token_secret: RuE1j8RNRlSuL5T-PSSpVWLvOlI
 
 with_proxy:
   <<: *default
