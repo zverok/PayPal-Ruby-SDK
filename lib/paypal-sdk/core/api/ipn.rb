@@ -7,7 +7,7 @@ module PayPal
         module IPN
 
           END_POINTS = {
-            :sandbox => "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr",
+            :sandbox => "https://www.sandbox.paypal.com/cgi-bin/webscr",
             :live    => "https://ipnpb.paypal.com/cgi-bin/webscr"
           }
           VERIFIED   = "VERIFIED"
