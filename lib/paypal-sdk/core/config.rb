@@ -63,9 +63,15 @@ module PayPal::SDK::Core
     # * <tt>app_id</tt>     -- Application ID
     # * <tt>cert_path</tt> (Optional if signature present)  -- Certificate file path
     def initialize(options)
+      merge!(options)
+    end
+
+    # Override configurations
+    def merge!(options)
       options.each do |key, value|
         send("#{key}=", value)
       end
+      self
     end
 
     class << self
@@ -113,7 +119,7 @@ module PayPal::SDK::Core
         if override_configuration.nil? or override_configuration.empty?
           @@config_cache[env] ||= new configurations[env]
         else
-          new configurations[env].merge(override_configuration)
+          new(configurations[env]).merge!(override_configuration)
         end
       end
 
