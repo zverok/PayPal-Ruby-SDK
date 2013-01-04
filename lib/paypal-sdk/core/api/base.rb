@@ -1,4 +1,4 @@
-require 'net/http'
+require 'net/https'
 
 module PayPal::SDK::Core
 
