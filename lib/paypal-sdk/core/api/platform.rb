@@ -1,4 +1,4 @@
-require 'json'
+require 'multi_json'
 
 module PayPal::SDK::Core
   module API
@@ -46,7 +46,7 @@ module PayPal::SDK::Core
         credential_properties = credential(uri.to_s).properties
         header   = map_header_value(NVP_AUTH_HEADER, credential_properties).
           merge(DEFAULT_NVP_HTTP_HEADER)
-        [ uri, DEFAULT_PARAMS.merge(params).to_json, header ]
+        [ uri, MultiJson.dump(DEFAULT_PARAMS.merge(params)), header ]
       end
 
       # Format the Response object
@@ -57,7 +57,7 @@ module PayPal::SDK::Core
       # Parse response content using JSON and return the Hash object
       def format_response(action, response)
         if response.code == "200"
-          JSON.parse(response.body)
+          MultiJson.load(response.body)
         else
           format_error(response, response.message)
         end
