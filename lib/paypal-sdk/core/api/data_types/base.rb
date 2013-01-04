@@ -124,37 +124,6 @@ module PayPal::SDK::Core
           self.instance_eval(&block) if block
         end
 
-        # Create Array with default value.
-        class ArrayWithDefault < ::Array
-          def initialize(&block)
-            @block   = block
-            super()
-          end
-
-          def [](key)
-            super(key) || send(:"[]=", key, nil)
-          end
-
-          def []=(key, value)
-            super(key, @block ? @block.call(value) : value )
-          end
-
-          def merge!(array)
-            if array.is_a? Array
-              array.each_with_index do |object, index|
-                self[index] = object
-              end
-            elsif array.is_a? Hash and array.keys.first.to_s =~ /^\d+$/
-              array.each do |key, object|
-                self[key.to_i] = object
-              end
-            else
-              self[0] = array
-            end
-            self
-          end
-        end
-
         # Create array of objects.
         # === Example
         # covert_array([{ :amount => "55", :code => "USD"}], CurrencyType)
@@ -164,7 +133,7 @@ module PayPal::SDK::Core
         # # [ <CurrencyType#object @amount="55" @code="USD" > ]
         def convert_array(array, klass)
           default_value = ( klass < Base ? {} : nil )
-          data_type_array = ArrayWithDefault.new{|object| convert_object(object || default_value, klass) }
+          data_type_array = ArrayWithBlock.new{|object| convert_object(object || default_value, klass) }
           data_type_array.merge!(array)
         end
 

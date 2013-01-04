@@ -86,6 +86,7 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
     test_type = TestType.new( :toCurrency => [{ :currencyID => "USD", :amount => "50.0" }] )
     test_type.toCurrency.should be_a Array
     test_type.toCurrency.first.should be_a TestCurrency
+    test_type.toCurrency.first.currencyID.should eql "USD"
   end
 
   it "should allow only configured fields" do
