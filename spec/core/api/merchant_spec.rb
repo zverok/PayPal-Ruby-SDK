@@ -5,22 +5,28 @@ describe PayPal::SDK::Core::API::Merchant do
   Merchant = PayPal::SDK::Core::API::Merchant
 
   TransactionSearchParams = { "StartDate" => "2012-09-30T00:00:00+0530", "EndDate" => "2012-09-30T00:01:00+0530"}
+  MassPayParams = { "ReceiverType" => "EmailAddress", "MassPayItem" => [{ 
+            "ReceiverEmail" => "enduser_biz@gmail.com", "Amount" => { "@currencyID" => "USD", "value" => "3.00" } }] }
 
   describe "Success request" do
     it "with default configuration" do
       client    = Merchant.new
       response  = client.request("TransactionSearch", TransactionSearchParams )
       response["Ack"].should eql "Success"
+      response  = client.request("MassPay", MassPayParams)
+      response["Ack"].should eql "Success"
     end
 
     it "with ssl certificate" do
       client   = Merchant.new(:with_certificate)
+      client.http.set_debug_output(File.open("http.log", "w"))
       response  = client.request("TransactionSearch", TransactionSearchParams)
       response["Ack"].should eql "Success"
     end
 
     it "with oauth token" do
       client   = Merchant.new(:with_oauth_token)
+      client.http.set_debug_output(File.open("http2.log", "w"))
       response  = client.request("TransactionSearch", TransactionSearchParams)
       response["Ack"].should eql "Success"
     end
