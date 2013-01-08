@@ -15,7 +15,7 @@ module PayPal::SDK::Core
       #   end
       class Base
 
-        HashOptions = { :attribute => true, :namespace => true, :symbol => true }
+        HashOptions = { :attribute => true, :namespace => true, :symbol => false }
         ContentKey  = :value
 
         include SimpleTypes

@@ -117,34 +117,34 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
 
   it "should convert to hash" do
     test_currency = TestCurrency.new(:amount => "500")
-    test_currency.to_hash.should eql(:amount => "500")
+    test_currency.to_hash.should eql("amount" => "500")
   end
 
-  it "should convert to hash with key as string" do
+  it "should convert to hash with key as symbol" do
     test_currency = TestCurrency.new(:amount => "500")
-    test_currency.to_hash(:symbol => false).should eql("amount" => "500")
+    test_currency.to_hash(:symbol => true).should eql(:amount => "500")
   end
 
   it "should convert attribute key with @" do
     test_currency = TestCurrency.new( :currencyID => "USD", :amount => "50" )
-    test_currency.to_hash[:@currencyID].should eql "USD"
+    test_currency.to_hash["@currencyID"].should eql "USD"
   end
 
   it "should convert attribute key without @" do
     test_currency = TestCurrency.new( :currencyID => "USD", :amount => "50" )
-    test_currency.to_hash(:attribute => false)[:currencyID].should eql "USD"
+    test_currency.to_hash(:attribute => false)["currencyID"].should eql "USD"
   end
 
   it "should convert to hash with namespace" do
     test_currency = TestCurrency.new(:currencyID => "USD", :amount => "500", :desciption => "Testing" )
     hash = test_currency.to_hash
-    hash[:amount].should eql "500"
-    hash[:"ns:desciption"].should eql "Testing"
-    hash[:@currencyID].should eql "USD"
+    hash["amount"].should eql "500"
+    hash["ns:desciption"].should eql "Testing"
+    hash["@currencyID"].should eql "USD"
     hash = test_currency.to_hash(:namespace => false)
-    hash[:amount].should eql "500"
-    hash[:desciption].should eql "Testing"
-    hash[:@currencyID].should eql "USD"
+    hash["amount"].should eql "500"
+    hash["desciption"].should eql "Testing"
+    hash["@currencyID"].should eql "USD"
   end
 
   it "should allow namespace" do
@@ -154,7 +154,7 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
 
   it "should use name option in members" do
     test_type = TestType.new( :firstname => "FirstName")
-    test_type.to_hash.should eql({:"first-name" => "FirstName" })
+    test_type.to_hash.should eql({"first-name" => "FirstName" })
   end
 
   it "should allow date" do

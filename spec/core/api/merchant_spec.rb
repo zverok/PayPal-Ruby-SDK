@@ -40,25 +40,25 @@ describe PayPal::SDK::Core::API::Merchant do
     end
 
     it "should handle attribute" do
-      uri, request, http_header = @client.format_request("Action", :amount => { :"@currencyID" => "USD", :value => "50" } )
+      uri, request, http_header = @client.format_request("Action", :amount => { "@currencyID" => "USD", :value => "50" } )
       request.should match '<amount currencyID="USD">50</amount>'
       uri, request, http_header = @client.format_request("Action", "amount" => { "@currencyID" => "USD", "value" => "50" } )
       request.should match '<amount currencyID="USD">50</amount>'
     end
 
     it "should handle members" do
-      uri, request, http_header = @client.format_request("Action", :list => { :amount => { :"@currencyID" => "USD", :value => "50" } } )
+      uri, request, http_header = @client.format_request("Action", :list => { :amount => { "@currencyID" => "USD", :value => "50" } } )
       request.should match '<list><amount currencyID="USD">50</amount></list>'
     end
 
     it "should handle array of members" do
       uri, request, http_header = @client.format_request("Action",
-        :list => { :amount => [ { :"@currencyID" => "USD", :value => "50" }, { :"@currencyID" => "USD", :value => "25" } ] }  )
+        :list => { :amount => [ { "@currencyID" => "USD", :value => "50" }, { "@currencyID" => "USD", :value => "25" } ] }  )
       request.should match '<list><amount currencyID="USD">50</amount><amount currencyID="USD">25</amount></list>'
     end
 
     it "should handle namespace" do
-      uri, request, http_header = @client.format_request("Action", :"ebl:amount" => { :"@cc:currencyID" => "USD", :value => "50" } )
+      uri, request, http_header = @client.format_request("Action", :"ebl:amount" => { "@cc:currencyID" => "USD", :value => "50" } )
       request.should match '<ebl:amount cc:currencyID="USD">50</ebl:amount>'
     end
   end
