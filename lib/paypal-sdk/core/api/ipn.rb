@@ -41,7 +41,10 @@ module PayPal
               uri  = URI(ipn_end_point)
               http = Net::HTTP.new(uri.host, uri.port)
               http.use_ssl = true
-              http.ca_file =  config.ca_file if config.ca_file
+              if config.ca_file
+                http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+                http.ca_file =  config.ca_file
+              end
               query_string = "cmd=_notify-validate&#{message}"
               http.post(uri.path, query_string)
             end
