@@ -19,14 +19,12 @@ describe PayPal::SDK::Core::API::Merchant do
 
     it "with ssl certificate" do
       client   = Merchant.new(:with_certificate)
-      client.http.set_debug_output(File.open("http.log", "w"))
       response  = client.request("TransactionSearch", TransactionSearchParams)
       response["Ack"].should eql "Success"
     end
 
     it "with oauth token" do
       client   = Merchant.new(:with_oauth_token)
-      client.http.set_debug_output(File.open("http2.log", "w"))
       response  = client.request("TransactionSearch", TransactionSearchParams)
       response["Ack"].should eql "Success"
     end
