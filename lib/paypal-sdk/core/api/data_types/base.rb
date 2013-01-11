@@ -35,7 +35,7 @@ module PayPal::SDK::Core
             @members ||=
               begin
                 parent_members = superclass.instance_variable_get("@members")
-                parent_members ? parent_members.dup : {}
+                parent_members ? parent_members.dup : Util::OrderedHash.new
               end
           end
 
@@ -53,7 +53,7 @@ module PayPal::SDK::Core
               object = options[:array] ? convert_array(value, klass) : convert_object(value, klass)
               instance_variable_set(member_variable_name, object)
             end
-            default_value = ( options[:array] ? [] : ( klass < Base ? {} : nil ) )
+            default_value = ( options[:array] ? [] : ( klass < Base ? Util::OrderedHash.new : nil ) )
             define_method member_name do |&block|
               value = instance_variable_get(member_variable_name) || ( default_value && send("#{member_name}=", default_value) )
               value.instance_eval(&block) if block
@@ -132,7 +132,7 @@ module PayPal::SDK::Core
         # # @return
         # # [ <CurrencyType#object @amount="55" @code="USD" > ]
         def convert_array(array, klass)
-          default_value = ( klass < Base ? {} : nil )
+          default_value = ( klass < Base ? Util::OrderedHash.new : nil )
           data_type_array = ArrayWithBlock.new{|object| convert_object(object || default_value, klass) }
           data_type_array.merge!(array)
         end
@@ -159,7 +159,7 @@ module PayPal::SDK::Core
         # Create Hash based configured members
         def to_hash(options = {})
           options = HashOptions.merge(options)
-          hash    = {}
+          hash    = Util::OrderedHash.new
           member_names.each do |member|
             value = value_to_hash(instance_variable_get("@#{member}"), options)
             hash[hash_key(member, options)] = value unless skip_value?(value)
