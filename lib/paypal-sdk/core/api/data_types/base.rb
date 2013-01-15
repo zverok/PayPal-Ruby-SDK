@@ -34,6 +34,7 @@ module PayPal::SDK::Core
           def members
             @members ||=
               begin
+                superclass.load_members if defined? superclass.load_members
                 parent_members = superclass.instance_variable_get("@members")
                 parent_members ? parent_members.dup : Util::OrderedHash.new
               end
@@ -47,6 +48,7 @@ module PayPal::SDK::Core
           #   # alias_method  :error_message=, :errorMessage=
           def add_member(member_name, klass, options = {})
             member_name = member_name.to_sym
+            return if members[member_name]
             members[member_name] = options.merge( :type => klass )
             member_variable_name = "@#{member_name}"
             define_method "#{member_name}=" do |value|
