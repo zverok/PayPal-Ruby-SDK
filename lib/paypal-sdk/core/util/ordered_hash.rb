@@ -2,6 +2,10 @@ module PayPal::SDK::Core
   module Util
     class OrderedHash < ::Hash #:nodoc:
 
+      def to_yaml_type
+        "!tag:yaml.org,2002:map"
+      end
+
       # Hash is ordered in Ruby 1.9!
       if RUBY_VERSION < '1.9'
 
