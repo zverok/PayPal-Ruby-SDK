@@ -1,3 +1,6 @@
+Version 0.1.5 - Jan 28, 2013
+  - Fix OrderedHash issue with ruby 1.8.7
+
 Version 0.1.4 - Jan 09, 2013
 
   - Support ruby version 1.8.7
