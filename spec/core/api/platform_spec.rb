@@ -58,7 +58,16 @@ describe PayPal::SDK::Core::API::Platform do
         should_be_success(response)
       end
     end
+
+    describe "Override Configuration" do
+      it "Set http_verify_mode" do
+        api = Platform.new("AdaptivePayments", :http_verify_mode => 0 )
+        api.http.verify_mode.should eql 0
+      end
+    end
+
   end
+
 
   describe "Failure request" do
     def should_be_failure(response, message = nil)

@@ -72,19 +72,18 @@ module PayPal::SDK::Core
         else
           @http = Net::HTTP.new(@uri.host, @uri.port)
         end
+        @http.use_ssl = true if @uri.scheme == "https"
         @uri.path = @uri.path.gsub(/\/+/, "/")
         configure_http_connection
       end
 
       # Configure HTTP connection based on configuration.
       def configure_http_connection
-        if @uri.scheme == "https"
-          http.use_ssl  = true
-          if config.ca_file
-            http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-            http.ca_file  = config.ca_file
-          end
+        if config.ca_file
+          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+          http.ca_file  = config.ca_file
         end
+        http.verify_mode = config.http_verify_mode if config.http_verify_mode
         if config.http_timeout
           http.open_timeout = config.http_timeout
           http.read_timeout = config.http_timeout
@@ -130,7 +129,7 @@ module PayPal::SDK::Core
         uri, content, header = format_request(action, params)
         initheader    = default_http_header.merge(header).merge(initheader)
         initheader.delete_if{|key, val| val.nil? }
-        response      = 
+        response      =
           log_event("Request: #{action}") do
             @http.post(uri.path, content, initheader)
           end
