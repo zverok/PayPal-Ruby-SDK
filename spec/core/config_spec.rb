@@ -16,7 +16,7 @@ describe PayPal::SDK::Core::Config do
       backup_default_environment = Config.default_environment
       Config.default_environment = "new_env"
       Config.default_environment.should eql "new_env"
-    ensure 
+    ensure
       Config.default_environment = backup_default_environment
     end
   end
@@ -28,7 +28,7 @@ describe PayPal::SDK::Core::Config do
       Config.config.username.should eql "direct"
       Config.config.password.should eql "direct"
       Config.config.signature.should be_nil
-    ensure 
+    ensure
       Config.configurations = backup_configurations
     end
   end
@@ -65,6 +65,41 @@ describe PayPal::SDK::Core::Config do
     my_logger = Logger.new(STDERR)
     Config.logger = my_logger
     Config.logger.should eql my_logger
+  end
+
+  describe "include Configuration" do
+    class TestConfig
+      include PayPal::SDK::Core::Configuration
+    end
+
+    it "Get default configuration" do
+      test_object = TestConfig.new
+      test_object.config.should be_a Config
+    end
+
+    it "Change environment" do
+      test_object = TestConfig.new
+      test_object.set_config("test")
+      test_object.config.should eql Config.config("test")
+      test_object.config.should_not eql Config.config("development")
+    end
+
+    it "Override environment configuration" do
+      test_object = TestConfig.new
+      test_object.set_config("test", :username => "test")
+      test_object.config.should_not eql Config.config("test")
+    end
+
+    it "Override default/current configuration" do
+      test_object = TestConfig.new
+      test_object.set_config( :username => "test")
+      test_object.config.username.should eql "test"
+      test_object.set_config( :password => "test")
+      test_object.config.password.should eql "test"
+      test_object.config.username.should eql "test"
+    end
+
+
   end
 
 end

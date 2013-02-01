@@ -25,8 +25,21 @@ module PayPal::SDK::Core
     # === Arguments
     # * <tt>env</tt> -- Environment
     # * <tt>override_configurations</tt> (Optional) -- To override the default configuration.
+    # === Examples
+    #   obj.set_config(api.config)
+    #   obj.set_config(:http_timeout => 30)
+    #   obj.set_config(:development)
+    #   obj.set_config(:development, :http_timeout => 30)
     def set_config(env, override_configurations = {})
-      @config = env.is_a?(Config) ? env : Config.config(env, override_configurations)
+      @config =
+        case env
+        when Config
+          env
+        when Hash
+          config.dup.merge!(env)
+        else
+          Config.config(env, override_configurations)
+        end
     end
 
     alias_method :config=, :set_config
