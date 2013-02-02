@@ -45,11 +45,11 @@ describe PayPal::SDK::Core::API::Platform do
     end
 
     it "override service endpoint" do
-      client = Platform.new("AdaptivePayments", :platform_end_point => "http://example.com" )
+      client = Platform.new("AdaptivePayments", :platform_endpoint => "http://example.com" )
       client.service_endpoint.should eql "http://example.com"
-      client = Platform.new("AdaptivePayments", :platform_end_point => "http://example.com", :mode => :live )
+      client = Platform.new("AdaptivePayments", :platform_endpoint => "http://example.com", :mode => :live )
       client.service_endpoint.should eql "http://example.com"
-      client = Platform.new("AdaptivePayments", :end_point => "http://example.com" )
+      client = Platform.new("AdaptivePayments", :endpoint => "http://example.com" )
       client.service_endpoint.should eql "http://example.com"
     end
   end

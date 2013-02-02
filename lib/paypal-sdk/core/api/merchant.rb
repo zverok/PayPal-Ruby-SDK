@@ -48,7 +48,7 @@ module PayPal::SDK::Core
 
       # Get services end point
       def service_endpoint
-        config.merchant_end_point || config.end_point || DEFAULT_END_POINTS[api_mode][base_credential_type]
+        config.merchant_endpoint || config.endpoint || DEFAULT_END_POINTS[api_mode][base_credential_type]
       end
 
       # Format the HTTP request content

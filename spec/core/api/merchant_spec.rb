@@ -36,11 +36,11 @@ describe PayPal::SDK::Core::API::Merchant do
     end
 
     it "override service endpoint" do
-      client = Merchant.new( :merchant_end_point => "http://example.com" )
+      client = Merchant.new( :merchant_endpoint => "http://example.com" )
       client.service_endpoint.should eql "http://example.com"
-      client = Merchant.new( :merchant_end_point => "http://example.com", :mode => :live )
+      client = Merchant.new( :merchant_endpoint => "http://example.com", :mode => :live )
       client.service_endpoint.should eql "http://example.com"
-      client = Merchant.new( :end_point => "http://example.com" )
+      client = Merchant.new( :endpoint => "http://example.com" )
       client.service_endpoint.should eql "http://example.com"
     end
   end

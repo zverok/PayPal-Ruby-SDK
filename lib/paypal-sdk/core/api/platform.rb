@@ -33,7 +33,7 @@ module PayPal::SDK::Core
 
       # Get service end point
       def service_endpoint
-        config.platform_end_point || config.end_point || DEFAULT_END_POINTS[api_mode]
+        config.platform_endpoint || config.endpoint || DEFAULT_END_POINTS[api_mode]
       end
 
       # Format the Request.

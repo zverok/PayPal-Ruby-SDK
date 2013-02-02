@@ -5,10 +5,17 @@ describe PayPal::SDK::Core::API::IPN do
   IPN = PayPal::SDK::Core::API::IPN
 
   describe "Configuration" do
-    it "set IPN end_point" do
-      ipn_validate_url = "https://www.sandbox.paypal.com/cgi-bin/webscr"
-      message = IPN::Message.new(samples["ipn"]["valid_message"], :ipn_end_point => ipn_validate_url )
-      message.config.ipn_end_point.should eql ipn_validate_url
+    it "set IPN endpoint" do
+      message = IPN::Message.new("")
+      message.ipn_endpoint.should eql "https://www.sandbox.paypal.com/cgi-bin/webscr"
+      message = IPN::Message.new("", :mode => :sandbox)
+      message.ipn_endpoint.should eql "https://www.sandbox.paypal.com/cgi-bin/webscr"
+
+      message = IPN::Message.new("", :mode => :live)
+      message.ipn_endpoint.should eql "https://ipnpb.paypal.com/cgi-bin/webscr"
+
+      message = IPN::Message.new("", :ipn_endpoint => "http://example.com")
+      message.ipn_endpoint.should eql "http://example.com"
     end
   end
 

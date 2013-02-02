@@ -22,21 +22,21 @@ module PayPal
             end
 
             # Fetch end point
-            def ipn_end_point
-              config.ipn_end_point || default_ipn_end_point
+            def ipn_endpoint
+              config.ipn_endpoint || default_ipn_endpoint
             end
 
             # Default IPN end point
-            def default_ipn_end_point
-              end_point = END_POINTS[(config.mode || :sandbox).to_sym] rescue nil
-              end_point || END_POINTS[:sandbox]
+            def default_ipn_endpoint
+              endpoint = END_POINTS[(config.mode || :sandbox).to_sym] rescue nil
+              endpoint || END_POINTS[:sandbox]
             end
 
             # Request IPN service for validating the content
             # === Return
             # return http response object
             def request
-              uri  = URI(ipn_end_point)
+              uri  = URI(ipn_endpoint)
               http = create_http_connection(uri)
               query_string = "cmd=_notify-validate&#{message}"
               http.post(uri.path, query_string)

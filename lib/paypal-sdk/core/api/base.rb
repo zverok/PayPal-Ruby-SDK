@@ -62,7 +62,7 @@ module PayPal::SDK::Core
 
       # Get service end point
       def service_endpoint
-        config.end_point
+        config.endpoint
       end
 
       # Default Http header

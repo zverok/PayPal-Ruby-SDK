@@ -8,7 +8,6 @@ test: &default
   sandbox_email_address: Platform.sdk.seller@gmail.com
   logfile: spec/log/test.log
   ca_file: <%= File.expand_path("../cacert.pem", __FILE__) %>
-  ipn_end_point: https://www.sandbox.paypal.com/cgi-bin/webscr
 
 development:
   <<: *default

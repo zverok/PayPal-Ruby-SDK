@@ -62,15 +62,24 @@ module PayPal::SDK::Core
   #   # Read configuration attributes
   #   config = Config.config
   #   config.username
-  #   config.end_point
+  #   config.endpoint
   class Config
     attr_accessor :username, :password, :signature, :app_id, :cert_path,
         :token, :token_secret, :subject,
         :http_timeout, :http_retry, :http_proxy, :http_verify_mode, :ca_file,
         :device_ipaddress, :sandbox_email_address,
-        :mode, :end_point, :merchant_end_point, :platform_end_point, :ipn_end_point,
+        :mode, :endpoint, :merchant_endpoint, :platform_endpoint, :ipn_endpoint,
         :redirect_url, :dev_central_url,
         :logfile
+
+    alias_method :end_point=, :endpoint=
+    alias_method :end_point, :endpoint
+    alias_method :platform_end_point=, :platform_endpoint=
+    alias_method :platform_end_point, :platform_endpoint
+    alias_method :merchant_end_point=, :merchant_endpoint=
+    alias_method :merchant_end_point, :merchant_endpoint
+    alias_method :ipn_end_point=, :ipn_endpoint=
+    alias_method :ipn_end_point, :ipn_endpoint
 
     # Create Config object
     # === Options(Hash)
