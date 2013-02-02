@@ -13,9 +13,45 @@ describe PayPal::SDK::Core::API::Platform do
                                     { "name"=>"item2", "quantity"=>"2", "unitPrice"=>"2.00" } ] },
         "currencyCode" => "USD", "paymentTerms" => "DueOnReceipt" } }
 
-  it "create client with Service name" do
-    client = Platform.new("AdaptivePayments")
-    client.uri.path.should match "AdaptivePayments$"
+  describe "Configuration" do
+    it "create client with Service name" do
+      client = Platform.new("AdaptivePayments")
+      client.uri.path.should match "AdaptivePayments$"
+      client.service_name.should eql "AdaptivePayments"
+    end
+
+    it "service endpoint for sandbox" do
+      sandbox_endpoint = "https://svcs.sandbox.paypal.com/"
+      client = Platform.new("AdaptivePayments")
+      client.service_endpoint.should eql sandbox_endpoint
+      client = Platform.new("AdaptivePayments", :with_certificate)
+      client.service_endpoint.should eql sandbox_endpoint
+      client = Platform.new("AdaptivePayments", :mode => "sandbox")
+      client.service_endpoint.should eql sandbox_endpoint
+      client = Platform.new("AdaptivePayments", :mode => :sandbox)
+      client.service_endpoint.should eql sandbox_endpoint
+      client = Platform.new("AdaptivePayments", :mode => "invalid")
+      client.service_endpoint.should eql sandbox_endpoint
+      client = Platform.new("AdaptivePayments", :mode => nil)
+      client.service_endpoint.should eql sandbox_endpoint
+    end
+
+    it "service endpoint for live" do
+      live_endpoint = "https://svcs.paypal.com/"
+      client = Platform.new("AdaptivePayments", :mode => "live")
+      client.service_endpoint.should eql live_endpoint
+      client = Platform.new("AdaptivePayments", :with_certificate, :mode => :live)
+      client.service_endpoint.should eql live_endpoint
+    end
+
+    it "override service endpoint" do
+      client = Platform.new("AdaptivePayments", :platform_end_point => "http://example.com" )
+      client.service_endpoint.should eql "http://example.com"
+      client = Platform.new("AdaptivePayments", :platform_end_point => "http://example.com", :mode => :live )
+      client.service_endpoint.should eql "http://example.com"
+      client = Platform.new("AdaptivePayments", :end_point => "http://example.com" )
+      client.service_endpoint.should eql "http://example.com"
+    end
   end
 
   describe "Success request" do

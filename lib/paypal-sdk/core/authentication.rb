@@ -30,6 +30,11 @@ module PayPal::SDK::Core
         end
     end
 
+    # Get base credential type
+    def base_credential_type
+      config.cert_path ? :certificate : :three_token
+    end
+
     # Get third party credential
     def third_party_credential(url)
       if config.token and config.token_secret

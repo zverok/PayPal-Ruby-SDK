@@ -26,10 +26,14 @@ module PayPal::SDK::Core
       }
       DEFAULT_PARAMS = Util::OrderedHash.new.merge!({ 
         "requestEnvelope" => { "errorLanguage" => "en_US" } })
+      DEFAULT_END_POINTS = {
+        :sandbox => "https://svcs.sandbox.paypal.com/",
+        :live    => "https://svcs.paypal.com/"
+      }
 
-      # Get NVP service end point
+      # Get service end point
       def service_endpoint
-        config.platform_end_point || super || default_end_point(:platform)
+        config.platform_end_point || config.end_point || DEFAULT_END_POINTS[api_mode]
       end
 
       # Format the Request.

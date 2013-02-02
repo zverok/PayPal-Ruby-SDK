@@ -35,10 +35,20 @@ module PayPal::SDK::Core
         :signature  => "ebl:Signature",
         :subject    => "ebl:Subject"
       }
+      DEFAULT_END_POINTS = {
+        :sandbox => {
+          :three_token  => "https://api-3t.sandbox.paypal.com/2.0/",
+          :certificate  => "https://api.sandbox.paypal.com/2.0/"
+        },
+        :live => {
+          :three_token  => "https://api-3t.paypal.com/2.0/",
+          :certificate  => "https://api.paypal.com/2.0/"
+        }
+      }
 
-      # Get SOAP or default end point
+      # Get services end point
       def service_endpoint
-        config.merchant_end_point || super || default_end_point(:merchant)
+        config.merchant_end_point || config.end_point || DEFAULT_END_POINTS[api_mode][base_credential_type]
       end
 
       # Format the HTTP request content

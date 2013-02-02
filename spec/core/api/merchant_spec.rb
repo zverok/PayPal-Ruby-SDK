@@ -8,6 +8,43 @@ describe PayPal::SDK::Core::API::Merchant do
   MassPayParams = { "ReceiverType" => "EmailAddress", "MassPayItem" => [{ 
             "ReceiverEmail" => "enduser_biz@gmail.com", "Amount" => { "@currencyID" => "USD", "value" => "3.00" } }] }
 
+  describe "Configuration" do
+    it "service endpoint for sandbox" do
+      client = Merchant.new
+      client.service_endpoint.should eql "https://api-3t.sandbox.paypal.com/2.0/"
+      client = Merchant.new( :mode => "sandbox" )
+      client.service_endpoint.should eql "https://api-3t.sandbox.paypal.com/2.0/"
+      client = Merchant.new( :mode => :sandbox )
+      client.service_endpoint.should eql "https://api-3t.sandbox.paypal.com/2.0/"
+      client = Merchant.new( :mode => "invalid" )
+      client.service_endpoint.should eql "https://api-3t.sandbox.paypal.com/2.0/"
+      client = Merchant.new( :mode => nil )
+      client.service_endpoint.should eql "https://api-3t.sandbox.paypal.com/2.0/"
+
+      client = Merchant.new(:with_certificate)
+      client.service_endpoint.should eql "https://api.sandbox.paypal.com/2.0/"
+    end
+
+    it "service_endpoint for live" do
+      client = Merchant.new( :mode => "live" )
+      client.service_endpoint.should eql "https://api-3t.paypal.com/2.0/"
+      client = Merchant.new( :mode => :live )
+      client.service_endpoint.should eql "https://api-3t.paypal.com/2.0/"
+
+      client = Merchant.new( :with_certificate, :mode => "live" )
+      client.service_endpoint.should eql "https://api.paypal.com/2.0/"
+    end
+
+    it "override service endpoint" do
+      client = Merchant.new( :merchant_end_point => "http://example.com" )
+      client.service_endpoint.should eql "http://example.com"
+      client = Merchant.new( :merchant_end_point => "http://example.com", :mode => :live )
+      client.service_endpoint.should eql "http://example.com"
+      client = Merchant.new( :end_point => "http://example.com" )
+      client.service_endpoint.should eql "http://example.com"
+    end
+  end
+
   describe "Success request" do
     it "with default configuration" do
       client    = Merchant.new
