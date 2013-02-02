@@ -99,6 +99,20 @@ describe PayPal::SDK::Core::Config do
       test_object.config.username.should eql "test"
     end
 
+    it "Set configuration without loading configuration File" do
+      backup_configurations = Config.configurations
+      begin
+        Config.configurations = nil
+        test_object = TestConfig.new
+        lambda {
+          test_object.config
+        }.should raise_error
+        test_object.set_config( :username => "test" )
+        test_object.config.should be_a Config
+      ensure
+        Config.configurations = backup_configurations
+      end
+    end
 
   end
 

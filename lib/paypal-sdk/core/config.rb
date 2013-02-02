@@ -36,7 +36,11 @@ module PayPal::SDK::Core
         when Config
           env
         when Hash
-          config.dup.merge!(env)
+          begin
+            config.dup.merge!(env)
+          rescue Errno::ENOENT => error
+            Config.new(env)
+          end
         else
           Config.config(env, override_configurations)
         end
@@ -154,7 +158,7 @@ module PayPal::SDK::Core
       # Set configuration
       def configurations=(configs)
         @@config_cache   = {}
-        @@configurations = Hash[configs.map{|k,v| [k.to_s, v] }]
+        @@configurations = configs && Hash[configs.map{|k,v| [k.to_s, v] }]
       end
 
       private
