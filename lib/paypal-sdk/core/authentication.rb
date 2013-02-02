@@ -41,8 +41,8 @@ module PayPal::SDK::Core
 
     # Clear cached variables on changing the configuration.
     def set_config(*args)
-      super
       @base_credential = nil
+      super
     end
 
     # Generate header based on given header keys and properties

@@ -40,12 +40,12 @@ module PayPal::SDK::Core
       # * <tt>request_path</tt> -- Generated URL for requested action
       # * <tt>request_content</tt> -- Format parameters in JSON with default values.
       def format_request(action, params)
-        uri = @uri.dup
-        uri.path = @uri.path.sub(/\/?$/, "/#{action}")
-        credential_properties = credential(uri.to_s).properties
+        request_uri = uri.dup
+        request_uri.path = request_uri.path.sub(/\/?$/, "/#{action}")
+        credential_properties = credential(request_uri.to_s).properties
         header   = map_header_value(NVP_AUTH_HEADER, credential_properties).
           merge(DEFAULT_NVP_HTTP_HEADER)
-        [ uri, MultiJson.dump(DEFAULT_PARAMS.merge(params)), header ]
+        [ request_uri, MultiJson.dump(DEFAULT_PARAMS.merge(params)), header ]
       end
 
       # Format the Response object

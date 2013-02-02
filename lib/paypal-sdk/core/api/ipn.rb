@@ -1,5 +1,3 @@
-require 'net/https'
-
 module PayPal
   module SDK
     module Core
@@ -14,7 +12,7 @@ module PayPal
           INVALID    = "INVALID"
 
           class Message
-            include PayPal::SDK::Core::Configuration
+            include Util::HTTPHelper
 
             attr_accessor :message
 
@@ -39,14 +37,7 @@ module PayPal
             # return http response object
             def request
               uri  = URI(ipn_end_point)
-              http = Net::HTTP.new(uri.host, uri.port)
-              if uri.scheme == "https"
-                http.use_ssl = true
-                if config.ca_file
-                  http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-                  http.ca_file =  config.ca_file
-                end
-              end
+              http = create_http_connection(uri)
               query_string = "cmd=_notify-validate&#{message}"
               http.post(uri.path, query_string)
             end

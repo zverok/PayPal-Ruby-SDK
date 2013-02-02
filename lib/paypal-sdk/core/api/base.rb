@@ -1,5 +1,3 @@
-require 'net/https'
-
 module PayPal::SDK::Core
 
   module API
@@ -9,9 +7,7 @@ module PayPal::SDK::Core
     #   response = api.request("GetPaymentOptions", "")
     class Base
 
-      include Configuration
-      include Logging
-      include Authentication
+      include Util::HTTPHelper
 
       attr_accessor :http, :uri, :service_name
 
@@ -56,39 +52,23 @@ module PayPal::SDK::Core
         set_config(environment, options)
       end
 
+      def uri
+        @uri ||=
+          begin
+            uri = URI.parse("#{service_endpoint}/#{service_name}")
+            uri.path = uri.path.gsub(/\/+/, "/")
+            uri
+          end
+      end
+
+      def http
+        @http ||= create_http_connection(uri)
+      end
+
       # Override set_config method to create http connection on changing the configuration.
       def set_config(*args)
+        @http = @uri = nil
         super
-        create_http_connection
-      end
-
-      # Create HTTP connection based on given service name or configured end point
-      def create_http_connection
-        service_path = "#{service_endpoint}/#{service_name}"
-        @uri  = URI.parse(service_path)
-        if config.http_proxy
-          proxy = URI.parse(config.http_proxy)
-          @http = Net::HTTP.new(@uri.host, @uri.port, proxy.host, proxy.port, proxy.user, proxy.password)
-        else
-          @http = Net::HTTP.new(@uri.host, @uri.port)
-        end
-        @http.use_ssl = true if @uri.scheme == "https"
-        @uri.path = @uri.path.gsub(/\/+/, "/")
-        configure_http_connection
-      end
-
-      # Configure HTTP connection based on configuration.
-      def configure_http_connection
-        if config.ca_file
-          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-          http.ca_file  = config.ca_file
-        end
-        http.verify_mode = config.http_verify_mode if config.http_verify_mode
-        if config.http_timeout
-          http.open_timeout = config.http_timeout
-          http.read_timeout = config.http_timeout
-        end
-        add_certificate(http)
       end
 
       # Get configured API mode( sandbox or live)
@@ -126,12 +106,12 @@ module PayPal::SDK::Core
       # * <tt>params</tt> -- (Optional) Parameters for the action
       # * <tt>initheader</tt> -- (Optional) HTTP header
       def request(action, params = {}, initheader = {})
-        uri, content, header = format_request(action, params)
+        request_uri, content, header = format_request(action, params)
         initheader    = default_http_header.merge(header).merge(initheader)
         initheader.delete_if{|key, val| val.nil? }
         response      =
           log_event("Request: #{action}") do
-            @http.post(uri.path, content, initheader)
+            http.post(request_uri.path, content, initheader)
           end
         format_response(action, response)
       rescue Net::HTTPBadGateway, Errno::ECONNRESET, Errno::ECONNABORTED, SocketError => error
@@ -147,7 +127,7 @@ module PayPal::SDK::Core
       # * <tt>params</tt> -- Formated request Parameters
       # * <tt>header</tt> -- HTTP Header
       def format_request(action, params)
-        [ @uri, params, {} ]
+        [ uri, params, {} ]
       end
 
       # Format Response object. It will be override by child class
