@@ -1,11 +1,10 @@
-require "paypal-sdk/core/version"
-require "paypal-sdk/core/config"
-require "paypal-sdk/core/logging"
-
 module PayPal
   module SDK
     module Core
 
+      autoload :VERSION,        "paypal-sdk/core/version"
+      autoload :Config,         "paypal-sdk/core/config"
+      autoload :Logging,        "paypal-sdk/core/logging"
       autoload :Authentication, "paypal-sdk/core/authentication"
 
       module API

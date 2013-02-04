@@ -8,7 +8,10 @@ if ENV['COVERAGE']
 end
 
 Bundler.require :default, :test
+require 'logger'
+
 PayPal::SDK::Core::Config.load('spec/config/paypal.yml', 'test')
+PayPal::SDK::Core::Config.logger = Logger.new('spec/log/test.log')
 
 Dir[File.expand_path("../support/**/*.rb", __FILE__)].each {|f| require f }
 

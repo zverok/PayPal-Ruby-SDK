@@ -26,7 +26,7 @@ module PayPal::SDK::Core
 
       # Get or Create configured logger based on the default environment configuration
       def logger
-        @logger ||= Logger.new(Config.config.logfile || STDERR)
+        @logger ||= Logger.new(STDERR)
       end
 
       # Set logger directly and clear the loggers cache.
@@ -35,7 +35,7 @@ module PayPal::SDK::Core
       # === Example
       #   Logging.logger = Logger.new(STDERR)
       def logger=(logger)
-        @logger  = logger
+        @logger = logger
       end
 
     end
