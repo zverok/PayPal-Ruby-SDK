@@ -73,7 +73,7 @@ module PayPal::SDK::Core
           }.merge(Namespaces)
         }, xml_out_options.merge('noescape' => true))
         header = map_header_value(SOAP_HTTP_AUTH_HEADER, credential_properties)
-        [ @uri, request_content, header ]
+        [ uri, request_content, header ]
       end
 
       # Format Response object
