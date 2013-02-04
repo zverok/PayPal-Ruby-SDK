@@ -4,6 +4,7 @@ module PayPal
 
       autoload :VERSION,        "paypal-sdk/core/version"
       autoload :Config,         "paypal-sdk/core/config"
+      autoload :Configuration,  "paypal-sdk/core/config"
       autoload :Logging,        "paypal-sdk/core/logging"
       autoload :Authentication, "paypal-sdk/core/authentication"
 
