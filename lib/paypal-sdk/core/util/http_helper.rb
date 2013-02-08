@@ -33,11 +33,9 @@ module PayPal::SDK::Core
       def configure_ssl(http)
         http.tap do |https|
           https.use_ssl = true
-          if config.ca_file
-            https.verify_mode = OpenSSL::SSL::VERIFY_PEER
-            https.ca_file     = config.ca_file
+          config.ssl_options.each do |key, value|
+            http.send("#{key}=", value)
           end
-          https.verify_mode = config.http_verify_mode if config.http_verify_mode
           add_certificate(https)
         end
       end

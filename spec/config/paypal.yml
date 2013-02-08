@@ -6,7 +6,8 @@ test: &default
   http_timeout: 30
   mode: sandbox
   sandbox_email_address: Platform.sdk.seller@gmail.com
-  ca_file: <%= File.expand_path("../cacert.pem", __FILE__) %>
+  ssl_options:
+    ca_file: <%= File.expand_path("../cacert.pem", __FILE__) %>
 
 development:
   <<: *default

@@ -99,6 +99,15 @@ describe PayPal::SDK::Core::Config do
       test_object.config.username.should eql "test"
     end
 
+    it "Append ssl_options" do
+      test_object = TestConfig.new
+      test_object.set_config( :ssl_options => { :ca_file => "test_path" } )
+      test_object.config.ssl_options[:ca_file].should eql "test_path"
+      test_object.set_config( :ssl_options => { :verify_mode => 1 } )
+      test_object.config.ssl_options[:verify_mode].should eql 1
+      test_object.config.ssl_options[:ca_file].should eql "test_path"
+    end
+
     it "Set configuration without loading configuration File" do
       backup_configurations = Config.configurations
       begin

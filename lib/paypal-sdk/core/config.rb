@@ -69,7 +69,7 @@ module PayPal::SDK::Core
 
     attr_accessor :username, :password, :signature, :app_id, :cert_path,
         :token, :token_secret, :subject,
-        :http_timeout, :http_retry, :http_proxy, :http_verify_mode, :ca_file,
+        :http_timeout, :http_proxy,
         :device_ipaddress, :sandbox_email_address,
         :mode, :endpoint, :merchant_endpoint, :platform_endpoint, :ipn_endpoint
 
@@ -95,6 +95,25 @@ module PayPal::SDK::Core
 
     def logfile=(filename)
       logger.warn '`logfile=` is deprecated, Please use `PayPal::SDK::Core::Config.logger = Logger.new(STDERR)`'
+    end
+
+    def ssl_options
+      @ssl_options ||= {}.freeze
+    end
+
+    def ssl_options=(options)
+      options = Hash[options.map{|key, value| [key.to_sym, value] }]
+      @ssl_options = ssl_options.merge(options).freeze
+    end
+
+    def ca_file=(ca_file)
+      logger.warn '`ca_file=` is deprecated, Please configure `ca_file=` under `ssl_options`'
+      self.ssl_options = { :ca_file => ca_file }
+    end
+
+    def http_verify_mode=(verify_mode)
+      logger.warn '`http_verify_mode=` is deprecated, Please configure `verify_mode=` under `ssl_options`'
+      self.ssl_options = { :verify_mode => verify_mode }
     end
 
     # Override configurations

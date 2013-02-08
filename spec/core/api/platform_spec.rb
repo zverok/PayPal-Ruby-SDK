@@ -96,9 +96,14 @@ describe PayPal::SDK::Core::API::Platform do
     end
 
     describe "Override Configuration" do
-      it "Set http_verify_mode" do
-        api = Platform.new("AdaptivePayments", :http_verify_mode => 0 )
+      it "Set verify_mode" do
+        api = Platform.new("AdaptivePayments", :ssl_options => { :verify_mode => 0 } )
         api.http.verify_mode.should eql 0
+      end
+
+      it "Set ca_file" do
+        api = Platform.new("AdaptivePayments", :ssl_options => { :ca_file => "ca_file_path" } )
+        api.http.ca_file.should eql "ca_file_path"
       end
     end
 
