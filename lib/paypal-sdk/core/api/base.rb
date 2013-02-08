@@ -75,18 +75,23 @@ module PayPal::SDK::Core
       # * <tt>action</tt> -- Action to perform
       # * <tt>params</tt> -- (Optional) Parameters for the action
       # * <tt>initheader</tt> -- (Optional) HTTP header
-      def request(action, params = {}, initheader = {})
-        request_uri, content, header = format_request(action, params)
-        initheader    = default_http_header.merge(header).merge(initheader)
-        initheader.delete_if{|key, val| val.nil? }
-        response      =
-          log_event("Request: #{action}") do
-            http.post(request_uri.path, content, initheader)
-          end
-        format_response(action, response)
+      def api_call(payload)
+        payload[:header] = default_http_header.merge(payload[:header])
+        payload[:uri]   ||= uri.dup
+        payload[:http]  ||= http.dup
+        format_request(payload)
+        payload[:response] = http_call(payload)
+        format_response(payload)
+        payload[:data]
       rescue Net::HTTPBadGateway, Errno::ECONNRESET, Errno::ECONNABORTED, SocketError => error
         format_error(error, error.message)
       end
+
+
+      def post(action, params = {}, header = {})
+        api_call(:method => :post, :action => action, :params => params, :header => header)
+      end
+      alias_method :request, :post
 
       # Format Request data. It will be override by child class
       # == Arguments
@@ -96,16 +101,19 @@ module PayPal::SDK::Core
       # * <tt>path</tt>   -- Formated request uri object
       # * <tt>params</tt> -- Formated request Parameters
       # * <tt>header</tt> -- HTTP Header
-      def format_request(action, params)
-        [ uri, params, {} ]
+      def format_request(payload)
+        payload[:uri].path = url_join(payload[:uri].path, payload[:action])
+        payload[:body] = payload[:params].to_s
+        payload
       end
 
       # Format Response object. It will be override by child class
       # == Argument
       # * <tt>action</tt> -- Request action
       # * <tt>response</tt> -- HTTP response object
-      def format_response(action, response)
-        response
+      def format_response(payload)
+        payload[:data] = payload[:response].body
+        payload
       end
 
       # Format Error object. It will be override by child class.

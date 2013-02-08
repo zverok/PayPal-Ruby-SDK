@@ -58,22 +58,24 @@ module PayPal::SDK::Core
       # === Return
       # * <tt>request_path</tt> -- Soap request path. DEFAULT("/")
       # * <tt>request_content</tt> -- Request content in SOAP format.
-      def format_request(action, params)
+      def format_request(payload)
         credential_properties  = credential(uri.to_s).properties
         user_auth_header = map_header_value(SOAP_AUTH_HEADER, credential_properties)
-        content_key      = params.keys.first.is_a?(Symbol) ? ContentKey.to_sym : ContentKey.to_s
+        content_key      = payload[:params].keys.first.is_a?(Symbol) ? ContentKey.to_sym : ContentKey.to_s
         xml_out_options  = XML_OUT_OPTIONS.merge( 'ContentKey' => content_key )
         request_content = XmlSimple.xml_out({
           "soapenv:Envelope" => {
           content_key => (
-              XmlSimple.xml_out({"soapenv:Header"  => { "ns:RequesterCredentials" => {
+              XmlSimple.xml_out({"soapenv:Header" => { "ns:RequesterCredentials" => {
                   "ebl:Credentials" => user_auth_header
                }}}, xml_out_options) +
-              XmlSimple.xml_out({"soapenv:Body"    => body(action, params)}, xml_out_options))
+              XmlSimple.xml_out({"soapenv:Body"   => request_body(payload[:action], payload[:params])}, xml_out_options))
           }.merge(Namespaces)
         }, xml_out_options.merge('noescape' => true))
         header = map_header_value(SOAP_HTTP_AUTH_HEADER, credential_properties)
-        [ uri, request_content, header ]
+        payload[:header]  = header.merge(header)
+        payload[:body]    = request_content
+        payload
       end
 
       # Format Response object
@@ -82,14 +84,16 @@ module PayPal::SDK::Core
       # * <tt>response</tt> -- Response object
       # === Return
       # Parse the SOAP response content and return Hash object
-      def format_response(action, response)
-        if response.code == "200"
-          hash = XmlSimple.xml_in(response.body, XML_IN_OPTIONS)
-          hash = skip_attributes(hash)
-          hash["Body"].find{|key_val| key_val[0] =~ /^[^@]/ }[1] || {}
-        else
-          format_error(response, response.message)
-        end
+      def format_response(payload)
+        payload[:data] =
+          if payload[:response].code == "200"
+            hash = XmlSimple.xml_in(payload[:response].body, XML_IN_OPTIONS)
+            hash = skip_attributes(hash)
+            hash["Body"].find{|key_val| key_val[0] =~ /^[^@]/ }[1] || {}
+          else
+            format_error(payload[:response], payload[:response].message)
+          end
+        payload
       end
 
       private
@@ -98,7 +102,7 @@ module PayPal::SDK::Core
       # == Arguments
       # * <tt>action</tt> -- Request Action name
       # * <tt>params</tt> -- Parameters for the action.
-      def body(action, params = {})
+      def request_body(action, params = {})
         { "ns:#{action}Req" => { "ns:#{action}Request" => DEFAULT_PARAMS.merge(params) } }
       end
 

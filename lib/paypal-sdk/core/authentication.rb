@@ -50,24 +50,6 @@ module PayPal::SDK::Core
       super
     end
 
-    # Generate header based on given header keys and properties
-    # === Arguments
-    # * <tt>header_keys</tt> -- List of Header keys for the properties
-    # * <tt>properties</tt>  -- properties
-    # === Return
-    #  Hash with header as key property as value
-    # === Example
-    # map_header_value( { :username => "X-PAYPAL-USERNAME"}, { :username => "guest" })
-    # # Return: { "X-PAYPAL-USERNAME" => "guest" }
-    def map_header_value(header_keys, properties)
-      header = {}
-      properties.each do |key, value|
-        key = header_keys[key]
-        header[key] = value if key
-      end
-      header
-    end
-
     # Configure ssl certificate to HTTP object
     # === Argument
     # * <tt>http</tt> -- Net::HTTP object

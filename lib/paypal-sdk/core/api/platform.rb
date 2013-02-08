@@ -24,7 +24,7 @@ module PayPal::SDK::Core
         "X-PAYPAL-REQUEST-DATA-FORMAT"  => "JSON",
         "X-PAYPAL-RESPONSE-DATA-FORMAT" => "JSON"
       }
-      DEFAULT_PARAMS = Util::OrderedHash.new.merge!({ 
+      DEFAULT_PARAMS = Util::OrderedHash.new.merge!({
         "requestEnvelope" => { "errorLanguage" => "en_US" } })
       DEFAULT_END_POINTS = {
         :sandbox => "https://svcs.sandbox.paypal.com/",
@@ -43,13 +43,14 @@ module PayPal::SDK::Core
       # === Return
       # * <tt>request_path</tt> -- Generated URL for requested action
       # * <tt>request_content</tt> -- Format parameters in JSON with default values.
-      def format_request(action, params)
-        request_uri = uri.dup
-        request_uri.path = request_uri.path.sub(/\/?$/, "/#{action}")
-        credential_properties = credential(request_uri.to_s).properties
+      def format_request(payload)
+        payload[:uri].path = url_join(payload[:uri].path, payload[:action])
+        credential_properties = credential(payload[:uri].to_s).properties
         header   = map_header_value(NVP_AUTH_HEADER, credential_properties).
           merge(DEFAULT_NVP_HTTP_HEADER)
-        [ request_uri, MultiJson.dump(DEFAULT_PARAMS.merge(params)), header ]
+        payload[:header] = header.merge(payload[:header])
+        payload[:body]   = MultiJson.dump(DEFAULT_PARAMS.merge(payload[:params]))
+        payload
       end
 
       # Format the Response object
@@ -58,12 +59,14 @@ module PayPal::SDK::Core
       # * <tt>response</tt> -- HTTP response object
       # === Return
       # Parse response content using JSON and return the Hash object
-      def format_response(action, response)
-        if response.code == "200"
-          MultiJson.load(response.body)
-        else
-          format_error(response, response.message)
-        end
+      def format_response(payload)
+        payload[:data] =
+          if payload[:response].code == "200"
+            MultiJson.load(payload[:response].body)
+          else
+            format_error(payload[:response], payload[:response].message)
+          end
+        payload
       end
 
       # Format Error object.

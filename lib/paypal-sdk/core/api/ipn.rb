@@ -37,9 +37,8 @@ module PayPal
             # return http response object
             def request
               uri  = URI(ipn_endpoint)
-              http = create_http_connection(uri)
               query_string = "cmd=_notify-validate&#{message}"
-              http.post(uri.path, query_string)
+              http_call(:method => :post, :uri => uri, :body => query_string)
             end
 
             # Validate the given content
