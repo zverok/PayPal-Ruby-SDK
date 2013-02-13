@@ -127,9 +127,10 @@ describe PayPal::SDK::Core::API::Merchant do
     end
 
     it "invalid action" do
-      client   = Merchant.new
-      response = client.request("InvalidAction", TransactionSearchParams )
-      should_be_failure(response, "Internal Server Error")
+      lambda {
+        client   = Merchant.new
+        response = client.request("InvalidAction", TransactionSearchParams )
+      }.should raise_error PayPal::SDK::Core::Exceptions::ServerError
     end
 
     it "invalid params" do

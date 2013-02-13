@@ -131,9 +131,10 @@ describe PayPal::SDK::Core::API::Platform do
     end
 
     it "invalid action" do
-      client   = Platform.new("AdaptivePayments")
-      response = client.request("InvalidAction", ConvertCurrencyParams)
-      should_be_failure(response, "Internal Server Error")
+      lambda {
+        client   = Platform.new("AdaptivePayments")
+        response = client.request("InvalidAction", ConvertCurrencyParams)
+      }.should raise_error PayPal::SDK::Core::Exceptions::ServerError
     end
 
     it "invalid params" do

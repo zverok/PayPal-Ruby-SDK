@@ -7,6 +7,7 @@ module PayPal
       autoload :Configuration,  "paypal-sdk/core/config"
       autoload :Logging,        "paypal-sdk/core/logging"
       autoload :Authentication, "paypal-sdk/core/authentication"
+      autoload :Exceptions,     "paypal-sdk/core/exceptions"
 
       module API
         autoload :Base,     "paypal-sdk/core/api/base"

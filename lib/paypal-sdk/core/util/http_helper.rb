@@ -7,6 +7,7 @@ module PayPal::SDK::Core
       include Configuration
       include Logging
       include Authentication
+      include Exceptions
 
       # Create HTTP connection based on given service name or configured end point
       def create_http_connection(uri)
@@ -48,16 +49,18 @@ module PayPal::SDK::Core
       # Make Http call
       # * payload - Hash(:http, :method, :uri, :body, :header)
       def http_call(payload)
-        log_http_call(payload) do
-          http = payload[:http] || create_http_connection(payload[:uri])
-          http.start do |session|
-            if payload[:method] == :get
-              session.get(payload[:uri].request_uri, payload[:header])
-            else
-              session.send(payload[:method], payload[:uri].request_uri, payload[:body], payload[:header])
+        response =
+          log_http_call(payload) do
+            http = payload[:http] || create_http_connection(payload[:uri])
+            http.start do |session|
+              if payload[:method] == :get
+                session.get(payload[:uri].request_uri, payload[:header])
+              else
+                session.send(payload[:method], payload[:uri].request_uri, payload[:body], payload[:header])
+              end
             end
           end
-        end
+        handle_response(response)
       end
 
       # Log Http call
@@ -67,7 +70,8 @@ module PayPal::SDK::Core
         logger.info "Request[#{payload[:method]}]: #{payload[:uri].to_s}"
         start_time = Time.now
         response = yield
-        logger.info sprintf("Response[%s]: %s, Duration: %.3fs", response.code, response.message, Time.now - start_time)
+        logger.info sprintf("Response[%s]: %s, Duration: %.3fs", response.code, 
+          response.message, Time.now - start_time)
         response
       end
 
@@ -89,6 +93,37 @@ module PayPal::SDK::Core
         header
       end
 
+      # Handles response and error codes from the remote service.
+      def handle_response(response)
+        case response.code.to_i
+          when 301, 302, 303, 307
+            raise(Redirection.new(response))
+          when 200...400
+            response
+          when 400
+            raise(BadRequest.new(response))
+          when 401
+            raise(UnauthorizedAccess.new(response))
+          when 403
+            raise(ForbiddenAccess.new(response))
+          when 404
+            raise(ResourceNotFound.new(response))
+          when 405
+            raise(MethodNotAllowed.new(response))
+          when 409
+            raise(ResourceConflict.new(response))
+          when 410
+            raise(ResourceGone.new(response))
+          when 422
+            raise(ResourceInvalid.new(response))
+          when 401...500
+            raise(ClientError.new(response))
+          when 500...600
+            raise(ServerError.new(response))
+          else
+            raise(ConnectionError.new(response, "Unknown response code: #{response.code}"))
+        end
+      end
 
     end
   end
