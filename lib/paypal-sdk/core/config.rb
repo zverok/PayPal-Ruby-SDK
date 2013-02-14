@@ -66,6 +66,7 @@ module PayPal::SDK::Core
   class Config
 
     include Logging
+    include Exceptions
 
     attr_accessor :username, :password, :signature, :app_id, :cert_path,
         :token, :token_secret, :subject,
@@ -122,6 +123,12 @@ module PayPal::SDK::Core
         send("#{key}=", value)
       end
       self
+    end
+
+    # Validate required configuration
+    def required!(*names)
+      names = names.select{|name| send(name).nil? }
+      raise MissingConfig.new("Required configuration(#{names.join(", ")})") if names.any?
     end
 
     class << self

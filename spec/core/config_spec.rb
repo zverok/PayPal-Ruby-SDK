@@ -33,6 +33,22 @@ describe PayPal::SDK::Core::Config do
     end
   end
 
+  it "validate configuration" do
+    config = Config.new( :username => "XYZ")
+    lambda {
+      config.required!(:username)
+    }.should_not raise_error
+    lambda {
+      config.required!(:password)
+    }.should raise_error "Required configuration(password)"
+    lambda {
+      config.required!(:username, :password)
+    }.should raise_error "Required configuration(password)"
+    lambda {
+      config.required!(:password, :signature)
+    }.should raise_error "Required configuration(password, signature)"
+  end
+
   it "return default environment configuration" do
     Config.config.should be_a Config
   end

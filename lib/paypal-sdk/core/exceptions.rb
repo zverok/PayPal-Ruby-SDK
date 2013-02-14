@@ -42,6 +42,9 @@ module PayPal::SDK::Core
     class MissingParam < ArgumentError # :nodoc:
     end
 
+    class MissingConfig < StandardError # :nodoc:
+    end
+
     # 4xx Client Error
     class ClientError < ConnectionError # :nodoc:
     end
