@@ -98,6 +98,14 @@ module PayPal::SDK::Core
       logger.warn '`logfile=` is deprecated, Please use `PayPal::SDK::Core::Config.logger = Logger.new(STDERR)`'
     end
 
+    def redirect_url=(redirect_url)
+      logger.warn '`redirect_url=` is deprecated.'
+    end
+
+    def dev_central_url=(dev_central_url)
+      logger.warn '`dev_central_url=` is deprecated.'
+    end
+
     def ssl_options
       @ssl_options ||= {}.freeze
     end
