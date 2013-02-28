@@ -115,7 +115,7 @@ describe PayPal::SDK::Core::API::Merchant do
     end
 
     it "invalid 3 token authentication" do
-      client   = Merchant.new(:username => "invalid")
+      client   = Merchant.new(:username => "invalid", :password => 1234 )
       response = client.request("TransactionSearch", TransactionSearchParams )
       should_be_failure(response, "Security error")
     end

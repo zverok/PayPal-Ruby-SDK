@@ -70,7 +70,7 @@ module PayPal::SDK::Core
         logger.info "Request[#{payload[:method]}]: #{payload[:uri].to_s}"
         start_time = Time.now
         response = yield
-        logger.info sprintf("Response[%s]: %s, Duration: %.3fs", response.code, 
+        logger.info sprintf("Response[%s]: %s, Duration: %.3fs", response.code,
           response.message, Time.now - start_time)
         response
       end
@@ -88,7 +88,7 @@ module PayPal::SDK::Core
         header = {}
         properties.each do |key, value|
           key = header_keys[key]
-          header[key] = value if key and value
+          header[key] = value.to_s if key and value
         end
         header
       end

@@ -119,7 +119,7 @@ describe PayPal::SDK::Core::API::Platform do
     end
 
     it "invalid 3 token authentication" do
-      client   = Platform.new("AdaptivePayments", :password => "invalid")
+      client   = Platform.new("AdaptivePayments", :username => 1234, :password => "invalid")
       response = client.request("ConvertCurrency", ConvertCurrencyParams )
       should_be_failure(response, "Authentication failed")
     end
