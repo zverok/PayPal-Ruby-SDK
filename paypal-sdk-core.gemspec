@@ -12,7 +12,7 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{Core library for PayPal ruby SDK}
   gem.homepage      = "https://www.x.com/"
 
-  gem.files         = Dir["{bin,spec,lib}/**/*"] + ["Rakefile", "README.md", "Gemfile"]
+  gem.files         = Dir["{bin,spec,lib,data}/**/*"] + ["Rakefile", "README.md", "Gemfile"]
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]

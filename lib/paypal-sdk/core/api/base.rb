@@ -11,7 +11,6 @@ module PayPal::SDK::Core
 
       attr_accessor :http, :uri, :service_name
 
-      DEFAULT_HTTP_HEADER = {}
       DEFAULT_API_MODE    = :sandbox
       API_MODES           = [ :live, :sandbox ]
 
@@ -67,11 +66,12 @@ module PayPal::SDK::Core
 
       # Default Http header
       def default_http_header
-        DEFAULT_HTTP_HEADER
+        { "User-Agent" => self.class.user_agent }
       end
 
       # Generate HTTP request for given action and parameters
       # === Arguments
+      # * <tt>http_method</tt> -- HTTP method(get/put/post/delete/patch)
       # * <tt>action</tt> -- Action to perform
       # * <tt>params</tt> -- (Optional) Parameters for the action
       # * <tt>initheader</tt> -- (Optional) HTTP header
@@ -79,6 +79,7 @@ module PayPal::SDK::Core
         payload[:header] = default_http_header.merge(payload[:header])
         payload[:uri]   ||= uri.dup
         payload[:http]  ||= http.dup
+        payload[:uri].query = encode_www_form(payload[:query]) if payload[:query] and payload[:query].any?
         format_request(payload)
         payload[:response] = http_call(payload)
         format_response(payload)
@@ -87,11 +88,31 @@ module PayPal::SDK::Core
         format_error(error, error.message)
       end
 
-
+      # Generate HTTP request for given action and parameters
+      # === Arguments
+      # * <tt>action</tt> -- Action to perform
+      # * <tt>params</tt> -- (Optional) Parameters for the action
+      # * <tt>initheader</tt> -- (Optional) HTTP header
       def post(action, params = {}, header = {})
         api_call(:method => :post, :action => action, :params => params, :header => header)
       end
       alias_method :request, :post
+
+      def get(action, params = {}, header = {})
+        api_call(:method => :get, :action => action, :query => params, :params => nil, :header => header)
+      end
+
+      def patch(action, params = {}, header = {})
+        api_call(:method => :patch, :action => action, :params => params, :header => header)
+      end
+
+      def put(action, params = {}, header = {})
+        api_call(:method => :put, :action => action, :params => params, :header => header)
+      end
+
+      def delete(action, params = {}, header = {})
+        api_call(:method => :delete, :action => action, :params => params, :header => header)
+      end
 
       # Format Request data. It will be override by child class
       # == Arguments
@@ -122,6 +143,12 @@ module PayPal::SDK::Core
       # * <tt>message</tt> -- Readable error message.
       def format_error(exception, message)
         raise exception
+      end
+
+      class << self
+        def user_agent
+          @user_agent ||= "paypal-sdk-core/#{VERSION} #{RUBY_DESCRIPTION}"
+        end
       end
     end
   end

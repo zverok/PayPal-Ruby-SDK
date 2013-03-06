@@ -72,7 +72,8 @@ module PayPal::SDK::Core
         :token, :token_secret, :subject,
         :http_timeout, :http_proxy,
         :device_ipaddress, :sandbox_email_address,
-        :mode, :endpoint, :merchant_endpoint, :platform_endpoint, :ipn_endpoint
+        :mode, :endpoint, :merchant_endpoint, :platform_endpoint, :ipn_endpoint,
+        :rest_endpoint, :rest_token_endpoint, :client_id, :client_secret
 
     alias_method :end_point=, :endpoint=
     alias_method :end_point, :endpoint
@@ -82,6 +83,10 @@ module PayPal::SDK::Core
     alias_method :merchant_end_point, :merchant_endpoint
     alias_method :ipn_end_point=, :ipn_endpoint=
     alias_method :ipn_end_point, :ipn_endpoint
+    alias_method :rest_end_point, :rest_endpoint
+    alias_method :rest_end_point=, :rest_endpoint=
+    alias_method :rest_token_end_point, :rest_token_endpoint
+    alias_method :rest_token_end_point=, :rest_token_endpoint=
 
     # Create Config object
     # === Options(Hash)

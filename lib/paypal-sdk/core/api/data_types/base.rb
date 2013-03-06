@@ -110,20 +110,32 @@ module PayPal::SDK::Core
 
         # Initialize options.
         def initialize(options = {}, &block)
+          merge!(options, &block)
+        end
+
+        # Merge values
+        def merge!(options, &block)
           if options.is_a? Hash
             options.each do |key, value|
-              begin
-                send("#{key}=", value)
-              rescue TypeError, ArgumentError => error
-                raise TypeError, "#{error.message}(#{value.inspect}) for #{self.class.name}.#{key} member"
-              end
+              set(key, value)
             end
           elsif members[ContentKey]
-            self.value = options
+            set(ContentKey, options)
           else
             raise ArgumentError, "invalid data(#{options.inspect}) for #{self.class.name} class"
           end
           self.instance_eval(&block) if block
+          self
+        end
+
+        # Set value for given member
+        # === Arguments
+        # * <tt>key</tt> -- member name
+        # * <tt>value</tt> -- value for member
+        def set(key, value)
+          send("#{key}=", value)
+        rescue TypeError, ArgumentError => error
+          raise TypeError, "#{error.message}(#{value.inspect}) for #{self.class.name}.#{key} member"
         end
 
         # Create array of objects.

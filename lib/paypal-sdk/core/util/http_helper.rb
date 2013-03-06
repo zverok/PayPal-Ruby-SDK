@@ -1,4 +1,6 @@
 require 'net/https'
+require 'uri'
+require 'cgi'
 
 module PayPal::SDK::Core
   module Util
@@ -30,10 +32,17 @@ module PayPal::SDK::Core
         end
       end
 
+      # Default ca file
+      def default_ca_file
+        File.expand_path("../../../../../data/paypal.crt", __FILE__)
+      end
+
       # Apply ssl configuration to http object
       def configure_ssl(http)
         http.tap do |https|
           https.use_ssl = true
+          https.ca_file = default_ca_file
+          https.verify_mode = OpenSSL::SSL::VERIFY_PEER
           config.ssl_options.each do |key, value|
             http.send("#{key}=", value)
           end
@@ -67,6 +76,9 @@ module PayPal::SDK::Core
       # * payload - Hash(:http, :method, :uri, :body, :header)
       def log_http_call(payload)
         logger.info "Action: #{payload[:action]}" if payload[:action]
+        if payload[:header] and payload[:header]["PayPal-Request-Id"]
+          logger.info "PayPal-Request-Id: #{payload[:header]["PayPal-Request-Id"]}"
+        end
         logger.info "Request[#{payload[:method]}]: #{payload[:uri].to_s}"
         start_time = Time.now
         response = yield
@@ -91,6 +103,14 @@ module PayPal::SDK::Core
           header[key] = value.to_s if key and value
         end
         header
+      end
+
+      def encode_www_form(hash)
+        if defined? URI.encode_www_form
+          URI.encode_www_form(hash)
+        else
+          hash.map{|key, value| "#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s)}" }.join("&")
+        end
       end
 
       # Handles response and error codes from the remote service.

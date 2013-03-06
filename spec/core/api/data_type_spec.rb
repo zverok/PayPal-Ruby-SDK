@@ -25,6 +25,18 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
     object_of :created_at, DateTime
   end
 
+  class Message < DataType
+    object_of :value, String
+  end
+
+  it "should allow content key" do
+    message = Message.new("Testing message")
+    message.value.should eql "Testing message"
+
+    message = Message.new(:value => "Testing message")
+    message.value.should eql "Testing message"
+  end
+
   it "should create member object automatically" do
     test_type = TestType.new
     test_type.fromCurrency.should   be_a TestCurrency
