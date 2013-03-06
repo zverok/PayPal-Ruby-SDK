@@ -75,10 +75,6 @@ module PayPal::SDK::Core
       # Log Http call
       # * payload - Hash(:http, :method, :uri, :body, :header)
       def log_http_call(payload)
-        logger.info "Action: #{payload[:action]}" if payload[:action]
-        if payload[:header] and payload[:header]["PayPal-Request-Id"]
-          logger.info "PayPal-Request-Id: #{payload[:header]["PayPal-Request-Id"]}"
-        end
         logger.info "Request[#{payload[:method]}]: #{payload[:uri].to_s}"
         start_time = Time.now
         response = yield

@@ -96,6 +96,12 @@ module PayPal::SDK::Core
         payload
       end
 
+      # Log additional information
+      def log_http_call(payload)
+        logger.info "Action: #{payload[:action]}" if payload[:action]
+        super
+      end
+
       private
 
       # Generate soap body

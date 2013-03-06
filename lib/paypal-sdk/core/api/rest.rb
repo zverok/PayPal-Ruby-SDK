@@ -126,6 +126,14 @@ module PayPal::SDK::Core
         { "error" => { "name" => "ERROR", "message" => message, "developer_msg" => exception } }
       end
 
+      # Log PayPal-Request-Id header
+      def log_http_call(payload)
+        if payload[:header] and payload[:header]["PayPal-Request-Id"]
+          logger.info "PayPal-Request-Id: #{payload[:header]["PayPal-Request-Id"]}"
+        end
+        super
+      end
+
     end
   end
 end
