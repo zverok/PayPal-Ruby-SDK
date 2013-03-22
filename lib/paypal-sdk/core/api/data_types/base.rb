@@ -19,6 +19,7 @@ module PayPal::SDK::Core
         ContentKey  = :value
 
         include SimpleTypes
+        include Logging
 
         class << self
 
@@ -134,6 +135,8 @@ module PayPal::SDK::Core
         # * <tt>value</tt> -- value for member
         def set(key, value)
           send("#{key}=", value)
+        rescue NoMethodError => error
+          logger.warn error.message
         rescue TypeError, ArgumentError => error
           raise TypeError, "#{error.message}(#{value.inspect}) for #{self.class.name}.#{key} member"
         end

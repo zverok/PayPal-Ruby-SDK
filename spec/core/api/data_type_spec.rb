@@ -101,10 +101,14 @@ describe PayPal::SDK::Core::API::DataTypes::Base do
     test_type.toCurrency.first.currencyID.should eql "USD"
   end
 
-  it "should allow only configured fields" do
+  it "should skip undefind members on initializer" do
+    test_type = TestType.new( :notExist => "testing")
     lambda do
-      TestType.new( :notExist => "testing")
-    end.should raise_error
+      test_type.notExist
+    end.should raise_error NoMethodError
+    lambda do
+      test_type.notExist = "Value"
+    end.should raise_error NoMethodError
   end
 
   it "should not convert empty hash" do
