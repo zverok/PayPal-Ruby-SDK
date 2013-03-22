@@ -1,5 +1,6 @@
 ## PayPal SDKs
 
+* [paypal-sdk-rest](https://github.com/paypal/rest-api-sdk-ruby)
 * [paypal-sdk-adaptivepayments](https://github.com/paypal/adaptivepayments-sdk-ruby)
 * [paypal-sdk-adaptiveaccounts](https://github.com/paypal/adaptiveaccounts-sdk-ruby)
 * [paypal-sdk-invoice](https://github.com/paypal/invoice-sdk-ruby)
