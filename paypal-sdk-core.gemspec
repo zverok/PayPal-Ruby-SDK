@@ -8,8 +8,8 @@ Gem::Specification.new do |gem|
   gem.version       = PayPal::SDK::Core::VERSION
   gem.authors       = ["PayPal"]
   gem.email         = ["DL-PP-Platform-Ruby-SDK@ebay.com"]
-  gem.description   = %q{PayPal Core library for PayPal ruby SDKs}
-  gem.summary       = %q{PayPal Core library for PayPal ruby SDKs}
+  gem.description   = %q{Core library for PayPal ruby SDKs}
+  gem.summary       = %q{Core library for PayPal ruby SDKs}
   gem.homepage      = "https://developer.paypal.com"
 
   gem.files         = Dir["{bin,spec,lib,data}/**/*"] + ["Rakefile", "README.md", "Gemfile"]
