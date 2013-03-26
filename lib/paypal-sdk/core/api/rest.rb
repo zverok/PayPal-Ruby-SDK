@@ -121,11 +121,6 @@ module PayPal::SDK::Core
         payload
       end
 
-      # Formate Exception object
-      def format_error(exception, message)
-        { "error" => { "name" => "ERROR", "message" => message, "developer_msg" => exception } }
-      end
-
       # Log PayPal-Request-Id header
       def log_http_call(payload)
         if payload[:header] and payload[:header]["PayPal-Request-Id"]
