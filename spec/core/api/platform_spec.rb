@@ -81,7 +81,6 @@ describe PayPal::SDK::Core::API::Platform do
 
     describe "with token" do
       it "create invoice" do
-        pending "Fix issue with Invoice service"
         client   = Platform.new("Invoice", :with_oauth_token )
         response = client.request("CreateInvoice", CreateInvoiceParams)
         should_be_success(response)
