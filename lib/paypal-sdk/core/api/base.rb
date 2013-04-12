@@ -84,8 +84,6 @@ module PayPal::SDK::Core
         payload[:response] = http_call(payload)
         format_response(payload)
         payload[:data]
-      rescue Net::HTTPBadGateway, Errno::ECONNRESET, Errno::ECONNABORTED, SocketError => error
-        format_error(error, error.message)
       end
 
       # Generate HTTP request for given action and parameters
