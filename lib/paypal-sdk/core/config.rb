@@ -73,7 +73,8 @@ module PayPal::SDK::Core
         :http_timeout, :http_proxy,
         :device_ipaddress, :sandbox_email_address,
         :mode, :endpoint, :merchant_endpoint, :platform_endpoint, :ipn_endpoint,
-        :rest_endpoint, :rest_token_endpoint, :client_id, :client_secret
+        :rest_endpoint, :rest_token_endpoint, :client_id, :client_secret,
+        :openid_endpoint, :openid_redirect_uri
 
     alias_method :end_point=, :endpoint=
     alias_method :end_point, :endpoint
