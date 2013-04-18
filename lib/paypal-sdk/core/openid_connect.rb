@@ -10,14 +10,16 @@ module PayPal::SDK
 
       include DataTypes
 
-      def api
-        RequestDataType.api
-      end
+      class << self
+        def api
+          RequestDataType.api
+        end
 
-      def set_config(*args)
-        RequestDataType.set_config(*args)
+        def set_config(*args)
+          RequestDataType.set_config(*args)
+        end
+        alias_method :config=, :set_config
       end
-      alias_method :config=, :set_config
 
       module DataTypes
         class Tokeninfo < Base
@@ -70,7 +72,7 @@ module PayPal::SDK
 
         class Authorizeinfo < Base
           include RequestDataType
-          DEFAULT_OPENID_ENDPOINT = "https://www.paypal.com/webapps/auth/protocol/openidconnect/v1/authorize"
+          DEFAULT_OPENID_URL= "https://www.paypal.com/webapps/auth/protocol/openidconnect/v1/authorize"
 
           class << self
             def authorize_url(params = {})
@@ -81,7 +83,7 @@ module PayPal::SDK
             end
 
             def openid_endpoint
-              URI(api.config.openid_endpoint || DEFAULT_OPENID_ENDPOINT)
+              URI(DEFAULT_OPENID_URL)
             end
 
             def default_params
