@@ -19,6 +19,30 @@ module PayPal::SDK
           RequestDataType.set_config(*args)
         end
         alias_method :config=, :set_config
+
+        AUTHORIZATION_URL  = "https://www.paypal.com/webapps/auth/protocol/openidconnect/v1/authorize"
+        ENDSESSION_URL     = "https://www.paypal.com/webapps/auth/protocol/openidconnect/v1/endsession"
+        DEFAULT_SCOPE      = "openid"
+
+        def authorize_url(params = {})
+          uri = URI(AUTHORIZATION_URL)
+          uri.query = api.encode_www_form({
+            :response_type => "code",
+            :scope => DEFAULT_SCOPE,
+            :client_id => api.config.client_id,
+            :redirect_uri => api.config.openid_redirect_uri
+          }.merge(params))
+          uri.to_s
+        end
+
+        def logout_url(params = {})
+          uri = URI(ENDSESSION_URL)
+          uri.query = api.encode_www_form({
+            :logout   => "true",
+            :redirect_uri => api.config.openid_redirect_uri
+          }.merge(params))
+          uri.to_s
+        end
       end
 
       module DataTypes
@@ -27,21 +51,19 @@ module PayPal::SDK
           PATH = "v1/identity/openidconnect/tokenservice"
 
           class << self
-            def createFromAuthorizationCode(options, http_header = {})
+            def create_from_authorization_code(options, http_header = {})
               options = { :code => options } if options.is_a? String
               options = options.merge( :grant_type => "authorization_code" )
               Tokeninfo.new(api.post(PATH, with_credentials(options), http_header))
             end
-            alias_method :create_from_authorization_code, :createFromAuthorizationCode
-            alias_method :create, :createFromAuthorizationCode
+            alias_method :create, :create_from_authorization_code
 
-            def createFromRefreshToken(options, http_header = {})
+            def create_from_refresh_token(options, http_header = {})
               options = { :refresh_token => options } if options.is_a? String
               options = options.merge( :grant_type => "refresh_token" )
               Tokeninfo.new(api.post(PATH, with_credentials(options), http_header))
             end
-            alias_method :create_from_refresh_token, :createFromRefreshToken
-            alias_method :refresh, :createFromRefreshToken
+            alias_method :refresh, :create_from_refresh_token
 
             def with_credentials(options = {})
               options = options.dup
@@ -50,11 +72,24 @@ module PayPal::SDK
               end
               options
             end
+
+            def authorize_url(options = {})
+              OpenIDConnect.authorize_url(options)
+            end
           end
 
-          def refresh
-            self.class.createFromRefreshToken( :refresh_token => self.refresh_token )
+          def refresh(options = {})
+            self.class.refresh({:refresh_token => self.refresh_token}.merge(options))
           end
+
+          def userinfo(options = {})
+            Userinfo.get({ :access_token => options }.merge(options))
+          end
+
+          def logout_url(options = {})
+            OpenIDConnect.logout_url({ :id_token => self.id_token }.merge(options))
+          end
+
         end
 
         class Userinfo < Base
@@ -62,43 +97,15 @@ module PayPal::SDK
           PATH = "v1/identity/openidconnect/userinfo"
 
           class << self
-            def getUserinfo(options = {}, http_header = {})
+            def get_userinfo(options = {}, http_header = {})
               options = { :access_token => options } if options.is_a? String
               options = options.merge( :schema => "openid" ) unless options[:schema] or options["schema"]
               Userinfo.new(api.post(PATH, options, http_header))
             end
-            alias_method :get_userinfo, :getUserinfo
-            alias_method :get, :getUserinfo
+            alias_method :get, :get_userinfo
           end
         end
-
-        class Authorizeinfo < Base
-          include RequestDataType
-          DEFAULT_OPENID_URL= "https://www.paypal.com/webapps/auth/protocol/openidconnect/v1/authorize"
-
-          class << self
-            def authorize_url(params = {})
-              params = default_params.merge(params)
-              request_uri = openid_endpoint
-              request_uri.query = api.encode_www_form(params)
-              request_uri.to_s
-            end
-
-            def openid_endpoint
-              URI(DEFAULT_OPENID_URL)
-            end
-
-            def default_params
-              { :response_type => "code",
-                :scope => "openid",
-                :client_id => api.config.client_id,
-                :redirect_uri => api.config.openid_redirect_uri }
-            end
-          end
-        end
-
       end
-
     end
   end
 end
