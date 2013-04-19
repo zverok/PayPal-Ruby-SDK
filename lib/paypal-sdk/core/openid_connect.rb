@@ -67,6 +67,8 @@ module PayPal::SDK
               options = options.merge( :schema => "openid" ) unless options[:schema] or options["schema"]
               Userinfo.new(api.post(PATH, options, http_header))
             end
+            alias_method :get_userinfo, :getUserinfo
+            alias_method :get, :getUserinfo
           end
         end
 
