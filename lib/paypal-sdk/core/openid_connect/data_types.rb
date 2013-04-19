@@ -28,9 +28,11 @@ module PayPal::SDK::Core
           object_of :email, String
           object_of :email_verified, Boolean
           object_of :gender, String
-          object_of :birthdate, String
+          object_of :birthday, String
           object_of :zoneinfo, String
           object_of :locale, String
+          object_of :language, String
+          object_of :verified, Boolean
           object_of :phone_number, String
           object_of :address, Address
           object_of :verified_account, Boolean
@@ -46,6 +48,7 @@ module PayPal::SDK::Core
           object_of :access_token, String
           object_of :refresh_token, String
           object_of :token_type, String
+          object_of :id_token, String
           object_of :expires_in, Integer
         end
       end
@@ -55,15 +58,6 @@ module PayPal::SDK::Core
           object_of :error, String
           object_of :error_description, String
           object_of :error_uri, String
-        end
-      end
-
-      class Authorizeinfo < Base
-        def self.load_members
-          object_of :code, String
-          object_of :scope, String
-          object_of :id_token, String
-          object_of :state, String
         end
       end
 
