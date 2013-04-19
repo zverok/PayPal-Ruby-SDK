@@ -90,7 +90,7 @@ module PayPal::SDK
               { :response_type => "code",
                 :scope => "openid",
                 :client_id => api.config.client_id,
-                :request_uri => api.config.openid_redirect_uri }
+                :redirect_uri => api.config.openid_redirect_uri }
             end
           end
         end
