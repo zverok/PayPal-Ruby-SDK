@@ -79,11 +79,13 @@ module PayPal::SDK
           end
 
           def refresh(options = {})
-            self.class.refresh({:refresh_token => self.refresh_token}.merge(options))
+            tokeninfo = self.class.refresh({
+              :refresh_token => self.refresh_token}.merge(options))
+            self.merge!(tokeninfo.to_hash)
           end
 
           def userinfo(options = {})
-            Userinfo.get({ :access_token => options }.merge(options))
+            Userinfo.get({ :access_token => self.access_token }.merge(options))
           end
 
           def logout_url(options = {})
