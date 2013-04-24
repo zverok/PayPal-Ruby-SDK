@@ -29,7 +29,7 @@ module PayPal::SDK
           uri.query = api.encode_www_form({
             :response_type => "code",
             :scope => DEFAULT_SCOPE,
-            :client_id => api.config.client_id,
+            :client_id => RequestDataType.client_id,
             :redirect_uri => api.config.openid_redirect_uri
           }.merge(params))
           uri.to_s
@@ -68,7 +68,7 @@ module PayPal::SDK
             def with_credentials(options = {})
               options = options.dup
               [ :client_id, :client_secret ].each do |key|
-                options[key] = api.config.send(key) unless options[key] or options[key.to_s]
+                options[key] = self.send(key) unless options[key] or options[key.to_s]
               end
               options
             end
