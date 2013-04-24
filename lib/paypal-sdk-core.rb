@@ -8,6 +8,7 @@ module PayPal
       autoload :Logging,        "paypal-sdk/core/logging"
       autoload :Authentication, "paypal-sdk/core/authentication"
       autoload :Exceptions,     "paypal-sdk/core/exceptions"
+      autoload :OpenIDConnect,  "paypal-sdk/core/openid_connect"
 
       module API
         autoload :Base,     "paypal-sdk/core/api/base"
