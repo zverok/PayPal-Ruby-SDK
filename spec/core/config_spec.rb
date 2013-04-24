@@ -33,6 +33,47 @@ describe PayPal::SDK::Core::Config do
     end
   end
 
+  it "Configure with parameters" do
+    begin
+      backup_configurations = Config.configurations
+      Config.configurations = nil
+      Config.configure( :username => "Testing" )
+      Config.config.username.should eql "Testing"
+      Config.config.app_id.should be_nil
+    ensure
+      Config.configurations = backup_configurations
+    end
+  end
+
+  it "Configure with block" do
+    begin
+      backup_configurations = Config.configurations
+      Config.configurations = nil
+      Config.configure do |config|
+        config.username = "Testing"
+      end
+      Config.config.username.should eql "Testing"
+      Config.config.app_id.should be_nil
+    ensure
+      Config.configurations = backup_configurations
+    end
+  end
+
+  it "Configure with default values" do
+    begin
+      backup_configurations = Config.configurations
+      default_config = Config.config
+      Config.configure do |config|
+        config.username = "Testing"
+      end
+      Config.config.username.should eql "Testing"
+      Config.config.app_id.should_not be_nil
+      Config.config.app_id.should eql default_config.app_id
+    ensure
+      Config.configurations = backup_configurations
+    end
+  end
+
   it "validate configuration" do
     config = Config.new( :username => "XYZ")
     lambda {
@@ -81,6 +122,13 @@ describe PayPal::SDK::Core::Config do
     my_logger = Logger.new(STDERR)
     Config.logger = my_logger
     Config.logger.should eql my_logger
+  end
+
+  it "Access PayPal::SDK methods" do
+    PayPal::SDK.configure.should eql PayPal::SDK::Core::Config.config
+    PayPal::SDK.logger.should eql PayPal::SDK::Core::Config.logger
+    PayPal::SDK.logger = PayPal::SDK.logger
+    PayPal::SDK.logger.should eql PayPal::SDK::Core::Config.logger
   end
 
   describe "include Configuration" do

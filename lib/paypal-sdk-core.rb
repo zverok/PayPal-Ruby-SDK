@@ -43,5 +43,23 @@ module PayPal
       end
 
     end
+
+    class << self
+      def configure(options = {}, &block)
+        Core::Config.configure(options, &block)
+      end
+
+      def load(*args)
+        Core::Config.load(*args)
+      end
+
+      def logger
+        Core::Config.logger
+      end
+
+      def logger=(log)
+        Core::Config.logger = log
+      end
+    end
   end
 end
