@@ -1,6 +1,6 @@
 test: &default
 
-  # Credentials for New APIs
+  # Credentials for REST APIs
   client_id: EBWKjlELKMYqRNQ6sYvFo64FtaRLRR5BdHEESmha49TM
   client_secret: EO422dn3gQLgDbuwqTjzrFgFtaRLRR5BdHEESmha49TM
 
@@ -8,10 +8,10 @@ test: &default
   mode: sandbox
 
   # Credentials for Classic APIs
+  app_id: APP-80W284485P519543T
   username: jb-us-seller_api1.paypal.com
   password: WX4WTU3S8MY44S7F
   signature: AFcWxV21C7fd0v3bYYYRCpSSRl31A7yDhhsPUU2XhtMoZXsWHFxu-RWy
-  app_id: APP-80W284485P519543T
   # # With Certificate
   # cert_path: "config/cert_key.pem"
   sandbox_email_address: Platform.sdk.seller@gmail.com

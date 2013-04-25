@@ -74,7 +74,7 @@ module PayPal::SDK::Core
         :device_ipaddress, :sandbox_email_address,
         :mode, :endpoint, :merchant_endpoint, :platform_endpoint, :ipn_endpoint,
         :rest_endpoint, :rest_token_endpoint, :client_id, :client_secret,
-        :openid_endpoint, :openid_redirect_uri
+        :openid_endpoint, :openid_redirect_uri, :openid_client_id, :openid_client_secret
 
     alias_method :end_point=, :endpoint=
     alias_method :end_point, :endpoint
@@ -164,13 +164,24 @@ module PayPal::SDK::Core
 
       # Get default environment name
       def default_environment
-        @@default_environment ||= ENV['PAYPAL_ENV'] || ENV['RACK_ENV'] || ENV['RAILS_ENV'] || ENV['ENV'] || "development"
+        @@default_environment ||= ENV['PAYPAL_ENV'] || ENV['RACK_ENV'] || ENV['RAILS_ENV'] || "development"
       end
 
       # Set default environment
       def default_environment=(env)
         @@default_environment = env.to_s
       end
+
+      def configure(options = {}, &block)
+        begin
+          self.config.merge!(options)
+        rescue Errno::ENOENT
+          self.configurations = { default_environment => options }
+        end
+        block.call(self.config) if block
+        self.config
+      end
+      alias_method :set_config, :configure
 
       # Create or Load Config object based on given environment and configurations.
       # === Attributes
@@ -185,12 +196,19 @@ module PayPal::SDK::Core
           override_configuration = env
           env = default_environment
         end
-        env = (env || default_environment).to_s
-        raise "Configuration[#{env}] NotFound" unless configurations[env]
         if override_configuration.nil? or override_configuration.empty?
-          @@config_cache[env] ||= new configurations[env]
+          default_config(env)
         else
-          new(configurations[env]).merge!(override_configuration)
+          default_config(env).dup.merge!(override_configuration)
+        end
+      end
+
+      def default_config(env = nil)
+        env = (env || default_environment).to_s
+        if configurations[env]
+          @@config_cache[env] ||= new(configurations[env])
+        else
+          raise Exceptions::MissingConfig.new("Configuration[#{env}] NotFound")
         end
       end
 

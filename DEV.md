@@ -42,13 +42,13 @@ production:
 Load Configurations from specified file:
 
 ```ruby
-PayPal::SDK::Core::Config.load('config/paypal.yml',  ENV['RACK_ENV'] || 'development')
+PayPal::SDK.load('config/paypal.yml',  ENV['RACK_ENV'] || 'development')
 ```
 
 Logger configuration:
 
 ```ruby
-PayPal::SDK::Core::Logging.logger = Logger.new(STDERR)
+PayPal::SDK.logger = Logger.new(STDERR)
 ```
 
 ### Usage API services
@@ -82,24 +82,27 @@ PayPal::SDK::Core::IPN.verify?(request.raw_post) # return true or false
 ```ruby
 require 'paypal-sdk-core'
 
-# Update client_id, client_secret and openid_redirect_uri
-PayPal::SDK::Core::OpenIDConnect.set_config({
-  # :openid_endpoint      => "https://api.paypal.com/",
-  :openid_redirect_uri  => "http://google.com",
-  :client_id      => "client_id",
-  :client_secret  => "client_secret"
+# Update client_id, client_secret and redirect_uri
+PayPal::SDK.configure({
+  :openid_client_id     => "client_id",
+  :openid_client_secret => "client_secret",
+  :openid_redirect_uri  => "http://google.com"
 })
-include PayPal::SDK::Core::OpenIDConnect
+include PayPal::SDK::OpenIDConnect
 
 # Generate URL to Get Authorize code
-puts Tokeninfo.authorize_url( :scope => "openid" )
+puts Tokeninfo.authorize_url( :scope => "openid profile" )
 
 # Create tokeninfo by using AuthorizeCode from redirect_uri
 tokeninfo = Tokeninfo.create("Replace with Authorize Code received on redirect_uri")
 puts tokeninfo.to_hash
 
-# Get tokeninfo by using refresh token
+# Refresh tokeninfo object
 tokeninfo = tokeninfo.refresh
+puts tokeninfo.to_hash
+
+# Create tokeninfo by using refresh token
+tokeninfo = Tokeninfo.refresh("Replace with refresh_token")
 puts tokeninfo.to_hash
 
 # Get Userinfo

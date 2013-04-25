@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe PayPal::SDK::Core::OpenIDConnect do
-  OpenIDConnect = PayPal::SDK::Core::OpenIDConnect
+describe PayPal::SDK::OpenIDConnect do
+  OpenIDConnect = PayPal::SDK::OpenIDConnect
 
   before :all do
     OpenIDConnect.set_config( :client_id => "client_id", :openid_redirect_uri => "http://google.com" )

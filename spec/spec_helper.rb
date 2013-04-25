@@ -10,8 +10,8 @@ end
 Bundler.require :default, :test
 require 'logger'
 
-PayPal::SDK::Core::Config.load('spec/config/paypal.yml', 'test')
-PayPal::SDK::Core::Config.logger = Logger.new(STDERR)
+PayPal::SDK.load('spec/config/paypal.yml', 'test')
+PayPal::SDK.logger = Logger.new(STDERR)
 
 Dir[File.expand_path("../support/**/*.rb", __FILE__)].each {|f| require f }
 
