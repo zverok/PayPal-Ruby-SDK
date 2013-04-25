@@ -1,0 +1,16 @@
+Version 0.2.2 - Apr 25, 2013
+  - Validate token expiry duration on every REST API call
+  - Removed exception handling for Socket and Timeout errors
+  - Added configure and logger methods to PayPal::SDK module
+  - Added PayPal:SDK::OpenIDConnect module
+
+Version 0.2.1 - Mar 22, 2013
+  - Skip values for undefined members on initializer
+
+Version 0.1.5 - Jan 28, 2013
+  - Fix OrderedHash issue with ruby 1.8.7
+
+Version 0.1.4 - Jan 09, 2013
+
+  - Support ruby version 1.8.7
+  - Update IPN Endpoint
