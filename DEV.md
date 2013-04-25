@@ -1,18 +1,18 @@
-## Installation
+### Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'paypal-sdk-core', :git => "https://github.com/paypal/sdk-core.git", :branch => "ruby-sdk"
-
-And then execute:
-
-    $ bundle
+```ruby
+gem 'paypal-sdk-core', :git => "https://github.com/paypal/sdk-core.git"
+```
 
 Or install it yourself as:
 
-    $ gem install paypal-sdk-core
+```sh
+$ gem install paypal-sdk-core
+```
 
-## Configuration
+### Configuration
 
 To generate configuration in Rails application:
 
@@ -51,32 +51,7 @@ Logger configuration:
 PayPal::SDK::Core::Logging.logger = Logger.new(STDERR)
 ```
 
-Override configuration on particular API client:
-
-```ruby
-client    = PayPal::SDK::Core::API::Platform.new("AdaptivePayments", :test, :app_id => "XYZ")
-# Override with default environment configuration
-client    = PayPal::SDK::Core::API::Platform.new("AdaptivePayments", :app_id => "XYZ")
-```
-
-Change client configuration:
-
-```ruby
-client.set_config :development
-client.set_config :development, :api_id => "XYZ"
-```
-
-For token and subject authentication:
-
-```ruby
-# Token Authentication
-client    = PayPal::SDK::Core::API::Platform.new("AdaptivePayments", :token => "xyz", :token_secret => "xyz")
-# Subject Authentication
-client    = PayPal::SDK::Core::API::Merchant.new( :subject => "xyz@example.com" )
-```
-
-## Usage API services
-
+### Usage API services
 
 ```ruby
 
@@ -102,41 +77,35 @@ PayPal::SDK::Core::IPN.verify?(request.raw_post) # return true or false
 
 ```
 
-## Using Core package
+### OpenIDConnect Samples
 
 ```ruby
-# Get Configuration
-config = PayPal::SDK::Core::Config.config # Load default configuration
-config = PayPal::SDK::Core::Config.config(:development) # Load specified environment configuration
-config = PayPal::SDK::Core::Config.config(:development, :app_id => "XYZ") # Override configuration
+require 'paypal-sdk-core'
 
-# Include Core package
-include PayPal::SDK::Core::Configuration
-include PayPal::SDK::Core::Logging
-set_config :development # Set configuration
-config  				# access configuration
-logger  				# access logger
-```
+# Update client_id, client_secret and openid_redirect_uri
+PayPal::SDK::Core::OpenIDConnect.set_config({
+  # :openid_endpoint      => "https://api.paypal.com/",
+  :openid_redirect_uri  => "http://google.com",
+  :client_id      => "client_id",
+  :client_secret  => "client_secret"
+})
+include PayPal::SDK::Core::OpenIDConnect
 
-## Implement AdaptivePayments by inheriting the Platform class
+# Generate URL to Get Authorize code
+puts Tokeninfo.authorize_url( :scope => "openid" )
 
-```ruby
-class AdaptivePayments < PayPal::SDK::Core::API::Platform
+# Create tokeninfo by using AuthorizeCode from redirect_uri
+tokeninfo = Tokeninfo.create("Replace with Authorize Code received on redirect_uri")
+puts tokeninfo.to_hash
 
-  def initlaize(*args)
-    super("AdaptivePayments", *args)
-  end
+# Get tokeninfo by using refresh token
+tokeninfo = tokeninfo.refresh
+puts tokeninfo.to_hash
 
-  def convert_currency(object_or_hash, http_headers = {})
-    object_or_hash = ConvertCurrencyRequest.new(object_or_hash) unless object_or_hash.is_a? ConvertCurrencyRequest
-    response_hash  = request("ConvertCurrency", object_or_hash.to_hash, http_headers)
-    ConvertCurrencyResponse.new(response_hash)
-  end
-  ....
-end
+# Get Userinfo
+userinfo = tokeninfo.userinfo
+puts userinfo.to_hash
 
-# Using AdaptivePayments class
-ap = AdaptivePayment.new
-response = ap.convert_currency( {...} )
-response.response_envelope.ack
+# Get logout url
+put tokeninfo.logout_url
 ```
