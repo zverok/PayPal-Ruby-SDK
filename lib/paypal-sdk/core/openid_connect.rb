@@ -110,4 +110,7 @@ module PayPal::SDK
       end
     end
   end
+
+  # Alias for the Core::OpenIDConnect constant
+  OpenIDConnect = Core::OpenIDConnect
 end

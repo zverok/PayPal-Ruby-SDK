@@ -15,6 +15,8 @@ module PayPal
 
     end
 
+    autoload :OpenIDConnect,    "paypal-sdk/core/openid_connect"
+
     class << self
       def configure(options = {}, &block)
         Core::Config.configure(options, &block)
