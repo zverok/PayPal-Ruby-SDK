@@ -12,12 +12,11 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{Core library for PayPal ruby SDKs}
   gem.homepage      = "https://developer.paypal.com"
 
-  gem.files         = Dir["{bin,spec,lib,data}/**/*"] + ["Rakefile", "README.md", "Gemfile"]
+  gem.files         = Dir["{bin,spec,lib,data}/**/*"] + ["Rakefile", "README.md", "Gemfile", "CHANGELOG.txt"]
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
   gem.add_dependency('xml-simple')
   gem.add_dependency('multi_json', '~> 1.0')
-
 end
