@@ -8,6 +8,10 @@ describe PayPal::SDK::Core::API::Merchant do
   MassPayParams = { "ReceiverType" => "EmailAddress", "MassPayItem" => [{
             "ReceiverEmail" => "enduser_biz@gmail.com", "Amount" => { "@currencyID" => "USD", "value" => "3.00" } }] }
 
+  it "Validate user_agent" do
+    Merchant.user_agent.should match "PayPalSDK/sdk-core-ruby"
+  end
+
   describe "Configuration" do
     it "service endpoint for sandbox" do
       client = Merchant.new

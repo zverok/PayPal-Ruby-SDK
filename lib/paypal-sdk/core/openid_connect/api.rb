@@ -35,6 +35,12 @@ module PayPal::SDK
           payload
         end
 
+        class << self
+          def user_agent
+            @user_agent ||= "PayPalSDK/openid-connect-ruby #{VERSION} (#{sdk_library_details})"
+          end
+        end
+
       end
     end
   end
