@@ -1,3 +1,6 @@
+Version 0.2.3 - Apr 26, 2013
+  - Update User-Agent for openid-connect
+
 Version 0.2.2 - Apr 25, 2013
   - Validate token expiry duration on every REST API call
   - Removed exception handling for Socket and Timeout errors
