@@ -144,8 +144,12 @@ module PayPal::SDK::Core
       end
 
       class << self
+        def sdk_library_details
+          @library_details ||= "paypal-sdk-core #{PayPal::SDK::Core::VERSION}; ruby #{RUBY_VERSION}p#{RUBY_PATCHLEVEL}-#{RUBY_PLATFORM}"
+        end
+
         def user_agent
-          @user_agent ||= "paypal-sdk-core/#{VERSION} #{RUBY_DESCRIPTION}"
+          @user_agent ||= "PayPalSDK/sdk-core-ruby #{VERSION} (#{sdk_library_details})"
         end
       end
     end
