@@ -13,6 +13,10 @@ describe PayPal::SDK::Core::API::Platform do
                                     { "name"=>"item2", "quantity"=>"2", "unitPrice"=>"2.00" } ] },
         "currencyCode" => "USD", "paymentTerms" => "DueOnReceipt" } }
 
+  it "Validate user_agent" do
+    Platform.user_agent.should match "PayPalSDK/sdk-core-ruby"
+  end
+
   describe "Configuration" do
     it "create client with Service name" do
       client = Platform.new("AdaptivePayments")

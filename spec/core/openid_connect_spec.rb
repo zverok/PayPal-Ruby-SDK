@@ -7,6 +7,10 @@ describe PayPal::SDK::OpenIDConnect do
     OpenIDConnect.set_config( :client_id => "client_id", :openid_redirect_uri => "http://google.com" )
   end
 
+  it "Validate user_agent" do
+    OpenIDConnect::API.user_agent.should match "PayPalSDK/openid-connect-ruby"
+  end
+
   it "generate autorize_url" do
     url = OpenIDConnect::Tokeninfo.authorize_url
     url.should match "client_id=client_id"
