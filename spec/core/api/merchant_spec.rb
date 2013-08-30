@@ -76,7 +76,6 @@ describe PayPal::SDK::Core::API::Merchant do
         "ns:TransactionSearchReq" => {
           "ns:TransactionSearchRequest" =>  TransactionSearchParams.merge("ebl:Version" => "94")
       } } )
-      puts response.inspect
       response["Ack"].should eql "Success"
     end
   end
