@@ -37,6 +37,7 @@ module PayPal::SDK::Core
           object_of :address, Address
           object_of :verified_account, Boolean
           object_of :account_type, String
+          object_of :account_creation_date, String
           object_of :age_range, String
           object_of :payer_id, String
         end
