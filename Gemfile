@@ -11,6 +11,6 @@ group :test do
   gem 'coveralls', :require => false
 end
 
-platform :mri_18 do
+platform :mri_18, :jruby do
   gem 'mime-types', '~> 1.23'
 end
