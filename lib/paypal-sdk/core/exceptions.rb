@@ -12,7 +12,8 @@ module PayPal::SDK::Core
         message = "Failed."
         message << "  Response code = #{response.code}." if response.respond_to?(:code)
         message << "  Response message = #{response.message}." if response.respond_to?(:message)
-        message
+        message << "  Response debug ID = #{response.debug_id}." if response.respond_to?(:debug_id)
+	message
       end
     end
 
