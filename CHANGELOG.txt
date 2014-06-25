@@ -1,3 +1,6 @@
+Version 0.2.10 - June 25, 2014
+  - Fix debug ID dump
+
 Version 0.2.9 - May 30, 2014
   - Log debug ID
 
