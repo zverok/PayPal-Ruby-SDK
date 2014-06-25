@@ -1,3 +1,6 @@
+require 'json'
+require 'pp'
+
 module PayPal::SDK::Core
   module Exceptions
     class ConnectionError < StandardError # :nodoc:
@@ -9,11 +12,13 @@ module PayPal::SDK::Core
       end
 
       def to_s
+        response_body = JSON.parse(response.body)
+        debug_id = response_body["debug_id"]
         message = "Failed."
         message << "  Response code = #{response.code}." if response.respond_to?(:code)
         message << "  Response message = #{response.message}." if response.respond_to?(:message)
-        message << "  Response debug ID = #{response.debug_id}." if response.respond_to?(:debug_id)
-	message
+        message << "  Response debug ID = #{debug_id}." if debug_id
+        message
       end
     end
 
