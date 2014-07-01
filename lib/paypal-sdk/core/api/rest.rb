@@ -45,7 +45,7 @@ module PayPal::SDK::Core
       end
 
       # Generate Oauth token or Get cached
-      def token_hash
+      def token_hash(auth_code=nil)
         validate_token_hash
         @token_hash ||=
           begin
@@ -54,6 +54,10 @@ module PayPal::SDK::Core
             token_headers = default_http_header.merge({
               "Content-Type"  => "application/x-www-form-urlencoded",
               "Authorization" => "Basic #{basic_auth}" })
+            if auth_code != nil
+              TOKEN_REQUEST_PARAMS.replace "grant_type=authorization_code&response_type=token&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&code="
+              TOKEN_REQUEST_PARAMS << auth_code
+            end
             response = http_call( :method => :post, :uri => token_uri, :body => TOKEN_REQUEST_PARAMS, :header => token_headers )
             MultiJson.load(response.body, :symbolize_keys => true)
           end
@@ -61,8 +65,8 @@ module PayPal::SDK::Core
       attr_writer :token_hash
 
       # Get access token
-      def token
-        token_hash[:access_token]
+      def token(auth_code=nil)
+        token_hash(auth_code)[:access_token]
       end
 
       # Get access token type
