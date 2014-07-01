@@ -3,7 +3,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'paypal-sdk-core', :git => "https://github.com/paypal/sdk-core.git"
+gem 'paypal-sdk-core', :git => "https://github.com/paypal/sdk-core-ruby.git"
 ```
 
 Or install it yourself as:
