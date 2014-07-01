@@ -1,3 +1,6 @@
+Version 0.3.0 - July 1, 2014
+  - Add future payment support
+  - Fix exception handling for debug ID print
 Version 0.2.10 - June 25, 2014
   - Fix debug ID dump
 
