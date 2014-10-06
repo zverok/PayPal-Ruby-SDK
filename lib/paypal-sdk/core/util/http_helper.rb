@@ -58,6 +58,10 @@ module PayPal::SDK::Core
       # Make Http call
       # * payload - Hash(:http, :method, :uri, :body, :header)
       def http_call(payload)
+        if Config.config.verbose_logging
+          logger.info payload.inspect
+        end
+
         response =
           log_http_call(payload) do
             http = payload[:http] || create_http_connection(payload[:uri])
@@ -69,6 +73,15 @@ module PayPal::SDK::Core
               end
             end
           end
+
+        if Config.config.verbose_logging
+          if response.code.to_i == 200
+            logger.info(response.body)
+          else
+            logger.warn(response.body)
+          end
+        end
+
         handle_response(response)
       end
 
