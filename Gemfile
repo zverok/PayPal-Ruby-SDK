@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gemspec
+#gemspec
 
 #gem 'paypal-sdk-core', :git => "https://github.com/paypal/sdk-core-ruby.git"
 
@@ -12,3 +12,4 @@ group :test do
 end
 
 gem 'releasinator', '~> 0.5'
+gem 'coveralls', require: false
